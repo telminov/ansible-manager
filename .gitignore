@@ -1,0 +1,5 @@
+project/local_settings.py
+*.sqlite3
+/.idea/
+*.pyc
+node_modules

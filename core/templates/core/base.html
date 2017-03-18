@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title|default:"Ansible Manager" }}</title>
+
+    <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/node_modules/select2/dist/css/select2.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}core/css/style.css" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/node_modules/select2/dist/js/select2.min.js"></script>
+
+    {% block form_media %}
+        {{ form.media }}
+        {{ formset.media }}
+    {% endblock form_media %}
+</head>
+<body>
+
+<div class="container">
+    {% block container %}
+    {% endblock container %}
+</div>
+
+{% block js %}
+{% endblock js %}
+</body>
+</html>

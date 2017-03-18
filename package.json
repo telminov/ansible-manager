@@ -1,0 +1,23 @@
+{
+  "name": "ansible_manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/telminov/ansible-manager.git"
+  },
+  "author": "Telminov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/telminov/ansible-manager/issues"
+  },
+  "homepage": "https://github.com/telminov/ansible-manager#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "select2": "^4.0.3"
+  }
+}
