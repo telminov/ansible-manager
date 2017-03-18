@@ -2,14 +2,16 @@
 {% load bootstrap3 %}
 
 {% block container %}
-    <div class="col-sm-4 col-sm-offset-4">
-        <form action="" method="POST">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <button type="submit" class="btn btn-success btn-block">
-                <i class="glyphicon glyphicon-log-in"></i>
-                Sign In
-            </button>
-        </form>
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <form action="" method="POST">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="glyphicon glyphicon-log-in"></i>
+                    Sign In
+                </button>
+            </form>
+        </div>
     </div>
 {% endblock container %}
