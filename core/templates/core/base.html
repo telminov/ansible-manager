@@ -41,8 +41,6 @@
                     {% endfor %}
                 </ol>
             {% endif %}
-
-{#            <p class="navbar-text">{{ breadcrumbs }}</p>#}
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -67,8 +65,8 @@
                     </a></li>
                 {% endif %}
             </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
+        </div>
+    </div>
 </nav>
 
 
@@ -78,6 +76,16 @@
 </div>
 
 {% block js %}
+    <script type="text/javascript">
+{#        TODO select2 not draw #}
+{#       $('.need-select2').select2({#}
+{#            width: '100%',#}
+{#            language: "ru",#}
+{#            theme: "bootstrap"#}
+{#        });#}
+
+        $('[data-toggle="tooltip"]').tooltip();
+    </script>
 {% endblock js %}
 </body>
 </html>

@@ -1,1 +1,42 @@
 {% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+
+{% block container %}
+    <form action="" method="GET">
+
+        {% block form %}
+            <div class="row">
+                {% for field in form %}
+                    <div class="col-sm-4">
+                        {% bootstrap_field field %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endblock form %}
+        <div class="row">
+            <div class="col-sm-6">
+                {% block left_buttons %}
+                {% endblock left_buttons %}
+            </div>
+            <div class="col-sm-6 text-right">
+                {% block rigth_buttons %}
+                    <button type="submit" class="btn btn-info">
+                        <i class="glyphicon glyphicon-search"></i>
+                        Search
+                    </button>
+                {% endblock %}
+            </div>
+        </div>
+    </form>
+    <br>
+    <div>
+        {% if not object_list %}
+            <div class="alert alert-warning text-center">
+                Objects not found
+            </div>
+        {% else %}
+            list
+        {% endif %}
+    </div>
+{% endblock container %}

@@ -1,1 +1,8 @@
 {% extends 'core/base_search.html' %}
+
+{% block left_buttons %}
+    <a href="{% url 'host_create' %}" class="btn btn-success">
+        <i class="glyphicon glyphicon-plus"></i>
+        Add
+    </a>
+{% endblock left_buttons %}

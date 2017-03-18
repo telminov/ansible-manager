@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <form action="" method="POST">
+        {% block buttons_top %}
+            <div class="text-right">
+                <button type="submit" class="btn btn-success">
+                    <i class="glyphicon glyphicon-floppy-save"></i>
+                    Create
+                </button>
+            </div>
+        {% endblock %}
+        <div class="row">
+            <div class="col-sm-8">
+                {% bootstrap_field form.name %}
+            </div>
+            <div class="col-sm-4">
+                {% bootstrap_field form.address %}
+            </div>
+        </div>
+        <div>
+            {% bootstrap_field form.groups %}
+        </div>
+        <div>
+            <h5><b>Variables</b></h5>
+            {{ formset.management_form }}
+            <div id="variables">
+                {% for f in formset %}
+                    <div class="row">
+                        <div class="col-sm-6">{% bootstrap_field f.name %}</div>
+                        <div class="col-sm-6">{% bootstrap_field f.value %}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% block buttons_bottom %}
+            <div class="text-right">
+                <button type="submit" class="btn btn-success">
+                    <i class="glyphicon glyphicon-floppy-save"></i>
+                    Create
+                </button>
+            </div>
+        {% endblock %}
+    </form>
+{% endblock container %}

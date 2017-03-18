@@ -3,7 +3,9 @@ from django.views.generic import (
     TemplateView as DjangoTemplateView,
     ListView as DjangoListView,
     DetailView as DjangoDetailView,
-    View as DjangoView
+    View as DjangoView,
+    CreateView as DjangoCreateView,
+    UpdateView as DjangoUpdateView,
 )
 
 from core.generic import mixins
@@ -26,4 +28,12 @@ class DetailView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoDetailView):
 
 
 class DeleteView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoDeleteView):
+    pass
+
+
+class CreateView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoCreateView):
+    pass
+
+
+class UpdateView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoUpdateView):
     pass
