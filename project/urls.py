@@ -12,7 +12,7 @@ import core.urls
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/', django.contrib.auth.views.login,
-        {'template_name': 'core/auth/login.html', 'redirect_authenticated_user': True},
+        {'template_name': 'core/user/login.html', 'redirect_authenticated_user': True},
         name='login'),
     url(r'^logout/', django.contrib.auth.views.logout_then_login, {'login_url': '/login/?next=/'}, name='logout'),
 
