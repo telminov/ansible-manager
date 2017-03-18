@@ -3,19 +3,23 @@
 {% block container %}
     <div class="row">
         <div class="col-sm-6">
-            <a href="" class="btn btn-default btn-lg btn-block">Hosts</a>
-            <a href="" class="btn btn-default btn-lg btn-block">Groups</a>
+            <div class="card">
+                <a href="{% url 'host_search' %}" class="btn btn-default btn-lg btn-block">Hosts</a>
+                <a href="" class="btn btn-default btn-lg btn-block">Groups</a>
+            </div>
         </div>
         <div class="col-sm-6">
-            {# TODO Tasks information #}
-            <div class="alert alert-info">
-                No running tasks
-            </div>
-            <div class="text-right">
-                <a href="" class="btn btn-info disabled">
-                    Show all tasks
-                    <i class="glyphicon glyphicon-arrow-right"></i>
-                </a>
+            <div class="card">
+                {# TODO Tasks information #}
+                <div class="alert alert-info">
+                    No running tasks
+                </div>
+                <div class="text-right">
+                    <a href="" class="btn btn-info disabled">
+                        Show all tasks
+                        <i class="glyphicon glyphicon-arrow-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

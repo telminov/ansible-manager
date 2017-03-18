@@ -30,6 +30,19 @@
             <a class="navbar-brand" href="{% url 'index' %}">
                 Ansible Manager
             </a>
+            {% if breadcrumbs %}
+                <ol class="breadcrumb navbar-text head-breadcrumbs">
+                    {% for label, url in breadcrumbs %}
+                        {% if url %}
+                            <li><a href="{{ url }}">{{ label }}</a></li>
+                        {% else %}
+                            <li class="active">{{ label }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+            {% endif %}
+
+{#            <p class="navbar-text">{{ breadcrumbs }}</p>#}
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
