@@ -1,0 +1,36 @@
+.navbar-default{
+    border-radius: 0;
+    background-color: #2382bc;
+    border: none;
+}
+
+.navbar-default .navbar-text{
+    color: white;
+}
+
+.navbar-default .navbar-brand{
+    color: white;
+    font-weight: bold;
+}
+.navbar-default .navbar-brand:hover{
+    color: rgba(255, 255, 255, 0.77);
+}
+
+.navbar-default .navbar-nav li a{
+    color: white;
+}
+
+.navbar-default .navbar-nav li a:hover{
+    color: rgba(255, 255, 255, 0.77);
+}
+
+.navbar-default .navbar-nav li a:focus{
+    color: rgba(255, 255, 255, 0.77);
+}
+
+.navbar-default .dropdown-menu li a{
+    color: black;
+}
+.navbar-default .dropdown-menu li a:hover{
+    color: black;
+}
