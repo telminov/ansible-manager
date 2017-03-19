@@ -22,7 +22,7 @@
                 <div class="row">
                     <div class="col-sm-6">
                         {% if object %}
-                            <a href="{% url 'host_group_delete' object.id %}" class="btn btn-danger">
+                            <a href="{% url 'task_template_delete' object.id %}" class="btn btn-danger">
                                 <i class="glyphicon glyphicon-trash"></i>
                                 Delete
                             </a>
@@ -34,9 +34,6 @@
                             {{ object|yesno:'Update, Create' }}
                         </button>
                     </div>
-                </div>
-                <div class="">
-
                 </div>
             </div>
             {% if object %}
