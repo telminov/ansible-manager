@@ -4,13 +4,17 @@
     <div class="row">
         <div class="col-sm-3">
             <ul class="nav nav-pills nav-stacked" id="index_menu">
-              <li role="presentation"><a href="{% url 'host_search' %}">
-                  <i class="fa fa-tv"></i>
-                  Hosts</a></li>
-              <li role="presentation"><a href="{% url 'host_group_search' %}">
-                  <i class="fa fa-folder-o"></i>
-                  Host Groups</a>
-              </li>
+                <li role="presentation"><a href="{% url 'host_search' %}">
+                    <i class="fa fa-tv"></i>
+                    Hosts</a></li>
+                <li role="presentation"><a href="{% url 'host_group_search' %}">
+                    <i class="fa fa-folder-o"></i>
+                    Host Groups</a>
+                </li>
+                <li role="presentation"><a href="{% url 'task_template_search' %}">
+                    <i class="fa fa-list-ol"></i>
+                    Task Templates</a>
+                </li>
             </ul>
         </div>
         <div class="col-sm-9">

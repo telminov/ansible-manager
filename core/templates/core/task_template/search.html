@@ -1,0 +1,28 @@
+{% extends 'core/base_search.html' %}
+
+{% block left_buttons %}
+    <a href="{% url 'task_template_create' %}" class="btn btn-success">
+        <i class="glyphicon glyphicon-plus"></i>
+        Add
+    </a>
+{% endblock left_buttons %}
+
+{% block table_heads %}
+    <th>Name</th>
+    <th>Description</th>
+    <th>Hosts count</th>
+    <th>Groups count</th>
+    <th>Actual hosts count</th>
+    <th>Vars count</th>
+    <th>Playbook</th>
+{% endblock table_heads %}
+
+{% block table_cols %}
+    <td><a href="{% url 'task_template_update' object.id %}">{{ object.name }}</a></td>
+    <td>{{ object.description|default:'-'|truncatechars:20 }}</td>
+    <td>{{ object.hosts.count }}</td>
+    <td>{{ object.host_groups.count }}</td>
+    <td>{{ object.get_actual_hosts.count }}</td>
+    <td>{{ object.vars.count }}</td>
+    <td>{{ object.get_playbook_name }}</td>
+{% endblock table_cols %}
