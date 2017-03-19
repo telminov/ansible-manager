@@ -23,13 +23,34 @@
             {% bootstrap_field form.groups %}
         </div>
         <div>
-            <h5><b>Variables</b></h5>
+            <h4><button onclick="addForm()" type="button" class="btn btn-success btn-sm"  data-toggle="tooltip" data-placement="top" title="Add new variable"><i class="glyphicon glyphicon-plus"></i></button> <b>Variables</b></h4>
+
             {{ formset.management_form }}
+
+            <div class="hide">
+                <div class="row variable" id="empty_form">
+                    <div class="col-sm-6">{% bootstrap_field formset.empty_form.name %}</div>
+                    <div class="col-sm-5">{% bootstrap_field formset.empty_form.value %}</div>
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-danger btn-block" onclick="removeElem($(this).parents('.row'))" style="margin-top: 25px"
+                         data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                            <i class="glyphicon glyphicon-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div id="variables">
                 {% for f in formset %}
-                    <div class="row">
+                    <div class="row variable">
                         <div class="col-sm-6">{% bootstrap_field f.name %}</div>
-                        <div class="col-sm-6">{% bootstrap_field f.value %}</div>
+                        <div class="col-sm-5">{% bootstrap_field f.value %}</div>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-danger btn-block" onclick="removeElem($(this).parents('.row'))" style="margin-top: 25px"
+                             data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -37,7 +58,7 @@
 
         {% block buttons_bottom %}
             <div class="text-right">
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success"  data-toggle="tooltip" data-placement="top" >
                     <i class="glyphicon glyphicon-floppy-save"></i>
                     Create
                 </button>
@@ -45,3 +66,8 @@
         {% endblock %}
     </form>
 {% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+{% endblock js %}

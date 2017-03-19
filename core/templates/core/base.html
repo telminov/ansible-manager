@@ -70,11 +70,15 @@
 </nav>
 
 
-<div class="container">
-    {% block container %}
-    {% endblock container %}
+{% block content %}
+    <div class="container">
+        {% block container %}
+        {% endblock container %}
+    </div>
+{% endblock content %}
+<div class="text-center" id="bottom_brand">
+    <a href="http://soft-way.biz">2017 SoftWay</a>
 </div>
-
 {% block js %}
     <script type="text/javascript">
 {#        TODO select2 not draw #}

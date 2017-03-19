@@ -38,6 +38,10 @@ body{
     color: rgba(255, 255, 255, 0.77);
 }
 
+.navbar-default .navbar-nav li:active{
+    color: rgba(255, 255, 255, 0.77);
+}
+
 .navbar-default .dropdown-menu li a{
     color: black;
 }
@@ -59,3 +63,7 @@ body{
 .head-breadcrumbs .active{
     color: white;
 }
+#bottom_brand{
+    padding: 10px;
+}
+
