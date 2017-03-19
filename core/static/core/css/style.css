@@ -67,3 +67,14 @@ body{
     padding: 10px;
 }
 
+#index_menu {
+    background-color: #2382bc; border-radius: 5px
+}
+
+#index_menu a{
+    color: white;
+}
+
+#index_menu li:hover a{
+    color: #2382bc;
+}

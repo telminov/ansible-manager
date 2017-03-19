@@ -1,22 +1,21 @@
-from django.forms import modelformset_factory
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 
-import core.forms.host
-from core import models
+import core.forms.host_group
 
+from core import models
 from core.generic import mixins
 from core.generic import views
 
 
 class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
-    template_name = 'core/host/search.html'
-    form_class = core.forms.host.Search
+    template_name = 'core/host_group/search.html'
+    form_class = core.forms.host_group.Search
     paginate_by = 20
-    title = 'Search hosts'
-    model = models.Host
-    permission_required = 'core.view_host'
+    title = 'Search host groups'
+    model = models.HostGroup
+    permission_required = 'core.view_host_group'
 
     def get_breadcrumbs(self):
         return (
@@ -29,26 +28,20 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
         form = self.get_form()
         if form.is_valid():
             name = form.cleaned_data.get('name')
-            address = form.cleaned_data.get('address')
-            group = form.cleaned_data.get('group')
-
             if name:
                 queryset = queryset.filter(name__icontains=name)
-            if address:
-                queryset = queryset.filter(address=address)
-            if group:
-                queryset = queryset.filter(groups__in=[group, ])
         return queryset
 search = Search.as_view()
 
 
 class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, views.EditView):
-    template_name = 'core/host/edit.html'
-    form_class = core.forms.host.Edit
-    model = models.Host
+    template_name = 'core/host_group/edit.html'
+    form_class = core.forms.host_group.Edit
+    model = models.HostGroup
     formset_model = models.Variable
-    permission_required = 'core.add_host'
-    success_url = reverse_lazy('host_search')
+    permission_required = 'core.add_host_group'
+    success_url = reverse_lazy('host_group_search')
+    title_create = 'Create Host Group'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -59,13 +52,13 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         initial = self.formset_model.objects.none()
         obj = self.get_object()
         if obj:
-            initial = self.formset_model.objects.filter(hosts__in=[obj, ])
+            initial = self.formset_model.objects.filter(host_groups__in=[obj, ])
         return initial
 
     def get_breadcrumbs(self):
         return (
             ('Home', reverse('index')),
-            ('Search hosts', reverse('host_search')),
+            ('Search host groups', reverse('host_group_search')),
             (self.get_title(), '')
         )
 
@@ -78,9 +71,10 @@ edit = Edit.as_view()
 
 
 class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
-    template_name = 'core/host/delete.html'
-    model = models.Host
-    permission_required = 'core.delete_host'
+    template_name = 'core/host_group/delete.html'
+    model = models.HostGroup
+    permission_required = 'core.delete_host_group'
+    success_url = reverse_lazy('host_group_search')
 
     def get_title(self):
         obj = self.get_object()
@@ -90,8 +84,8 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
         obj = self.get_object()
         return (
             ('Home', reverse('index')),
-            ('Search hosts', reverse('host_search')),
-            (str(obj), reverse('host_update', kwargs={'pk': obj.id})),
+            ('Search host group', reverse('host_group_search')),
+            (str(obj), reverse('host_group_update', kwargs={'pk': obj.id})),
             ('Delete', '')
         )
 delete = Delete.as_view()

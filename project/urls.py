@@ -6,8 +6,9 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf.urls.static import static
 
-
 import core.urls
+
+from core.views.views import permission_denied
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -15,7 +16,7 @@ urlpatterns = [
         {'template_name': 'core/user/login.html', 'redirect_authenticated_user': True},
         name='login'),
     url(r'^logout/', django.contrib.auth.views.logout_then_login, {'login_url': '/login/?next=/'}, name='logout'),
-
+    url(r'^permission_denied/$', permission_denied, name='permission_denied'),
     url(r'^', include(core.urls)),
 ]
 

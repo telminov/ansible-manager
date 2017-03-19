@@ -31,4 +31,4 @@ correctedIds = ->
 
 @deleteAllForms = ->
   for v in $('.variable')
-    deleteElem(v)
+    deleteElem($(v))

@@ -44,6 +44,7 @@ class UpdateView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoUpdateView):
 
 class EditView(CreateView):
     object = None
+    title_create = ''
 
     def get_object(self):
         obj = None
@@ -54,7 +55,7 @@ class EditView(CreateView):
 
     def get_title(self):
         obj = self.get_object()
-        title = 'Create host'
+        title = self.title_create
         if obj:
             title = str(obj)
         return title

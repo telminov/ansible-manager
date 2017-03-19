@@ -50,7 +50,7 @@
     results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       v = ref[i];
-      results.push(deleteElem(v));
+      results.push(deleteElem($(v)));
     }
     return results;
   };

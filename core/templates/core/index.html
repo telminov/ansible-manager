@@ -2,11 +2,18 @@
 
 {% block container %}
     <div class="row">
-        <div class="col-sm-6">
-            <a href="{% url 'host_search' %}" class="btn btn-default btn-lg btn-block">Hosts</a>
-            <a href="" class="btn btn-default btn-lg btn-block">Groups</a>
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked" id="index_menu">
+              <li role="presentation"><a href="{% url 'host_search' %}">
+                  <i class="fa fa-tv"></i>
+                  Hosts</a></li>
+              <li role="presentation"><a href="{% url 'host_group_search' %}">
+                  <i class="fa fa-folder-o"></i>
+                  Host Groups</a>
+              </li>
+            </ul>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-9">
             {# TODO Tasks information #}
             <div class="alert alert-info">
                 No running tasks
