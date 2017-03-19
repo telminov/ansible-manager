@@ -1,5 +1,6 @@
 import os
 
+import datetime
 from django.db import models
 
 
@@ -61,7 +62,7 @@ class TaskTemplate(models.Model):
     def __str__(self):
         return self.name
 
-    def get_actual_hosts(self):
+    def get_actual_hosts(self) -> models.QuerySet:
         host_ids = list(self.hosts.values_list('id', flat=True))
         for group in self.host_groups.all():
             host_ids.extend(list(group.hosts.values_list('id', flat=True)))
@@ -69,5 +70,17 @@ class TaskTemplate(models.Model):
         hosts = Host.objects.filter(id__in=set(host_ids))
         return hosts
 
-    def get_playbook_name(self):
+    def get_playbook_name(self) -> str:
         return os.path.basename(self.playbook)
+
+    def get_duration(self) -> int:
+        # TODO task 3
+        return 30  # min
+
+    def get_last_date(self) -> datetime.datetime:
+        # TODO task 3
+        return datetime.datetime.now()
+
+    def get_last_status(self) -> str:
+        # TODO task 3
+        return 'wait'

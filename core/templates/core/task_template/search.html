@@ -10,19 +10,37 @@
 {% block table_heads %}
     <th>Name</th>
     <th>Description</th>
-    <th>Hosts count</th>
-    <th>Groups count</th>
-    <th>Actual hosts count</th>
-    <th>Vars count</th>
+    <th>Last status</th>
+    <th>Hosts</th>
+    <th>Groups</th>
+    <th>Actual hosts</th>
+    <th>Vars</th>
     <th>Playbook</th>
+    <th>Duration</th>
+    <th>Last start</th>
 {% endblock table_heads %}
 
 {% block table_cols %}
     <td><a href="{% url 'task_template_update' object.id %}">{{ object.name }}</a></td>
     <td>{{ object.description|default:'-'|truncatechars:20 }}</td>
+    <td><span class="label label
+        {% if object.get_last_status == 'completed' %}
+            label-success
+        {% elif object.get_last_status == 'fail' %}
+            label-danger
+        {% elif object.get_last_status == 'in_progress' %}
+            label-primary
+        {% elif object.get_last_status == 'stopped' %}
+            label-default
+        {% elif object.get_last_status == 'wait' %}
+            label-warning
+        {% endif %}
+    ">{{ object.get_last_status }}</span></td>
     <td>{{ object.hosts.count }}</td>
     <td>{{ object.host_groups.count }}</td>
     <td>{{ object.get_actual_hosts.count }}</td>
     <td>{{ object.vars.count }}</td>
     <td>{{ object.get_playbook_name }}</td>
+    <td>{{ object.get_duration }}</td>
+    <td>{{ object.get_last_date }}</td>
 {% endblock table_cols %}
