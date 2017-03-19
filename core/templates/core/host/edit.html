@@ -1,0 +1,92 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-6">
+                <a href="{% url 'host_delete' object.id %}" class="btn btn-danger">
+                    <i class="glyphicon glyphicon-trash"></i>
+                    Delete
+                </a>
+            </div>
+            <div class="col-sm-6 text-right">
+                <button type="submit" class="btn btn-success"  data-toggle="tooltip" data-placement="top" >
+                    <i class="glyphicon glyphicon-floppy-save"></i>
+                    {{ object|yesno:'Update, Create' }}
+                </button>
+            </div>
+        </div>
+        <br>
+        {% bootstrap_form_errors form %}
+        {% bootstrap_formset_errors formset %}
+        <div class="row">
+            <div class="col-sm-8">
+                {% bootstrap_field form.name %}
+            </div>
+            <div class="col-sm-4">
+                {% bootstrap_field form.address %}
+            </div>
+        </div>
+        <div>
+            {% bootstrap_field form.groups %}
+        </div>
+        <div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <button onclick="addForm()" type="button" class="btn btn-success btn-sm"  data-toggle="tooltip" data-placement="top" title="Add new variable"><i class="glyphicon glyphicon-plus"></i></button>
+                    <b style="font-size: 18px">Variables</b>                </div>
+                <div class="col-sm-6 text-right">
+                    <button onclick="deleteAllForms()" type="button" class="btn btn-danger btn-sm"  data-toggle="tooltip" data-placement="left" title="Remove all variables for this host"><i class="glyphicon glyphicon-trash"></i> Delete all</button>
+                </div>
+            </div>
+            <br>
+
+            {{ formset.management_form }}
+
+            <div class="hide">
+                <div class="row variable" id="empty_form">
+                    <div class="col-sm-6">{% bootstrap_field formset.empty_form.name %}</div>
+                    <div class="col-sm-5">{% bootstrap_field formset.empty_form.value %}</div>
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-danger btn-block btn-sm" onclick="removeElem($(this).parents('.row'))" style="margin-top: 25px"
+                         data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                            <i class="glyphicon glyphicon-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="variables">
+                {% for f in formset %}
+                    <div class="row variable">
+                        <div class="hide">{{ f.id }}</div>
+                        <div class="col-sm-6">{% bootstrap_field f.name %}</div>
+                        <div class="col-sm-5">{% bootstrap_field f.value %}</div>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-danger btn-block btn-sm" onclick="deleteElem($(this).parents('.row'))" style="margin-top: 25px"
+                             data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div id="deleted-variables" class="hide"></div>
+        </div>
+
+        <div class="text-right">
+            <button type="submit" class="btn btn-success"  data-toggle="tooltip" data-placement="top" >
+                <i class="glyphicon glyphicon-floppy-save"></i>
+                {{ object|yesno:'Update, Create' }}
+            </button>
+        </div>
+    </form>
+{% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+{% endblock js %}

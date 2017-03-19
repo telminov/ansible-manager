@@ -11,9 +11,9 @@ class Search(forms.Form):
 
 
 class Edit(forms.ModelForm):
+    groups = forms.ModelMultipleChoiceField(required=False, queryset=models.HostGroup.objects.all(),
+                                            widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
+
     class Meta:
         model = models.Host
-        fields = '__all__'
-        widgets = {
-            'groups': forms.SelectMultiple(attrs={'class': 'need-select2'})
-        }
+        fields = ('name', 'address', 'groups')

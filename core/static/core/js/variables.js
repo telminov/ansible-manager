@@ -36,13 +36,23 @@
     return $('#variables').append(newElement);
   };
 
-  this.removeElem = function(elem) {
-    var total;
-    elem.remove();
-    total = $('#id_form-TOTAL_FORMS').val();
-    total--;
-    $('#id_form-TOTAL_FORMS').val(total);
-    return correctedIds();
+  this.deleteElem = function(elem) {
+    var deleteName, nameElements;
+    elem.prependTo("#deleted-variables");
+    nameElements = elem.find('input:first').attr('name').split('-');
+    deleteName = nameElements[0] + "-" + nameElements[1] + "-DELETE";
+    return elem.append("<input id='id_" + deleteName + "' name='" + deleteName + "' type='text' value='on'>");
+  };
+
+  this.deleteAllForms = function() {
+    var i, len, ref, results, v;
+    ref = $('.variable');
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      v = ref[i];
+      results.push(deleteElem(v));
+    }
+    return results;
   };
 
 }).call(this);

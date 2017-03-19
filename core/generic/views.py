@@ -28,7 +28,10 @@ class DetailView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoDetailView):
 
 
 class DeleteView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoDeleteView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next'] = self.request.META.get('HTTP_REFERER', self.request.GET.get('next'))
+        return context
 
 
 class CreateView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoCreateView):
@@ -37,3 +40,21 @@ class CreateView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoCreateView):
 
 class UpdateView(mixins.BreadcrumbsMixin, mixins.TitleMixin, DjangoUpdateView):
     pass
+
+
+class EditView(CreateView):
+    object = None
+
+    def get_object(self):
+        obj = None
+        if 'pk' in self.kwargs:
+            obj = self.model.objects.get(id=self.kwargs['pk'])
+            self.object = obj
+        return obj
+
+    def get_title(self):
+        obj = self.get_object()
+        title = 'Create host'
+        if obj:
+            title = str(obj)
+        return title

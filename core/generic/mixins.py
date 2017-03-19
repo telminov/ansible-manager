@@ -65,7 +65,7 @@ class FormAndFormsetMixin(FormMixin):
 
     def get_formset_kwargs(self):
         kwargs = {
-            'initial': self.get_formset_initial(),
+            'queryset': self.get_formset_initial(),
             'files': self.request.FILES or None,
             'data': getattr(self.request, self.data_method.upper() if self.data_method else 'GET') or None,
         }
@@ -99,4 +99,4 @@ class FormAndModelFormsetMixin(FormAndFormsetMixin):
     formset_model = None
 
     def get_formset_class(self):
-        return self.formset_class or modelformset_factory(model=self.formset_model, fields='__all__')
+        return self.formset_class or modelformset_factory(model=self.formset_model, fields='__all__', can_delete=True)

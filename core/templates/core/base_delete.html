@@ -1,20 +1,27 @@
 {% extends 'core/base.html' %}
 
 {% block container %}
-    <form action="" method="POST">
+    <form action="" method="POST" class="text-center">
         {% csrf_token %}
-        <div style="margin-top: 50px">
-            <h4>Do you really want to delete "{{ object }}" ?</h4>
-            <div>
-                <a href="{{ next_url }}" class="btn btn-default">
+        <h4>Do you really want to delete "{{ object }}" ?</h4>
+        <div>
+            {% if next %}
+                <a href="{{ next }}" class="btn btn-default" id="back_button">
                     <i class="glyphicon glyphicon-arrow-left"></i>
                     Back
                 </a>
-                <button type="submit" class="btn btn-danger" {% if error %}disabled{% endif %}>
-                    <i class="glyphicon glyphicon-trash"></i>
-                    Yes
-                </button>
-            </div>
+            {% endif %}
+            <button type="submit" class="btn btn-danger" {% if error %}disabled{% endif %}>
+                <i class="glyphicon glyphicon-trash"></i>
+                Yes
+            </button>
         </div>
     </form>
 {% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('#back_button').focus()
+    </script>
+{% endblock js %}

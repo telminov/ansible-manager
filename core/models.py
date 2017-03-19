@@ -34,6 +34,7 @@ class Host(models.Model):
     vars = models.ManyToManyField(Variable, verbose_name='Variables', related_name='hosts')
 
     class Meta:
+        unique_together = ('name', 'address')
         permissions = (
             ('view_host', 'View Host'),
         )

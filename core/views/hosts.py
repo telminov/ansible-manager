@@ -1,4 +1,7 @@
+from django.forms import modelformset_factory
+from django.shortcuts import redirect
 from django.urls import reverse
+from django.urls import reverse_lazy
 
 import core.forms.host
 from core import models
@@ -39,33 +42,25 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
 search = Search.as_view()
 
 
-class Create(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, views.CreateView):
-    template_name = 'core/host/create.html'
-    title = 'Create host'
+class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, views.EditView):
+    template_name = 'core/host/edit.html'
     form_class = core.forms.host.Edit
     model = models.Host
     formset_model = models.Variable
     permission_required = 'core.add_host'
+    success_url = reverse_lazy('host_search')
 
-    def get_breadcrumbs(self):
-        return (
-            ('Home', reverse('index')),
-            ('Search hosts', reverse('host_search')),
-            (self.get_title(), '')
-        )
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.get_object()
+        return kwargs
 
-create = Create.as_view()
-
-
-class Update(mixins.PermissionRequiredMixin, views.UpdateView):
-    template_name = 'core/host/update.html'
-    form_class = core.forms.host.Edit
-    model = models.Host
-    permission_required = 'core.change_host'
-
-    def get_title(self):
+    def get_formset_initial(self):
+        initial = self.formset_model.objects.none()
         obj = self.get_object()
-        return 'Update host %s' % obj
+        if obj:
+            initial = self.formset_model.objects.filter(hosts__in=[obj, ])
+        return initial
 
     def get_breadcrumbs(self):
         return (
@@ -73,7 +68,13 @@ class Update(mixins.PermissionRequiredMixin, views.UpdateView):
             ('Search hosts', reverse('host_search')),
             (self.get_title(), '')
         )
-update = Update.as_view()
+
+    def form_valid(self, form, formset):
+        self.object = form.save()
+        variables = formset.save()
+        self.object.vars.add(*variables)
+        return redirect(self.get_success_url())
+edit = Edit.as_view()
 
 
 class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
@@ -84,4 +85,13 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
     def get_title(self):
         obj = self.get_object()
         return "Delete %s" % obj
+
+    def get_breadcrumbs(self):
+        obj = self.get_object()
+        return (
+            ('Home', reverse('index')),
+            ('Search hosts', reverse('host_search')),
+            (str(obj), reverse('host_update', kwargs={'pk': obj.id})),
+            ('Delete', '')
+        )
 delete = Delete.as_view()

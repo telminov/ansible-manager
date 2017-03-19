@@ -22,9 +22,13 @@ correctedIds = ->
     $('#id_form-TOTAL_FORMS').val(total);
     $('#variables').append(newElement);
 
-@removeElem = (elem) ->
-  elem.remove()
-  total = $('#id_form-TOTAL_FORMS').val()
-  total--
-  $('#id_form-TOTAL_FORMS').val(total)
-  correctedIds()
+@deleteElem = (elem) ->
+  elem.prependTo("#deleted-variables");
+  nameElements = elem.find('input:first').attr('name').split('-')
+  deleteName = "#{nameElements[0]}-#{nameElements[1]}-DELETE"
+  elem.append("<input id='id_#{deleteName}' name='#{deleteName}' type='text' value='on'>")
+
+
+@deleteAllForms = ->
+  for v in $('.variable')
+    deleteElem(v)
