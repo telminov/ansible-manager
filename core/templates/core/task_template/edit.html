@@ -5,40 +5,129 @@
     <form action="" method="POST">
         {% csrf_token %}
         <div class="row">
-            <div class="col-sm-6">
-                {% if object %}
-                    <a href="{% url 'host_group_delete' object.id %}" class="btn btn-danger">
-                        <i class="glyphicon glyphicon-trash"></i>
-                        Delete
-                    </a>
-                {% endif %}
+            <div class="{% if object %}col-sm-6{% else %}col-sm-12{% endif %}">
+                {% bootstrap_form_errors form %}
+                {% bootstrap_formset_errors formset %}
+                <div class="row">
+                    <div class="col-sm-6">{% bootstrap_field form.name %}</div>
+                    <div class="col-sm-6">{% bootstrap_field form.playbook %}</div>
+                </div>
+
+                {% bootstrap_field form.hosts %}
+                {% bootstrap_field form.host_groups %}
+                {% bootstrap_field form.description %}
+
+                {% include 'core/variables/includes/variables_formset.html' %}
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        {% if object %}
+                            <a href="{% url 'host_group_delete' object.id %}" class="btn btn-danger">
+                                <i class="glyphicon glyphicon-trash"></i>
+                                Delete
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
+                            <i class="glyphicon glyphicon-floppy-save"></i>
+                            {{ object|yesno:'Update, Create' }}
+                        </button>
+                    </div>
+                </div>
+                <div class="">
+
+                </div>
             </div>
-            <div class="col-sm-6 text-right">
-                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
-                    <i class="glyphicon glyphicon-floppy-save"></i>
-                    {{ object|yesno:'Update, Create' }}
-                </button>
-            </div>
-        </div>
-        <br>
-        {% bootstrap_form_errors form %}
-        {% bootstrap_formset_errors formset %}
-        <div class="row">
-            <div class="col-sm-6">{% bootstrap_field form.name %}</div>
-            <div class="col-sm-6">{% bootstrap_field form.playbook %}</div>
-        </div>
-
-        {% bootstrap_field form.hosts %}
-        {% bootstrap_field form.host_groups %}
-        {% bootstrap_field form.description %}
-
-        {% include 'core/variables/includes/variables_formset.html' %}
-
-        <div class="text-right">
-            <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
-                <i class="glyphicon glyphicon-floppy-save"></i>
-                {{ object|yesno:'Update, Create' }}
-            </button>
+            {% if object %}
+                <div class="col-sm-6">
+                    <h4>Actual hosts</h4>
+                    {% if object.get_actual_hosts %}
+                        <div id="actual_hosts">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Host</th>
+                                    <th>Vars</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for host in object.get_actual_hosts %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td><a href="{% url 'host_update' host.id %}" target="_blank">{{ host.address }}</a></td>
+                                        <td>
+                                            {% for var in host.vars.all %}
+                                                <span class="label label-default">
+                                                    {{ var }}
+                                                </span>
+                                            {% empty %}
+                                                -
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        No actual hosts
+                    {% endif %}
+                    <hr>
+                    <h4>Tasks</h4>
+                    {% if object.get_tasks %}
+                        <div id="tasks">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>№</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Log</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for task in object.get_tasks %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ task.dc }}</td>
+                                        <td>
+                                            <span class="label label
+                                                {% if task.status == 'completed' %}
+                                                    label-success
+                                                {% elif task.status == 'fail' %}
+                                                    label-danger
+                                                {% elif task.status == 'in_progress' %}
+                                                    label-primary
+                                                {% elif task.status == 'stopped' %}
+                                                    label-default
+                                                {% elif task.status == 'wait' %}
+                                                    label-warning
+                                                {% endif %}
+                                            ">{{ task.status }}</span>
+                                        </td>
+                                        <td><a href="#{# TODO to task log url #}" class="btn btn-default" data-toggle="tooltip"
+                                            data-placement="left" title="Show log for this task">
+                                            <i class="fa fa-terminal"></i>
+                                        </a></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        No tasks
+                    {% endif %}
+                    <div class="text-right">
+                        <button type="button" class="btn btn-success btn-lg" data-toggle="tooltip"
+                                data-placement="left" title="Create and run new task">
+                            <i class="fa fa-play"></i>
+                            RUN
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </form>
 {% endblock container %}

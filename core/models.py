@@ -14,7 +14,7 @@ class Variable(models.Model):
         )
 
     def __str__(self):
-        return '%s=%s' % (self.name, self.value)
+        return '%s: %s' % (self.name, self.value)
 
 
 class HostGroup(models.Model):
@@ -69,6 +69,10 @@ class TaskTemplate(models.Model):
 
         hosts = Host.objects.filter(id__in=set(host_ids))
         return hosts
+
+    def get_tasks(self) -> models.QuerySet:
+        # TODO task 3
+        return None
 
     def get_playbook_name(self) -> str:
         return os.path.basename(self.playbook)

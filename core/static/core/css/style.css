@@ -70,3 +70,8 @@ body{
 #index_menu {
     background-color: #2382bc; border-radius: 5px
 }
+
+#actual_hosts, #tasks{
+    max-height: 300px;
+    overflow: auto;
+}
