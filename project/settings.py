@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.login_required.LoginRequiredMiddleware'
+    'djutils.middleware.LoginRequired'
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -131,7 +131,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_REDIRECT_URL = '/'
-LOGIN_REQUIRED_URLS_EXCEPTIONS = (
+LOGIN_URL = '/login/'
+LOGIN_EXEMPT_URLS = (
     r'/static/',
     r'/node_modules/',
     r'/login(.*)$',
