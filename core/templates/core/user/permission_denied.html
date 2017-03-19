@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="alert alert-danger">
+                <div class="text-center">
+                    <h1><i class="glyphicon glyphicon-warning-sign"></i></h1>
+                    <h2>Permission Denied</h2>
+                    <p>Sorry, but you do not have the rights to perform this operation.</p>
+                    {% if request.GET.message %}
+                        <p>{{ request.GET.message }}</p>
+                    {% endif %}
+                    <p><a href="{% url 'index' %}">return to home page</a></p>
+                </div>
+            </div>
+
+            {% if request.GET.next %}
+                <a href="{{ request.GET.next }}" class="btn btn-default btn-block">
+                    <i class="glyphicon glyphicon-arrow-left"></i>
+                    Back
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

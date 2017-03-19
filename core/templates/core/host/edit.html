@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-6">
+                {% if object %}
+                    <a href="{% url 'host_delete' object.id %}" class="btn btn-danger">
+                        <i class="glyphicon glyphicon-trash"></i>
+                        Delete
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-sm-6 text-right">
+                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
+                    <i class="glyphicon glyphicon-floppy-save"></i>
+                    {{ object|yesno:'Update, Create' }}
+                </button>
+            </div>
+        </div>
+        <br>
+        {% bootstrap_form_errors form %}
+        {% bootstrap_formset_errors formset %}
+        <div class="row">
+            <div class="col-sm-8">
+                {% bootstrap_field form.name %}
+            </div>
+            <div class="col-sm-4">
+                {% bootstrap_field form.address %}
+            </div>
+        </div>
+        <div>
+            {% bootstrap_field form.groups %}
+        </div>
+
+        {% include 'core/variables/includes/variables_formset.html' %}
+
+        <div class="text-right">
+            <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
+                <i class="glyphicon glyphicon-floppy-save"></i>
+                {{ object|yesno:'Update, Create' }}
+            </button>
+        </div>
+    </form>
+{% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+{% endblock js %}

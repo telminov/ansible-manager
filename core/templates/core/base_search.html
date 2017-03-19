@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+
+{% block container %}
+    <form action="" method="GET">
+        {% block form %}
+            <div class="row">
+                {% for field in form %}
+                    <div class="col-sm-4">
+                        {% bootstrap_field field %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endblock form %}
+        <div class="row">
+            <div class="col-sm-6">
+                {% block left_buttons %}
+                {% endblock left_buttons %}
+            </div>
+            <div class="col-sm-6 text-right">
+                {% block rigth_buttons %}
+                    <button type="submit" class="btn btn-info">
+                        <i class="glyphicon glyphicon-search"></i>
+                        Search
+                    </button>
+                {% endblock %}
+            </div>
+        </div>
+    </form>
+    <br>
+    <div>
+        {% if not object_list %}
+            <div class="alert alert-warning text-center">
+                Objects not found
+            </div>
+        {% else %}
+            <div><h4>Count: {{ object_list|length }}</h4></div>
+            <table class="table {% block table_class %}table-hover{% endblock table_class %}">
+                <thead>
+                    {% block thead %}
+                        <tr>
+                            <th>№</th>
+                            {% block table_heads %}
+                            {% endblock table_heads %}
+                        </tr>
+                    {% endblock thead %}
+                </thead>
+                <tbody>
+                    {% block tbody %}
+                        {% for object in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                {% block table_cols %}
+                                {% endblock table_cols %}
+                            </tr>
+                        {% endfor %}
+                    {% endblock tbody %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock container %}
