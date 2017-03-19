@@ -2,7 +2,7 @@ body{
     background-color: #f1f1f1;
 }
 
-.container{
+.white-container{
     background-color: rgba(255, 255, 255, 0.89);
     padding: 10px;
     border-radius: 3px;
@@ -76,5 +76,5 @@ body{
 }
 
 #index_menu li:hover a{
-    color: #2382bc;
+    background-color: #1e6fa1;
 }

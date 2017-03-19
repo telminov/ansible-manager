@@ -71,19 +71,25 @@
     </div>
 </nav>
 
-
 {% block content %}
-    <div class="container">
+    <div class="container white-container">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'warning' %}warning{% elif message.tags == 'error' %}danger{% else %}info{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
         {% block container %}
         {% endblock container %}
     </div>
 {% endblock content %}
+
 <div class="text-center" id="bottom_brand">
     <a href="http://soft-way.biz">2017 SoftWay</a>
 </div>
+
 {% block js %}
     <script type="text/javascript">
-       $('.need-select2').select2({
+        $('.need-select2').select2({
             width: '100%',
             theme: "bootstrap"
         });
