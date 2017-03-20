@@ -141,6 +141,7 @@ LOGIN_EXEMPT_URLS = (
     r'/api/',
 )
 
+ANSIBLE_PLAYBOOKS_PATH = '/home/user/ansible_playbooks'
 
 try:
     from project.local_settings import *

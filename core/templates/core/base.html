@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>{{ title|default:"Ansible Manager" }}</title>
 
-    <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="/node_modules/select2/dist/css/select2.min.css" rel="stylesheet">
     <link href="/node_modules/select2-bootstrap-theme/dist/select2-bootstrap.min.css" rel="stylesheet">
     <link href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
@@ -30,10 +30,11 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="fa fa-server"></i>
                 Ansible Manager
             </a>
             {% if breadcrumbs %}
-                <ol class="breadcrumb navbar-text head-breadcrumbs">
+                <ol class="breadcrumb navbar-text head-breadcrumbs" style="margin-left: 10px">
                     {% for label, url in breadcrumbs %}
                         {% if url %}
                             <li><a href="{{ url }}">{{ label }}</a></li>
@@ -48,11 +49,11 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
             <ul class="nav navbar-nav navbar-right">
-                <li class="disabled"><a href="#">About</a></li>
                 {% if user.is_authenticated %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">{{ user }} <span class="caret"></span></a>
+                           aria-expanded="false">
+                            {{ user }} <i class="fa fa-user-circle-o"></i> <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'logout' %}">
                                 <i class="glyphicon glyphicon-log-out"></i>
@@ -61,6 +62,7 @@
                         </ul>
                     </li>
                 {% else %}
+                    <li class="disabled"><a href="#">About</a></li>
                     <li><a href="{% url 'login' %}">
                         <i class="glyphicon glyphicon-log-in"></i>
                         Sing In
