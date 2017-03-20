@@ -5,8 +5,8 @@ from django.db import models
 
 
 class Variable(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Name')
-    value = models.CharField(max_length=255, verbose_name='Value')
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
 
     class Meta:
         permissions = (
@@ -18,8 +18,8 @@ class Variable(models.Model):
 
 
 class HostGroup(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Name')
-    vars = models.ManyToManyField(Variable, verbose_name='Variables', related_name='host_groups')
+    name = models.CharField(max_length=255)
+    vars = models.ManyToManyField(Variable, related_name='host_groups')
 
     class Meta:
         permissions = (
@@ -31,10 +31,10 @@ class HostGroup(models.Model):
 
 
 class Host(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Name', blank=True)
-    address = models.GenericIPAddressField(verbose_name='IP address')
-    groups = models.ManyToManyField(HostGroup, verbose_name='Groups', related_name='hosts')
-    vars = models.ManyToManyField(Variable, verbose_name='Variables', related_name='hosts')
+    name = models.CharField(max_length=255, blank=True)
+    address = models.GenericIPAddressField()
+    groups = models.ManyToManyField(HostGroup, related_name='hosts')
+    vars = models.ManyToManyField(Variable, related_name='hosts')
 
     class Meta:
         unique_together = ('name', 'address')
@@ -47,12 +47,12 @@ class Host(models.Model):
 
 
 class TaskTemplate(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Name')
-    description = models.TextField(verbose_name='Description', blank=True)
-    playbook = models.FilePathField(verbose_name='Playbook path')
-    hosts = models.ManyToManyField(Host, verbose_name='Hosts', related_name='task_templates')
-    host_groups = models.ManyToManyField(HostGroup, verbose_name='HostGroups', related_name='task_templates')
-    vars = models.ManyToManyField(Variable, verbose_name='Variables', related_name='task_templates')
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    playbook = models.FilePathField()
+    hosts = models.ManyToManyField(Host, related_name='task_templates')
+    host_groups = models.ManyToManyField(HostGroup, related_name='task_templates')
+    vars = models.ManyToManyField(Variable, related_name='task_templates')
 
     class Meta:
         permissions = (
