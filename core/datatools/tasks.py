@@ -25,7 +25,7 @@ class TaskChecker:
         tasks = models.Task.objects.filter(status=consts.IN_PROGRESS)
         not_run_tasks = []
         for task in tasks:
-            if self.process_is_run(task.pid):
+            if not self.process_is_run(task.pid):
                 not_run_tasks.append(task)
 
         for task in not_run_tasks:
@@ -97,6 +97,12 @@ def stop(task):
         except Exception as e:
             pass
             # TODO log error
+
+        models.TaskLog.objects.create(
+            task=task,
+            status=consts.STOPPED,
+            message='Task stopped'
+        )
 
 
 

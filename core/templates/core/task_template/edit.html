@@ -104,7 +104,7 @@
                                                 {% endif %}
                                             ">{{ task.status }}</span>
                                         </td>
-                                        <td><a href="#{# TODO to task log url #}" class="btn btn-default" data-toggle="tooltip"
+                                        <td><a href="{% url 'task_log' task.id %}" class="btn btn-default" data-toggle="tooltip"
                                             data-placement="left" title="Show log for this task">
                                             <i class="fa fa-terminal"></i>
                                         </a></td>

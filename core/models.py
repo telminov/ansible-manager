@@ -139,6 +139,8 @@ class Task(TaskOperationsMixin, models.Model):
     pid = models.CharField(blank=True, max_length=100)
     user = models.ForeignKey(User, related_name='tasks')
 
+    dc = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         permissions = (
             ('view_task', 'View Task'),
@@ -152,6 +154,15 @@ class Task(TaskOperationsMixin, models.Model):
     def get_command(self, splited=False):
         # todo create real ansible playbook command
         return ['ssh', 'root@185.22.60.21', 'apt update']  # Test dev
+
+    def get_duration(self) -> datetime.timedelta:
+        start_date = self.dc
+        last_log = self.logs.filter(status__in=consts.NOT_RUN_STATUSES).last()
+        finish_date = last_log.dc if last_log else datetime.datetime.now()
+        raw_delta = finish_date - start_date
+        days, minutes, seconds = raw_delta.days, raw_delta.seconds // 3600, raw_delta.seconds % 3600 / 60.0  # todo
+        delta = datetime.timedelta(days=days, minutes=minutes, seconds=seconds)
+        return delta
 
     def stop(self):
         tasks.stop(self)

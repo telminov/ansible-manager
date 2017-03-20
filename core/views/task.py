@@ -12,7 +12,7 @@ from core.generic import views
 
 
 class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
-    template_name = 'core/tasks/search.html'
+    template_name = 'core/task/search.html'
     form_class = core.forms.task.Search
     paginate_by = 20
     title = 'Search tasks'
@@ -33,7 +33,7 @@ search = Search.as_view()
 
 
 class Stop(mixins.PermissionRequiredMixin, views.DetailView):
-    template_name = 'core/tasks/stop.html'
+    template_name = 'core/task/stop.html'
     permission_required = 'core.stop_task'
     model = models.Task
 
@@ -51,6 +51,19 @@ class Stop(mixins.PermissionRequiredMixin, views.DetailView):
 stop = Stop.as_view()
 
 
-class Log(mixins.PermissionRequiredMixin, views.TemplateView):
-    pass
+class Log(mixins.PermissionRequiredMixin, views.DetailView):
+    template_name = 'core/task/log.html'
+    model = models.Task
+    permission_required = 'core.view_task_log'
+
+    def get_title(self):
+        task = self.get_object()
+        return 'Log task for %s' % task.dc.strftime("%d/%m/%y")
+
+    def get_breadcrumbs(self):
+        return (
+            ('Home', reverse('index')),
+            ('Search tasks', reverse('task_search')),
+            (self.get_title(), '')
+        )
 log = Log.as_view()

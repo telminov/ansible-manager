@@ -45,7 +45,7 @@
     <td>{{ object.get_duration|default:'Not runing' }}</td>
     <td>{{ object.get_last_date|default:'Not runing' }}</td>
     <td>
-        <a href="{% url 'task_template_run' object.id %}" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="left" title="Run">
+        <a href="{% url 'task_template_run' object.id %}" data-toggle="tooltip" data-placement="left" title="Run">
             <i class="fa fa-play"></i>
         </a>
     </td>

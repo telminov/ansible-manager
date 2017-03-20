@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="console">
+                {% for log in object.logs.all %}
+                    <p class="line log-{{ log.status }}">{{ log.output|default:log.message }}</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <button class="btn btn-success btn-block btn-lg">
+                <i class="fa fa-play"></i> Run
+            </button>
+            <button class="btn btn-danger btn-block btn-lg" disabled>
+                <i class="fa fa-stop"></i> Stop
+            </button>
+
+            {% if object.get_actual_hosts %}
+                <br>
+                <div id="actual_hosts">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Host</th>
+                            <th>Vars</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for host in object.get_actual_hosts %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href="{% url 'host_update' host.id %}" target="_blank">{{ host.address }}</a>
+                                </td>
+                                <td>
+                                    {% for var in host.vars.all %}
+                                        <span class="label label-default">
+                                                    {{ var }}
+                                                </span>
+                                    {% empty %}
+                                        -
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        <hr>
+            <h4>Vars</h4>
+            {% for var in object.vars.all %}
+                <span class="label label-default">{{ var }}</span>
+            {% empty %}
+                No vars
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock container %}
