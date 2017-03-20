@@ -18,13 +18,12 @@
     <th>Playbook</th>
     <th>Duration</th>
     <th>Last start</th>
-    <th></th>
 {% endblock table_heads %}
 
 {% block table_cols %}
     <td><a href="{% url 'task_template_update' object.id %}">{{ object.name }}</a></td>
     <td>{{ object.description|default:'-'|truncatechars:20 }}</td>
-    <td><span class="{% if object.get_last_status %}label{% endif %}
+    <td><span class="label label
         {% if object.get_last_status == 'completed' %}
             label-success
         {% elif object.get_last_status == 'fail' %}
@@ -36,17 +35,12 @@
         {% elif object.get_last_status == 'wait' %}
             label-warning
         {% endif %}
-    ">{{ object.get_last_status|default:'Not runing' }}</span></td>
+    ">{{ object.get_last_status }}</span></td>
     <td>{{ object.hosts.count }}</td>
     <td>{{ object.host_groups.count }}</td>
     <td>{{ object.get_actual_hosts.count }}</td>
     <td>{{ object.vars.count }}</td>
     <td>{{ object.get_playbook_name }}</td>
-    <td>{{ object.get_duration|default:'Not runing' }}</td>
-    <td>{{ object.get_last_date|default:'Not runing' }}</td>
-    <td>
-        <a href="{% url 'task_template_run' object.id %}" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="left" title="Run">
-            <i class="fa fa-play"></i>
-        </a>
-    </td>
+    <td>{{ object.get_duration }}</td>
+    <td>{{ object.get_last_date }}</td>
 {% endblock table_cols %}

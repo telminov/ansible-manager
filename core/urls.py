@@ -1,9 +1,6 @@
 from django.conf.urls import url
 
-from core.views import views
-from core.views import host
-from core.views import host_group
-from core.views import task_template
+from core.views import views, host, host_group, task_template, task, rest
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -21,5 +18,12 @@ urlpatterns = [
     url(r'^task_templates/$', task_template.search, name='task_template_search'),
     url(r'^task_templates/create/$', task_template.edit, name='task_template_create'),
     url(r'^task_templates/(?P<pk>\d+)/$', task_template.edit, name='task_template_update'),
+    url(r'^task_templates/(?P<pk>\d+)/run/$', task_template.run, name='task_template_run'),
     url(r'^task_templates/(?P<pk>\d+)/delete/$', task_template.delete, name='task_template_delete'),
+
+    url(r'^tasks/$', task.search, name='task_search'),
+    url(r'^tasks/(?P<pk>\d+)/stop$', task.stop, name='task_stop'),
+    url(r'^tasks/(?P<pk>\d+)/log/$', task.log, name='task_log'),
+
+    url(r'^api/task/(?P<pk>\d+)/logs/$', rest.task_logs, name='rest_task_logs')
 ]
