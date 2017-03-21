@@ -49,7 +49,7 @@
     <td>{{ object.get_actual_hosts.count }}</td>
     <td>{{ object.vars.count }}</td>
     <td>{{ object.get_duration|default:'in job ...' }}</td>
-    <td>{{ object.pid }}</td>
+    <td>{{ object.pid |default:''}}</td>
     <td>
         {% if object.status == 'in_progress' or object.status == 'wait' %}
             <a href="{% url 'task_stop' object.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">

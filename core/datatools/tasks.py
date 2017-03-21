@@ -66,7 +66,7 @@ class TaskChecker:
         models.Log.objects.create(
             action=consts.ACTION_START,
             item=consts.TASK,
-            message='Start task for pid' % task.pid,
+            message='Start task for pid %s' % task.pid,
             object_id=task.id,
         )
 

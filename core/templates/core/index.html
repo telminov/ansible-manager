@@ -37,7 +37,7 @@
                         {% for task in tasks %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ task.dc }}</td>
+                                <td><a href="{% url 'task_log' task.id %}">{{ task.dc }}</a></td>
                                 <td>
                                     <span class="label label
                                         {% if task.status == 'in_progress' %}

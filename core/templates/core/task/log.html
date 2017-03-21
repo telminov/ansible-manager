@@ -3,9 +3,11 @@
 
 {% block container %}
     <div class="console">
-        {% for log in object.logs.all %}
-            <p class="line log-{{ log.status }}">{{ log.output|default:log.message }}</p>
-        {% endfor %}
+        <div class="logs">
+            {% for log in object.logs.all %}
+                <p class="line log-{{ log.status }}">{{ log.output|default:log.message }}</p>
+            {% endfor %}
+        </div>
     </div>
     <br>
     <div class="row">
@@ -63,3 +65,13 @@
         </div>
     </div>
 {% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        var GET_LOGS_URL = '{% url 'rest_task_logs' object.id %}';
+        var last_log_id = {{ object.logs.last.id }};
+        var task_running = {% if object.status == 'in_progress' or object.status == 'wait' %}true{% else %}false{% endif %}
+    </script>
+    <script src="{{ STATIC_URL }}core/js/console.js"></script>
+{% endblock js %}

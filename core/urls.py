@@ -27,5 +27,5 @@ urlpatterns = [
     url(r'^tasks/(?P<pk>\d+)/replay/$', task.replay, name='task_replay'),
     url(r'^tasks/(?P<pk>\d+)/log/$', task.log, name='task_log'),
 
-    url(r'^api/task/(?P<pk>\d+)/logs/$', rest.task_logs, name='rest_task_logs')
+    url(r'^api/task/(?P<task_id>\d+)/logs/$', rest.task_logs, name='rest_task_logs')
 ]
