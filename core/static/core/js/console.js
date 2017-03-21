@@ -11,19 +11,25 @@
       logs = $('.logs');
       return console.animate({
         scrollTop: logs.height()
-      }, 1000);
+      }, 0);
     }
   };
 
   scrollConsole();
 
   setLogs = function(logs) {
-    var i, len, log, message, results;
+    var i, len, log, message, ref, results;
     results = [];
     for (i = 0, len = logs.length; i < len; i++) {
       log = logs[i];
       message = log.output || log.message;
-      results.push($('.logs').append("<p class='line log-" + log.status + "'>" + log.id + " " + message + "</p>"));
+      $('.logs').append("<p class='line log-" + log.status + "'>" + message + "</p>");
+      scrollConsole();
+      if ((ref = log.status) === 'fail' || ref === 'stopped' || ref === 'completed') {
+        results.push(this.task_running = false);
+      } else {
+        results.push(void 0);
+      }
     }
     return results;
   };
@@ -31,20 +37,21 @@
   this.getLogs = function(last_id) {
     var url;
     if (task_running) {
-      if (!last_id) {
+      url = GET_LOGS_URL;
+      if (!last_id && last_log_id) {
         last_id = last_log_id;
       }
-      url = GET_LOGS_URL;
       if (last_id) {
         url = url + "?last_log_id=" + last_id;
       }
       return $.get(url, function(data) {
-        scrollConsole();
         if (data.length > 0) {
           last_id = data[data.length - 1].id;
           setLogs(data);
         }
-        return setTimeout(getLogs(last_id), 1000);
+        return setTimeout((function() {
+          return getLogs(last_id);
+        }), 1000);
       });
     }
   };

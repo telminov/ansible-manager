@@ -7,5 +7,8 @@ class Command(BaseCommand):
     help = "Check and management tasks command"
 
     def handle(self, *args, **kwargs):
-        checker = TaskChecker()
-        checker.run()
+        try:
+            checker = TaskChecker()
+            checker.run()
+        except KeyboardInterrupt:
+            pass

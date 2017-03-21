@@ -66,7 +66,7 @@ class TaskChecker:
         models.Log.objects.create(
             action=consts.ACTION_START,
             item=consts.TASK,
-            message='Start task for pid %s' % task.pid,
+            message='Run task for pid %s in new process' % task.pid,
             object_id=task.id,
         )
 
@@ -79,6 +79,7 @@ class TaskChecker:
                     status=consts.IN_PROGRESS,
                     output=output
                 )
+
             task.status = consts.COMPLETED
             task.save()
             models.TaskLog.objects.create(
@@ -94,6 +95,12 @@ class TaskChecker:
             )
 
         except Exception as e:
+            models.TaskLog.objects.create(
+                action=consts.ACTION_ERROR,
+                item=consts.TASK,
+                message='Task error "%s"' % e,
+                object_id=task.id,
+            )
             models.Log.objects.create(
                 action=consts.ACTION_ERROR,
                 item=consts.TASK,
@@ -113,7 +120,7 @@ class TaskChecker:
         models.Log.objects.create(
             action=consts.ACTION_RUN,
             item=consts.TASK,
-            message='Run task for pid %s' % pid,
+            message='Start task for pid %s' % pid,
             object_id=task.id,
         )
 

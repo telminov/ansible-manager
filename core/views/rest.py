@@ -10,6 +10,5 @@ class TaskLogs(ListAPIView):
 
     def get_queryset(self):
         last_log_id = self.request.GET.get('last_log_id', 0)
-        print(last_log_id)
         return self.model.objects.filter(task_id=self.kwargs['task_id'], id__gt=last_log_id)
 task_logs = TaskLogs.as_view()

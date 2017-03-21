@@ -1,0 +1,24 @@
+{% for host in object.get_actual_hosts %}
+{{ host.address }} {% for var in host.vars.all %}{{ var.name }}={{ var.value }} {% endfor %}
+{% endfor %}
+
+{% for group in object.host_groups.all %}
+[{{ group.name }}]
+{% for host in group.hosts.all %}
+{{ host.address }}
+{% endfor %}
+{% endfor %}
+
+{% for group in object.host_groups.all %}
+[{{ group.name }}:vars]
+{% for var in group.vars.all %}
+{{ var.name }}={{ var.value }}
+{% endfor %}
+{% endfor %}
+
+[all:vars]
+{% for host in object.get_actual_hosts %}
+{% for var in object.vars.all %}
+{{ var.name }}={{ var.value }}
+{% endfor %}
+{% endfor %}

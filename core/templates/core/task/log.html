@@ -70,7 +70,7 @@
     {{ block.super }}
     <script type="text/javascript">
         var GET_LOGS_URL = '{% url 'rest_task_logs' object.id %}';
-        var last_log_id = {{ object.logs.last.id }};
+        var last_log_id = {{ object.logs.last.id|default:'undefined' }};
         var task_running = {% if object.status == 'in_progress' or object.status == 'wait' %}true{% else %}false{% endif %}
     </script>
     <script src="{{ STATIC_URL }}core/js/console.js"></script>
