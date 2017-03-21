@@ -27,28 +27,58 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        # TODO
+        form = self.get_form()
+        if form.is_valid():
+            template = form.cleaned_data.get('template')
+            playbook = form.cleaned_data.get('playbook')
+            status = form.cleaned_data.get('status')
+            if template:
+                queryset = queryset.filter(template=template)
+            if playbook:
+                queryset = queryset.filter(playbook=playbook)
+            if status:
+                queryset = queryset.filter(status=status)
         return queryset
 search = Search.as_view()
 
 
-class Stop(mixins.PermissionRequiredMixin, views.DetailView):
-    template_name = 'core/task/stop.html'
+class Stop(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
     permission_required = 'core.stop_task'
     model = models.Task
 
-    def get_title(self):
-        task = self.get_object()
-        return "Stop task for %s" % task.get_playbook_name()
-
-    def post(self, *args, **kwargs):
+    def get(self, *args, **kwargs): # TODO Post , Get - message
         task = self.get_object()
         if task.status == consts.IN_PROGRESS:
             task.stop()
         else:
-            messages.info(self.request, 'Task is already stopped')
-        return redirect('task_log', kwargs={'pk': task.id})
+            messages.info(self.request, 'Task is already finished')
+        return redirect('task_search')
 stop = Stop.as_view()
+
+
+class Replay(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
+    permission_required = 'core.replay_task'
+    model = models.Task
+
+    def get(self, *args, **kwargs):
+        task = self.get_object()
+        if task.status in consts.NOT_RUN_STATUSES:
+            hosts = task.hosts.all()
+            groups = task.host_groups.all()
+            vars = task.vars.all()
+
+            task.id = None
+            task.pid = None
+            task.status = consts.WAIT
+            task.save()
+
+            task.hosts.add(*hosts)
+            task.host_groups.add(*groups)
+            task.vars.add(*vars)
+        else:
+            messages.info(self.request, 'Not start duplicate task')
+        return redirect('task_search')
+replay = Replay.as_view()
 
 
 class Log(mixins.PermissionRequiredMixin, views.DetailView):

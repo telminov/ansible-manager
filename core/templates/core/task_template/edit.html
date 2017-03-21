@@ -71,8 +71,14 @@
                     {% else %}
                         No actual hosts
                     {% endif %}
-                    <hr>
-                    <h4>Tasks</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Tasks</h4>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <a href="{% url 'task_search' %}">Search tasks</a>
+                        </div>
+                    </div>
                     {% if object.tasks.all %}
                         <div id="tasks">
                             <table class="table table-hover">
@@ -116,12 +122,13 @@
                     {% else %}
                         No tasks
                     {% endif %}
+                    <br>
                     <div class="text-right">
-                        <button type="button" class="btn btn-success btn-lg" data-toggle="tooltip"
+                        <a class="btn btn-success btn-lg" data-toggle="tooltip" href="{% url 'task_template_run' object.id %}"
                                 data-placement="left" title="Create and run new task">
-                            <i class="fa fa-play"></i>
+                            <i class="fa fa-play-circle-o"></i>
                             RUN
-                        </button>
+                        </a>
                     </div>
                 </div>
             {% endif %}

@@ -22,17 +22,15 @@
             </ul>
         </div>
         <div class="col-sm-9">
-            {# TODO Tasks information #}
             {% if tasks %}
-                <h4>Count: {{ tasks.count }}</h4>
                 <div id="tasks">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>№</th>
-                                <th>Time</th>
+                                <th>Date</th>
                                 <th>Status</th>
-                                <th>Log</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,23 +40,18 @@
                                 <td>{{ task.dc }}</td>
                                 <td>
                                     <span class="label label
-                                        {% if task.status == 'completed' %}
-                                            label-success
-                                        {% elif task.status == 'fail' %}
-                                            label-danger
-                                        {% elif task.status == 'in_progress' %}
+                                        {% if task.status == 'in_progress' %}
                                             label-primary
-                                        {% elif task.status == 'stopped' %}
-                                            label-default
                                         {% elif task.status == 'wait' %}
                                             label-warning
                                         {% endif %}
                                     ">{{ task.status }}</span>
                                 </td>
-                                <td><a href="#{# TODO to task log url #}" class="btn btn-default" data-toggle="tooltip"
-                                    data-placement="left" title="Show log for this task">
-                                    <i class="fa fa-terminal"></i>
-                                </a></td>
+                                <td>
+                                    <a href="{% url 'task_stop' task.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">
+                                        <i class="fa fa-stop-circle-o" style="color: red"></i>
+                                    </a>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>

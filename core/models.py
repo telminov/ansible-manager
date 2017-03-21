@@ -136,12 +136,13 @@ class Task(TaskOperationsMixin, models.Model):
     vars = models.ManyToManyField(Variable, related_name='tasks')
     template = models.ForeignKey(TaskTemplate, related_name='tasks')
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
-    pid = models.CharField(blank=True, max_length=100)
+    pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks')
 
     dc = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        ordering = ('-dc', )
         permissions = (
             ('view_task', 'View Task'),
             ('stop_task', 'Stop Task'),
@@ -153,15 +154,17 @@ class Task(TaskOperationsMixin, models.Model):
 
     def get_command(self, splited=False):
         # todo create real ansible playbook command
-        return ['ssh', 'root@185.22.60.21', 'apt update']  # Test dev
+        return ['ssh', 'root@185.22.60.21', 'while true; do echo "lol"; sleep 2; done']  # Test dev
 
     def get_duration(self) -> datetime.timedelta:
         start_date = self.dc
-        last_log = self.logs.filter(status__in=consts.NOT_RUN_STATUSES).last()
-        finish_date = last_log.dc if last_log else datetime.datetime.now()
-        raw_delta = finish_date - start_date
-        days, minutes, seconds = raw_delta.days, raw_delta.seconds // 3600, raw_delta.seconds % 3600 / 60.0  # todo
-        delta = datetime.timedelta(days=days, minutes=minutes, seconds=seconds)
+        logs = self.logs.filter(status__in=consts.NOT_RUN_STATUSES)
+        delta = None
+        if logs.exists():
+            finish_date = logs.last().dc
+            raw_delta = finish_date - start_date
+            days, minutes, seconds = raw_delta.days, raw_delta.seconds // 3600, raw_delta.seconds % 3600 / 60.0  # todo
+            delta = datetime.timedelta(days=days, minutes=minutes, seconds=seconds)
         return delta
 
     def stop(self):

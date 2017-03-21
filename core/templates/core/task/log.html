@@ -2,22 +2,22 @@
 {% load bootstrap3 %}
 
 {% block container %}
+    <div class="console">
+        {% for log in object.logs.all %}
+            <p class="line log-{{ log.status }}">{{ log.output|default:log.message }}</p>
+        {% endfor %}
+    </div>
+    <br>
     <div class="row">
-        <div class="col-sm-8">
-            <div class="console">
-                {% for log in object.logs.all %}
-                    <p class="line log-{{ log.status }}">{{ log.output|default:log.message }}</p>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <button class="btn btn-success btn-block btn-lg">
                 <i class="fa fa-play"></i> Run
             </button>
             <button class="btn btn-danger btn-block btn-lg" disabled>
                 <i class="fa fa-stop"></i> Stop
             </button>
-
+        </div>
+        <div class="col-sm-6">
             {% if object.get_actual_hosts %}
                 <br>
                 <div id="actual_hosts">

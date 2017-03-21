@@ -94,15 +94,18 @@ def stop(task):
     if task.status == consts.IN_PROGRESS and task.pid:
         try:
             os.kill(task.pid, signal.SIGTERM)
+            task.status = consts.STOPPED
+            task.save()
+            models.TaskLog.objects.create(
+                task=task,
+                status=consts.STOPPED,
+                message='Task stopped'
+            )
         except Exception as e:
-            pass
+            print(e)
             # TODO log error
 
-        models.TaskLog.objects.create(
-            task=task,
-            status=consts.STOPPED,
-            message='Task stopped'
-        )
+
 
 
 

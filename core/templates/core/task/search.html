@@ -8,6 +8,7 @@
 {% endblock left_buttons %}
 
 {% block table_heads %}
+    <th>Template</th>
     <th>Date</th>
     <th>Playbook</th>
     <th>Status</th>
@@ -16,9 +17,17 @@
     <th>Actual hosts</th>
     <th>Vars</th>
     <th>Duration</th>
+    <th></th>
 {% endblock table_heads %}
 
 {% block table_cols %}
+    <td>
+        {% if object.template %}
+            <a href="{% url 'task_template_update' object.template.id %}">{{ object.template.name }}</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
     <td><a href="{% url 'task_log' object.id %}">{{ object.dc }}</a></td>
     <td>{{ object.get_playbook_name }}</td>
     <td><span class="label label
@@ -38,5 +47,16 @@
     <td>{{ object.host_groups.count }}</td>
     <td>{{ object.get_actual_hosts.count }}</td>
     <td>{{ object.vars.count }}</td>
-    <td>{{ object.get_duration }}</td>
+    <td>{{ object.get_duration|default:'in job ...' }}</td>
+    <td>
+        {% if object.status == 'in_progress' or object.status == 'wait' %}
+            <a href="{% url 'task_stop' object.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">
+                <i class="fa fa-stop-circle-o" style="color: red"></i>
+            </a>
+        {% else %}
+            <a href="{% url 'task_replay' object.id %}" data-toggle="tooltip"  data-placement="left" title="Replay">
+                <i class="fa fa-play-circle-o" style="color: green"></i>
+            </a>
+        {% endif %}
+    </td>
 {% endblock table_cols %}
