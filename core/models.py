@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from core import consts
+from core.datatools import ansible
 from core.datatools import tasks
 
 
@@ -153,8 +154,7 @@ class Task(TaskOperationsMixin, models.Model):
         return "%s %s" % (self.get_playbook_name(), self.status)
 
     def get_command(self, splited=False):
-        # todo create real ansible playbook command
-        return ['ssh', 'root@185.22.60.21', 'while true; do echo "lol"; sleep 2; done']  # Test dev
+        return ansible.make_command(self, splited)
 
     def get_duration(self) -> datetime.timedelta:
         start_date = self.dc
@@ -185,3 +185,23 @@ class TaskLog(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.task.get_playbook_name(), self.dc)
+
+
+class Log(models.Model):
+    ITEM_CHOICES = (
+        (consts.TASK, consts.TASK),
+        (consts.TASK_TEMPLATE, consts.TASK_TEMPLATE),
+    )
+    ACTION_CHOICES = [(action, action) for action in consts.ACTIONS]
+    message = models.CharField(max_length=255)
+    item = models.CharField(max_length=100, choices=ITEM_CHOICES, blank=True)
+    action = models.CharField(max_length=100, choices=ACTION_CHOICES)
+    object_id = models.IntegerField(null=True)
+
+    class Meta:
+        permissions = (
+            ('view_log', 'View Log'),
+        )
+
+    def __str__(self):
+        return '%s %s "%s"' % (self.item, self.action, self.message)

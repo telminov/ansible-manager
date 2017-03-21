@@ -12,34 +12,31 @@ from djutils.views.generic import TitleMixin
 from core.generic import mixins
 
 
-class TemplateView(mixins.BreadcrumbsMixin, TitleMixin, DjangoTemplateView):
+class TemplateView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoTemplateView):
     pass
 
 
-class View(mixins.BreadcrumbsMixin, TitleMixin, DjangoView):
+class View(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoView):
     pass
 
 
-class ListView(mixins.BreadcrumbsMixin, TitleMixin, DjangoListView):
+class ListView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoListView):
     pass
 
 
-class DetailView(mixins.BreadcrumbsMixin, TitleMixin, DjangoDetailView):
+class DetailView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoDetailView):
     pass
 
 
-class DeleteView(mixins.BreadcrumbsMixin, TitleMixin, DjangoDeleteView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['next'] = self.request.META.get('HTTP_REFERER', self.request.GET.get('next'))
-        return context
-
-
-class CreateView(mixins.BreadcrumbsMixin, TitleMixin, DjangoCreateView):
+class DeleteView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoDeleteView):
     pass
 
 
-class UpdateView(mixins.BreadcrumbsMixin, TitleMixin, DjangoUpdateView):
+class CreateView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoCreateView):
+    pass
+
+
+class UpdateView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoUpdateView):
     pass
 
 

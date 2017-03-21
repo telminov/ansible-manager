@@ -105,11 +105,12 @@ delete = Delete.as_view()
 
 class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
     permission_required = 'core.run_task'
+    model = models.TaskTemplate
 
     def get(self, request, *args, **kwargs):
         task_template = self.get_object()
-        task, in_progress = task_template.run(self.request.user)
+        task, in_progress = task_template.run_task(self.request.user)
         if in_progress:
             messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
-        return redirect('task_log', kwargs={'pk': task.id})
+        return redirect(reverse('task_log', kwargs={'pk': task.id}))
 run = Run.as_view()

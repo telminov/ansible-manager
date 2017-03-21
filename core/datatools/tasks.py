@@ -22,7 +22,7 @@ class TaskChecker:
         return os.path.exists("/proc/%s" % pid)
 
     def check_in_progress(self):
-        tasks = models.Task.objects.filter(status=consts.IN_PROGRESS)
+        tasks = models.Task.objects.filter(status=consts.IN_PROGRESS, pid__isnull=False)
         not_run_tasks = []
         for task in tasks:
             if not self.process_is_run(task.pid):
@@ -37,6 +37,12 @@ class TaskChecker:
                 status=consts.FAIL,
                 message='Task with pid %s is failed' % task.pid
             )
+            models.Log.objects.create(
+                action=consts.ACTION_ERROR,
+                item=consts.TASK,
+                message='Task fail',
+                object_id=task.id,
+            )
 
     @staticmethod
     def run_task(task_id):
@@ -45,10 +51,24 @@ class TaskChecker:
         connection.connection = None
 
         task = models.Task.objects.get(id=task_id)
+        if not task.pid:
+            models.Log.objects.create(
+                action=consts.ACTION_ERROR,
+                item=consts.TASK,
+                message='Error start task, pid is None',
+                object_id=task.id,
+            )
+            return
+
         task.status = consts.IN_PROGRESS
         task.save()
 
-        # TODO log for task bla bla bla started
+        models.Log.objects.create(
+            action=consts.ACTION_START,
+            item=consts.TASK,
+            message='Start task for pid' % task.pid,
+            object_id=task.id,
+        )
 
         try:
             proc = Popen(task.get_command(splited=True), stdout=PIPE)
@@ -66,22 +86,38 @@ class TaskChecker:
                 status=consts.COMPLETED,
                 message='Task complete'
             )
+            models.Log.objects.create(
+                action=consts.ACTION_COMPLETE,
+                item=consts.TASK,
+                message='Complete task for pid %s' % task.pid,
+                object_id=task.id,
+            )
 
         except Exception as e:
-            pass
-            # TODO log error
+            models.Log.objects.create(
+                action=consts.ACTION_ERROR,
+                item=consts.TASK,
+                message='Error in process task "%s"' % e,
+                object_id=task.id,
+            )
 
     def run_in_new_process(self, task):
         proc = Process(target=self.run_task, args=(task.id,))
         proc.start()
+        pid = proc.pid
 
         from django.db import connection
         connection.connection.close()
         connection.connection = None
 
-        # TODO log start process with pid
+        models.Log.objects.create(
+            action=consts.ACTION_RUN,
+            item=consts.TASK,
+            message='Run task for pid %s' % pid,
+            object_id=task.id,
+        )
 
-        task.pid = proc.pid
+        task.pid = pid
         task.save()
 
     def start_wait_tasks(self):
@@ -102,10 +138,9 @@ def stop(task):
                 message='Task stopped'
             )
         except Exception as e:
-            print(e)
-            # TODO log error
-
-
-
-
-
+            models.Log.objects.create(
+                action=consts.ACTION_ERROR,
+                item=consts.TASK,
+                message='Error stop task "%s"' % e,
+                object_id=task.id,
+            )

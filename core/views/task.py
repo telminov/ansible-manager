@@ -71,11 +71,12 @@ class Create(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, vi
 create = Create.as_view()
 
 
-class Stop(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
+class Stop(mixins.PermissionRequiredMixin, views.DetailView):
+    template_name = 'core/task/stop.html'
     permission_required = 'core.stop_task'
     model = models.Task
 
-    def get(self, *args, **kwargs): # TODO Post , Get - message
+    def post(self, *args, **kwargs):
         task = self.get_object()
         if task.status == consts.IN_PROGRESS:
             task.stop()
@@ -104,6 +105,13 @@ class Replay(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
             task.hosts.add(*hosts)
             task.host_groups.add(*groups)
             task.vars.add(*vars)
+
+            models.Log.objects.create(
+                action=consts.ACTION_REPLAY,
+                item=consts.TASK,
+                message='Replay task',
+                object_id=task.id,
+            )
         else:
             messages.info(self.request, 'Not start duplicate task')
         return redirect('task_search')

@@ -10,12 +10,15 @@
     <br>
     <div class="row">
         <div class="col-sm-6">
-            <button class="btn btn-success btn-block btn-lg">
-                <i class="fa fa-play"></i> Run
-            </button>
-            <button class="btn btn-danger btn-block btn-lg" disabled>
-                <i class="fa fa-stop"></i> Stop
-            </button>
+            {% if object.status == 'in_progress' or object.status == 'wait' %}
+                <a class="btn btn-danger btn-block btn-lg" href="{% url 'task_stop' object.id %}">
+                    <i class="fa fa-stop"></i> Stop
+                </a>
+            {% else %}
+                <a class="btn btn-success btn-block btn-lg" href="{% url 'task_replay' object.id %}">
+                    <i class="fa fa-play"></i> Run
+                </a>
+            {% endif %}
         </div>
         <div class="col-sm-6">
             {% if object.get_actual_hosts %}
@@ -57,7 +60,6 @@
             {% empty %}
                 No vars
             {% endfor %}
-
         </div>
     </div>
 {% endblock container %}

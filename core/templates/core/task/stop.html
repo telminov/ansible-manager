@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+
+{% block container %}
+    <form action="" method="POST" class="text-center">
+        {% csrf_token %}
+        <h4>Do you really want to stop task with pid "{{ object.pid }}" ?</h4>
+        <div>
+            {% if next %}
+                <a href="{{ next }}" class="btn btn-default" id="back_button">
+                    <i class="glyphicon glyphicon-arrow-left"></i>
+                    Back
+                </a>
+            {% endif %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fa fa-stop-circle-o"></i>
+                Yes
+            </button>
+        </div>
+    </form>
+{% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('#back_button').focus()
+    </script>
+{% endblock js %}
