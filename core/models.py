@@ -22,6 +22,9 @@ class TaskOperationsMixin:
     def get_playbook_name(self) -> str:
         return os.path.basename(self.playbook)
 
+    def get_single_hosts(self):
+        return self.get_actual_hosts().filter(groups__isnull=True)
+
 
 class Variable(models.Model):
     name = models.CharField(max_length=255)

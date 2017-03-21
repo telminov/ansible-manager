@@ -59,9 +59,6 @@ class Create(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, vi
             (self.get_title(), '')
         )
 
-    def form_invalid(self, form, formset):
-        return super().form_invalid(form, formset)
-
     def form_valid(self, form, formset):
         form.instance.user = self.request.user
         self.object = form.save()
@@ -114,7 +111,7 @@ class Replay(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
             )
         else:
             messages.info(self.request, 'Not start duplicate task')
-        return redirect('task_search')
+        return redirect(reverse('task_log', kwargs={'pk': task.id}))
 replay = Replay.as_view()
 
 
@@ -125,7 +122,7 @@ class Log(mixins.PermissionRequiredMixin, views.DetailView):
 
     def get_title(self):
         task = self.get_object()
-        return 'Log task for %s' % task.dc.strftime("%d/%m/%y")
+        return 'Log task for %s' % task.dc.strftime("%d-%m-%Y %H:%M:%S")
 
     def get_breadcrumbs(self):
         return (

@@ -15,6 +15,8 @@ setLogs = (logs) ->
 
     if log.status in ['fail', 'stopped', 'completed']
       @task_running = false
+      $('#stop').hide()
+      $('#replay').show()
 
 @getLogs = (last_id) ->
   if task_running

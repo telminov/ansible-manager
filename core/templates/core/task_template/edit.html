@@ -94,7 +94,7 @@
                                 {% for task in object.tasks.all %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ task.dc }}</td>
+                                        <td>{{ task.dc|date:"d-m-Y H:i:s" }}</td>
                                         <td>
                                             <span class="label label
                                                 {% if task.status == 'completed' %}

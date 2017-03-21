@@ -1,4 +1,4 @@
-{% for host in object.get_actual_hosts %}
+{% for host in object.get_single_hosts %}
 {{ host.address }} {% for var in host.vars.all %}{{ var.name }}={{ var.value }} {% endfor %}
 {% endfor %}
 

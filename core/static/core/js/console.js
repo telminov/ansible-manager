@@ -26,7 +26,9 @@
       $('.logs').append("<p class='line log-" + log.status + "'>" + message + "</p>");
       scrollConsole();
       if ((ref = log.status) === 'fail' || ref === 'stopped' || ref === 'completed') {
-        results.push(this.task_running = false);
+        this.task_running = false;
+        $('#stop').hide();
+        results.push($('#replay').show());
       } else {
         results.push(void 0);
       }
