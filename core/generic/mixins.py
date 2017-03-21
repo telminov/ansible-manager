@@ -86,5 +86,8 @@ class FormAndFormsetMixin(FormMixin):
 class FormAndModelFormsetMixin(FormAndFormsetMixin):
     formset_model = None
 
+    def get_formset_initial(self):
+        return self.formset_initial or self.formset_model.objects.none()
+
     def get_formset_class(self):
         return self.formset_class or modelformset_factory(model=self.formset_model, fields='__all__', can_delete=True)

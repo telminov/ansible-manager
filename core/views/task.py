@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.urls import reverse_lazy
 from django.views.generic.detail import SingleObjectMixin
 
 import core.forms.task
@@ -40,6 +41,34 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
                 queryset = queryset.filter(status=status)
         return queryset
 search = Search.as_view()
+
+
+class Create(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, views.EditView):
+    template_name = 'core/task/create.html'
+    form_class = core.forms.task.Create
+    model = models.Task
+    formset_model = models.Variable
+    permission_required = 'core.add_task'
+    success_url = reverse_lazy('task_search')
+    title_create = 'Create Task'
+
+    def get_breadcrumbs(self):
+        return (
+            ('Home', reverse('index')),
+            ('Search tasks', reverse('task_search')),
+            (self.get_title(), '')
+        )
+
+    def form_invalid(self, form, formset):
+        return super().form_invalid(form, formset)
+
+    def form_valid(self, form, formset):
+        form.instance.user = self.request.user
+        self.object = form.save()
+        variables = formset.save()
+        self.object.vars.add(*variables)
+        return redirect(self.get_success_url())
+create = Create.as_view()
 
 
 class Stop(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):

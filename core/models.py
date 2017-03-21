@@ -134,7 +134,7 @@ class Task(TaskOperationsMixin, models.Model):
     hosts = models.ManyToManyField(Host, related_name='tasks')
     host_groups = models.ManyToManyField(HostGroup, related_name='tasks')
     vars = models.ManyToManyField(Variable, related_name='tasks')
-    template = models.ForeignKey(TaskTemplate, related_name='tasks')
+    template = models.ForeignKey(TaskTemplate, related_name='tasks', null=True)
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
     pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks')
