@@ -27,7 +27,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
         )
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by('-id')
         form = self.get_form()
         if form.is_valid():
             template = form.cleaned_data.get('template')
@@ -75,10 +75,10 @@ class Stop(mixins.PermissionRequiredMixin, views.DetailView):
 
     def post(self, *args, **kwargs):
         task = self.get_object()
-        if task.status == consts.IN_PROGRESS:
+        if task.status in consts.RUN_STATUSES:
             task.stop()
         else:
-            messages.info(self.request, 'Task is already finished')
+            messages.info(self.request, 'Task is not run')
         return redirect('task_search')
 stop = Stop.as_view()
 

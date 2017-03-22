@@ -3,17 +3,18 @@
 
 
 {% block container %}
-    <form action="" method="GET">
+    <form class="search-from" action="" method="GET">
         {% block form %}
             <div class="row">
                 {% for field in form %}
                     <div class="col-sm-4">
-                        {% bootstrap_field field %}
+                        {% bootstrap_field field layout='horizontal' %}
                     </div>
                 {% endfor %}
             </div>
         {% endblock form %}
-        <div class="row">
+
+        <div class="row buttons-row">
             <div class="col-sm-6">
                 {% block left_buttons %}
                 {% endblock left_buttons %}
@@ -28,6 +29,10 @@
             </div>
         </div>
     </form>
+    <script>
+        $('.search-from input[type=text]').first().focus().select();
+    </script>
+
     <br>
     <div>
         {% if not object_list %}

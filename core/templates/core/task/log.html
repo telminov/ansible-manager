@@ -10,62 +10,82 @@
         </div>
     </div>
     <br>
+
+
     <div class="row">
+        <div class="col-sm-6">
+        </div>
+
         <div class="col-sm-6">
             {% if object.status == 'in_progress' or object.status == 'wait' %}
                 <a class="btn btn-danger btn-block btn-lg" id="stop" href="{% url 'task_stop' object.id %}">
                     <i class="fa fa-stop"></i> Stop
                 </a>
-                <a class="btn btn-success btn-block btn-lg" id="replay" href="{% url 'task_replay' object.id %}" style="display: none">
-                    <i class="fa fa-play"></i> Run
-                </a>
             {% else %}
-                <a class="btn btn-success btn-block btn-lg" id="replay" href="{% url 'task_replay' object.id %}">
-                    <i class="fa fa-play"></i> Run
-                </a>
+                <button class="btn btn-danger btn-block btn-lg" disabled="disabled">
+                    <i class="fa fa-stop"></i> Stop
+                </button>
             {% endif %}
         </div>
-        <div class="col-sm-6">
-            {% if object.get_actual_hosts %}
-                <br>
-                <div id="actual_hosts">
-                    <table class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th>№</th>
-                            <th>Host</th>
-                            <th>Vars</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for host in object.get_actual_hosts %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'host_update' host.id %}" target="_blank">{{ host.address }}</a>
-                                </td>
-                                <td>
-                                    {% for var in host.vars.all %}
-                                        <span class="label label-default">
-                                                    {{ var }}
-                                                </span>
-                                    {% empty %}
-                                        -
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endif %}
-        <hr>
-            <h4>Vars</h4>
-            {% for var in object.vars.all %}
-                <span class="label label-default">{{ var }}</span>
-            {% empty %}
-                No vars
-            {% endfor %}
-        </div>
+    </div>
+
+{#    <div class="row">#}
+{#        <div class="col-sm-6">#}
+{#            {% if object.status == 'in_progress' or object.status == 'wait' %}#}
+{#                <a class="btn btn-danger btn-block btn-lg" id="stop" href="{% url 'task_stop' object.id %}">#}
+{#                    <i class="fa fa-stop"></i> Stop#}
+{#                </a>#}
+{#                <a class="btn btn-success btn-block btn-lg" id="replay" href="{% url 'task_replay' object.id %}" style="display: none">#}
+{#                    <i class="fa fa-play"></i> Run#}
+{#                </a>#}
+{#            {% else %}#}
+{#                <a class="btn btn-success btn-block btn-lg" id="replay" href="{% url 'task_replay' object.id %}">#}
+{#                    <i class="fa fa-play"></i> Run#}
+{#                </a>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#        <div class="col-sm-6">#}
+{#            {% if object.get_actual_hosts %}#}
+{#                <br>#}
+{#                <div id="actual_hosts">#}
+{#                    <table class="table table-hover">#}
+{#                        <thead>#}
+{#                        <tr>#}
+{#                            <th>№</th>#}
+{#                            <th>Host</th>#}
+{#                            <th>Vars</th>#}
+{#                        </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for host in object.get_actual_hosts %}#}
+{#                            <tr>#}
+{#                                <td>{{ forloop.counter }}</td>#}
+{#                                <td><a href="{% url 'host_update' host.id %}" target="_blank">{{ host.address }}</a>#}
+{#                                </td>#}
+{#                                <td>#}
+{#                                    {% for var in host.vars.all %}#}
+{#                                        <span class="label label-default">#}
+{#                                                    {{ var }}#}
+{#                                                </span>#}
+{#                                    {% empty %}#}
+{#                                        -#}
+{#                                    {% endfor %}#}
+{#                                </td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            #}
+{#            <hr>#}
+{#            <h4>Vars</h4>#}
+{#            {% for var in object.vars.all %}#}
+{#                <span class="label label-default">{{ var }}</span>#}
+{#            {% empty %}#}
+{#                No vars#}
+{#            {% endfor %}#}
+{#        </div>#}
     </div>
 {% endblock container %}
 

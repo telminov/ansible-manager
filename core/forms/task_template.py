@@ -5,10 +5,10 @@ from core import models
 
 
 class Search(forms.Form):
-    name = forms.CharField(label='Name', required=False)
-    hosts = forms.ModelMultipleChoiceField(label='Hosts', required=False, queryset=models.Host.objects.all(),
+    name = forms.CharField(required=False)
+    hosts = forms.ModelMultipleChoiceField(required=False, queryset=models.Host.objects.all(),
                                            widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
-    host_groups = forms.ModelMultipleChoiceField(label='Host Groups', required=False, queryset=models.HostGroup.objects.all(),
+    host_groups = forms.ModelMultipleChoiceField(label='Groups', required=False, queryset=models.HostGroup.objects.all(),
                                                  widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
 
 
@@ -17,7 +17,7 @@ class Edit(forms.ModelForm):
                                            widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
     host_groups = forms.ModelMultipleChoiceField(queryset=models.HostGroup.objects.all(), required=False,
                                                  widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
-    playbook = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH,
+    playbook = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                    widget=forms.Select(attrs={'class': 'need-select2'}))
 
     class Meta:

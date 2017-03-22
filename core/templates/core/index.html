@@ -4,13 +4,7 @@
     <div class="row">
         <div class="col-sm-3">
             <ul class="nav nav-pills nav-stacked" id="index_menu">
-                <li role="presentation"><a href="{% url 'host_search' %}">
-                    <i class="fa fa-tv"></i>
-                    Hosts</a></li>
-                <li role="presentation"><a href="{% url 'host_group_search' %}">
-                    <i class="fa fa-folder-o"></i>
-                    Host Groups</a>
-                </li>
+
                 <li role="presentation"><a href="{% url 'task_template_search' %}">
                     <i class="fa fa-list-ol"></i>
                     Task Templates</a>
@@ -18,6 +12,14 @@
                 <li role="presentation"><a href="{% url 'task_search' %}">
                     <i class="fa fa-tasks"></i>
                     Tasks</a>
+                </li>
+
+                <li role="presentation"><a href="{% url 'host_search' %}">
+                    <i class="fa fa-tv"></i>
+                    Hosts</a></li>
+                <li role="presentation"><a href="{% url 'host_group_search' %}">
+                    <i class="fa fa-folder-o"></i>
+                    Host Groups</a>
                 </li>
             </ul>
         </div>
@@ -43,13 +45,13 @@
                                         {% if task.status == 'in_progress' %}
                                             label-primary
                                         {% elif task.status == 'wait' %}
-                                            label-warning
+                                            label-default
                                         {% endif %}
                                     ">{{ task.status }}</span>
                                 </td>
                                 <td>
                                     <a href="{% url 'task_stop' task.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">
-                                        <i class="fa fa-stop-circle-o" style="color: red"></i>
+                                        <i class="fa fa-stop" style="color: red"></i>
                                     </a>
                                 </td>
                             </tr>

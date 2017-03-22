@@ -25,7 +25,7 @@ class PermissionDenied(TemplateView):
 
     def get_breadcrumbs(self):
         return [
-            ('Главная', reverse('index')),
+            ('Home', reverse('index')),
             (self.get_title(), ''),
         ]
 permission_denied = PermissionDenied.as_view()

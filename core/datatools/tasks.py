@@ -120,16 +120,11 @@ class TaskManager:
 
     @staticmethod
     def stop_task(task):
+        assert task.status in consts.RUN_STATUSES
+
         if task.status == consts.IN_PROGRESS and task.pid:
             try:
                 os.kill(task.pid, signal.SIGTERM)
-                task.status = consts.STOPPED
-                task.save()
-                models.TaskLog.objects.create(
-                    task=task,
-                    status=consts.STOPPED,
-                    message='Task stopped'
-                )
             except Exception as e:
                 traceback_message = traceback.format_exc()
                 models.TaskLog.objects.create(
@@ -138,6 +133,14 @@ class TaskManager:
                     messgae='Stop error "%s"' % e,
                     status=consts.FAIL
                 )
+
+        task.status = consts.STOPPED
+        task.save()
+        models.TaskLog.objects.create(
+            task=task,
+            status=consts.STOPPED,
+            message='Task stopped'
+        )
 
     def run_task_process(self, task):
         proc = Process(target=self.run_task, args=(task.id,))

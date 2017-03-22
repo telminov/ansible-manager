@@ -1,9 +1,9 @@
 from django.conf.urls import url
 
-from core.views import views, host, host_group, task_template, task, rest
+from core.views import general, host, host_group, task_template, task, rest
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', general.index, name='index'),
 
     url(r'^hosts/$', host.search, name='host_search'),
     url(r'^hosts/create/$', host.edit, name='host_create'),

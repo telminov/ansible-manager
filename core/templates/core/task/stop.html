@@ -3,7 +3,7 @@
 {% block container %}
     <form action="" method="POST" class="text-center">
         {% csrf_token %}
-        <h4>Do you really want to stop task with pid "{{ object.pid }}" ?</h4>
+        <h4>Do you really want to stop task "{{ object }}"?</h4>
         <div>
             {% if next %}
                 <a href="{{ next }}" class="btn btn-default" id="back_button">
@@ -12,7 +12,7 @@
                 </a>
             {% endif %}
             <button type="submit" class="btn btn-danger">
-                <i class="fa fa-stop-circle-o"></i>
+                <i class="fa fa-stop"></i>
                 Yes
             </button>
         </div>

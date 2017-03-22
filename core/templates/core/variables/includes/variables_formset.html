@@ -20,11 +20,11 @@
 
     <div class="hide">
         <div class="row variable" id="empty_form">
-            <div class="col-sm-5">{% bootstrap_field formset.empty_form.name %}</div>
-            <div class="col-sm-5">{% bootstrap_field formset.empty_form.value %}</div>
+            <div class="col-sm-5">{% bootstrap_field formset.empty_form.name layout='horizontal' %}</div>
+            <div class="col-sm-5">{% bootstrap_field formset.empty_form.value layout='horizontal' %}</div>
             <div class="col-sm-2">
                 <button type="button" class="btn btn-danger btn-block btn-sm"
-                        onclick="removeElem($(this).parents('.row'))" style="margin-top: 25px"
+                        onclick="removeElem($(this).parents('.row'))"
                         data-toggle="tooltip" data-placement="top" title="Remove this variable">
                     <i class="glyphicon glyphicon-trash"></i>
                 </button>
@@ -36,11 +36,11 @@
         {% for f in formset %}
             <div class="row variable">
                 <div class="hide">{{ f.id }}</div>
-                <div class="col-sm-5">{% bootstrap_field f.name %}</div>
-                <div class="col-sm-5">{% bootstrap_field f.value %}</div>
+                <div class="col-sm-5">{% bootstrap_field f.name layout='horizontal' %}</div>
+                <div class="col-sm-5">{% bootstrap_field f.value layout='horizontal' %}</div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-danger btn-block btn-sm"
-                            onclick="deleteElem($(this).parents('.row'))" style="margin-top: 25px"
+                            onclick="deleteElem($(this).parents('.row'))"
                             data-toggle="tooltip" data-placement="top" title="Remove this variable">
                         <i class="glyphicon glyphicon-trash"></i>
                     </button>

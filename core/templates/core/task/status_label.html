@@ -1,0 +1,13 @@
+<span class="label
+    {% if task.status == 'completed' %}
+        label-success
+    {% elif task.status == 'fail' %}
+        label-danger
+    {% elif task.status == 'in_progress' %}
+        label-primary
+    {% elif task.status == 'stopped' %}
+        label-warning
+    {% else %}
+        label-default
+    {% endif %}
+">{{ task.status|default:'Unknown' }}</span>

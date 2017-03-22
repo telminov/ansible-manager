@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 
 import core.urls
 
-from core.views.views import permission_denied
+from core.views.general import permission_denied
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

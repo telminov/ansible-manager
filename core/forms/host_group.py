@@ -4,7 +4,7 @@ from core import models
 
 
 class Search(forms.Form):
-    name = forms.CharField(label='Name', required=False)
+    name = forms.CharField(required=False)
 
 
 class Edit(forms.ModelForm):

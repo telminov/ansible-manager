@@ -9,15 +9,12 @@
 
 {% block table_heads %}
     <th>Template</th>
-    <th>Date</th>
+    <th>Created</th>
     <th>Playbook</th>
     <th>Status</th>
     <th>Hosts</th>
     <th>Groups</th>
-    <th>Actual hosts</th>
-    <th>Vars</th>
     <th>Duration</th>
-    <th>PID</th>
     <th></th>
 {% endblock table_heads %}
 
@@ -31,33 +28,18 @@
     </td>
     <td><a href="{% url 'task_log' object.id %}">{{ object.dc }}</a></td>
     <td>{{ object.get_playbook_name }}</td>
-    <td><span class="label label
-        {% if object.status == 'completed' %}
-            label-success
-        {% elif object.status == 'fail' %}
-            label-danger
-        {% elif object.status == 'in_progress' %}
-            label-primary
-        {% elif object.status == 'stopped' %}
-            label-default
-        {% elif object.status == 'wait' %}
-            label-warning
-        {% endif %}
-    ">{{ object.status }}</span></td>
+    <td>{% include 'core/task/status_label.html' with task=object %}</td>
     <td>{{ object.hosts.count }}</td>
     <td>{{ object.host_groups.count }}</td>
-    <td>{{ object.get_actual_hosts.count }}</td>
-    <td>{{ object.vars.count }}</td>
-    <td>{{ object.get_duration|default:'in job ...' }}</td>
-    <td>{{ object.pid |default:''}}</td>
+    <td>{{ object.get_duration|default:'unknown' }}</td>
     <td>
         {% if object.status == 'in_progress' or object.status == 'wait' %}
             <a href="{% url 'task_stop' object.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">
-                <i class="fa fa-stop-circle-o" style="color: red"></i>
+                <i class="fa fa-stop" style="color: red"></i>
             </a>
         {% else %}
             <a href="{% url 'task_replay' object.id %}" data-toggle="tooltip"  data-placement="left" title="Replay">
-                <i class="fa fa-play-circle-o" style="color: green"></i>
+                <i class="fa fa-play" style="color: green"></i>
             </a>
         {% endif %}
     </td>

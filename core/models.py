@@ -84,41 +84,17 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     def __str__(self):
         return self.name
 
-    def get_last_task(self):
-        return self.tasks.last()
-
-    def get_last_date(self) -> datetime.datetime:
-        last_task = self.get_last_task()
-        date = None
-        if last_task:
-            date = last_task.dc
-        return date
-
-    def get_last_status(self) -> str:
-        last_task = self.get_last_task()
-        status = None
-        if last_task:
-            status = last_task.status
-        return status
-
-    def run_task(self, user):
-        in_progress = None
-        running_tasks = self.tasks.filter(status=consts.IN_PROGRESS)
-
-        if running_tasks.exists():
-            task = running_tasks.last()
-            in_progress = True
-        else:
-            task = Task.objects.create(
-                template=self,
-                playbook=self.playbook,
-                user=user
-            )
-            task.vars.add(*self.vars.all())
-            task.hosts.add(*self.hosts.all())
-            task.host_groups.add(*self.host_groups.all())
-
-        return task, in_progress
+    def create_task(self, user):
+        task = Task.objects.create(
+            template=self,
+            playbook=self.playbook,
+            user=user
+        )
+        task.vars.add(*self.vars.all())
+        task.hosts.add(*self.hosts.all())
+        task.host_groups.add(*self.host_groups.all())
+        task = Task.objects.get(id=task.id)
+        return task
 
 
 class Task(TaskOperationsMixin, models.Model):
@@ -134,7 +110,7 @@ class Task(TaskOperationsMixin, models.Model):
     dc = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-dc', )
+        get_latest_by = ('id',)
         permissions = (
             ('view_task', 'View Task'),
             ('stop_task', 'Stop Task'),
@@ -142,7 +118,10 @@ class Task(TaskOperationsMixin, models.Model):
         )
 
     def __str__(self):
-        return "%s %s" % (self.get_playbook_name(), self.status)
+        name = self.get_playbook_name()
+        if self.template:
+            name = self.template.name
+        return "%s %s" % (name, self.dc.isoformat(sep=' ')[:19])
 
     def get_command(self, splited=False):
         return ansible.make_command(self, splited)

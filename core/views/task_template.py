@@ -79,6 +79,12 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         variables = formset.save()
         self.object.vars.add(*variables)
         return redirect(self.get_success_url())
+
+    def get_context_data(self, *args, **kwargs):
+        c = super().get_context_data(*args, **kwargs)
+        c['last_tasks'] = self.get_object().tasks.order_by('-id')[:10]
+        return c
+
 edit = Edit.as_view()
 
 
@@ -109,8 +115,13 @@ class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
 
     def get(self, request, *args, **kwargs):
         task_template = self.get_object()
-        task, in_progress = task_template.run_task(self.request.user)
-        if in_progress:
+
+        in_progress_tasks = task_template.tasks.filter(status__in=consts.RUN_STATUSES)
+        if in_progress_tasks.exists():
             messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
+            task = in_progress_tasks.last()
+        else:
+            task = task_template.create_task(self.request.user)
+
         return redirect(reverse('task_log', kwargs={'pk': task.id}))
 run = Run.as_view()

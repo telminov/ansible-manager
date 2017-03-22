@@ -104,3 +104,10 @@ body{
     font-weight: bold;
     color: yellow;
 }
+
+.search-from .form-group label, .edit-form .form-group label {
+    padding-top: 5px;
+}
+.search-from .buttons-row {
+    margin-top: 5px;
+}

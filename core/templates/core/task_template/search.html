@@ -13,8 +13,6 @@
     <th>Last status</th>
     <th>Hosts</th>
     <th>Groups</th>
-    <th>Actual hosts</th>
-    <th>Vars</th>
     <th>Playbook</th>
     <th>Duration</th>
     <th>Last start</th>
@@ -22,31 +20,19 @@
 {% endblock table_heads %}
 
 {% block table_cols %}
-    <td><a href="{% url 'task_template_update' object.id %}">{{ object.name }}</a></td>
-    <td>{{ object.description|default:'-'|truncatechars:20 }}</td>
-    <td><span class="{% if object.get_last_status %}label{% endif %}
-        {% if object.get_last_status == 'completed' %}
-            label-success
-        {% elif object.get_last_status == 'fail' %}
-            label-danger
-        {% elif object.get_last_status == 'in_progress' %}
-            label-primary
-        {% elif object.get_last_status == 'stopped' %}
-            label-default
-        {% elif object.get_last_status == 'wait' %}
-            label-warning
-        {% endif %}
-    ">{{ object.get_last_status|default:'Not runing' }}</span></td>
-    <td>{{ object.hosts.count }}</td>
-    <td>{{ object.host_groups.count }}</td>
-    <td>{{ object.get_actual_hosts.count }}</td>
-    <td>{{ object.vars.count }}</td>
-    <td>{{ object.get_playbook_name }}</td>
-    <td>{{ object.tasks.last.get_duration|default:'Not runing' }}</td>
-    <td>{{ object.get_last_date|date:"d-m-Y H:i:s"|default:'Not runing' }}</td>
-    <td>
-        <a href="{% url 'task_template_run' object.id %}" data-toggle="tooltip" data-placement="left" title="Run">
-            <i class="fa fa-play"></i>
-        </a>
-    </td>
+    {% with object.tasks.last as last_task %}
+        <td><a href="{% url 'task_template_update' object.id %}">{{ object.name }}</a></td>
+        <td>{{ object.description|default:'-'|truncatechars:20 }}</td>
+        <td>{% include 'core/task/status_label.html' with task=last_task %}</td>
+        <td>{{ object.hosts.count }}</td>
+        <td>{{ object.host_groups.count }}</td>
+        <td>{{ object.get_playbook_name }}</td>
+        <td>{{ last_task.get_duration|default:'Not runing' }}</td>
+        <td>{{ last_task.dc|date:"d-m-Y H:i:s"|default:'Not runing' }}</td>
+        <td>
+            <a href="{% url 'task_template_run' object.id %}" data-toggle="tooltip" data-placement="left" title="Run">
+                <i class="fa fa-play"></i>
+            </a>
+        </td>
+    {% endwith %}
 {% endblock table_cols %}
