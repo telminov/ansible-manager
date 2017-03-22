@@ -71,9 +71,15 @@
                     {% else %}
                         No actual hosts
                     {% endif %}
-                    <hr>
-                    <h4>Tasks</h4>
-                    {% if object.get_tasks %}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Tasks</h4>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <a href="{% url 'task_search' %}">Search tasks</a>
+                        </div>
+                    </div>
+                    {% if object.tasks.all %}
                         <div id="tasks">
                             <table class="table table-hover">
                                 <thead>
@@ -85,10 +91,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {% for task in object.get_tasks %}
+                                {% for task in object.tasks.all %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ task.dc }}</td>
+                                        <td>{{ task.dc|date:"d-m-Y H:i:s" }}</td>
                                         <td>
                                             <span class="label label
                                                 {% if task.status == 'completed' %}
@@ -104,7 +110,7 @@
                                                 {% endif %}
                                             ">{{ task.status }}</span>
                                         </td>
-                                        <td><a href="#{# TODO to task log url #}" class="btn btn-default" data-toggle="tooltip"
+                                        <td><a href="{% url 'task_log' task.id %}" class="btn btn-default" data-toggle="tooltip"
                                             data-placement="left" title="Show log for this task">
                                             <i class="fa fa-terminal"></i>
                                         </a></td>
@@ -116,12 +122,13 @@
                     {% else %}
                         No tasks
                     {% endif %}
+                    <br>
                     <div class="text-right">
-                        <button type="button" class="btn btn-success btn-lg" data-toggle="tooltip"
+                        <a class="btn btn-success btn-lg" data-toggle="tooltip" href="{% url 'task_template_run' object.id %}"
                                 data-placement="left" title="Create and run new task">
-                            <i class="fa fa-play"></i>
+                            <i class="fa fa-play-circle-o"></i>
                             RUN
-                        </button>
+                        </a>
                     </div>
                 </div>
             {% endif %}

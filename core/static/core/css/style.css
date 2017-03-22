@@ -75,3 +75,32 @@ body{
     max-height: 300px;
     overflow: auto;
 }
+
+.console{
+    padding: 10px;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    max-height: 500px;
+    min-height: 500px;
+    overflow: auto;
+}
+
+.console .line{
+    margin: 0;
+}
+
+.log-completed{
+    font-weight: bold;
+    color: green;
+}
+
+.log-fail{
+    font-weight: bold;
+    color: red;
+}
+
+.log-stopped{
+    font-weight: bold;
+    color: yellow;
+}

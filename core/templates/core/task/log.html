@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <div class="console">
+        <div class="logs">
+            {% for log in object.logs.all %}
+                <p class="line log-{{ log.status }}">{{ log.output|default:log.message|safe }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-6">
+            {% if object.status == 'in_progress' or object.status == 'wait' %}
+                <a class="btn btn-danger btn-block btn-lg" id="stop" href="{% url 'task_stop' object.id %}">
+                    <i class="fa fa-stop"></i> Stop
+                </a>
+                <a class="btn btn-success btn-block btn-lg" id="replay" href="{% url 'task_replay' object.id %}" style="display: none">
+                    <i class="fa fa-play"></i> Run
+                </a>
+            {% else %}
+                <a class="btn btn-success btn-block btn-lg" id="replay" href="{% url 'task_replay' object.id %}">
+                    <i class="fa fa-play"></i> Run
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-sm-6">
+            {% if object.get_actual_hosts %}
+                <br>
+                <div id="actual_hosts">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Host</th>
+                            <th>Vars</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for host in object.get_actual_hosts %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href="{% url 'host_update' host.id %}" target="_blank">{{ host.address }}</a>
+                                </td>
+                                <td>
+                                    {% for var in host.vars.all %}
+                                        <span class="label label-default">
+                                                    {{ var }}
+                                                </span>
+                                    {% empty %}
+                                        -
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        <hr>
+            <h4>Vars</h4>
+            {% for var in object.vars.all %}
+                <span class="label label-default">{{ var }}</span>
+            {% empty %}
+                No vars
+            {% endfor %}
+        </div>
+    </div>
+{% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        var GET_LOGS_URL = '{% url 'rest_task_logs' object.id %}';
+        var last_log_id = {{ object.logs.last.id|default:'undefined' }};
+        var task_running = {% if object.status == 'in_progress' or object.status == 'wait' %}true{% else %}false{% endif %}
+    </script>
+    <script src="{{ STATIC_URL }}core/js/console.js"></script>
+{% endblock js %}

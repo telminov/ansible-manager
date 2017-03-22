@@ -1,8 +1,11 @@
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.views.generic.detail import SingleObjectMixin
 
 import core.forms.task_template
+from core import consts
 
 from core import models
 from core.generic import mixins
@@ -98,3 +101,16 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
             ('Delete', '')
         )
 delete = Delete.as_view()
+
+
+class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
+    permission_required = 'core.run_task'
+    model = models.TaskTemplate
+
+    def get(self, request, *args, **kwargs):
+        task_template = self.get_object()
+        task, in_progress = task_template.run_task(self.request.user)
+        if in_progress:
+            messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
+        return redirect(reverse('task_log', kwargs={'pk': task.id}))
+run = Run.as_view()

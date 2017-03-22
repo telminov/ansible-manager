@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form_errors form %}
+        {% bootstrap_formset_errors formset %}
+        <div class="row">
+            <div class="col-sm-6">{% bootstrap_field form.template %}</div>
+            <div class="col-sm-6">{% bootstrap_field form.playbook %}</div>
+        </div>
+
+        {% bootstrap_field form.hosts %}
+        {% bootstrap_field form.host_groups %}
+
+        {% include 'core/variables/includes/variables_formset.html' %}
+
+        <div class=" text-right">
+            <button type="submit" class="btn btn-success">
+                <i class="glyphicon glyphicon-floppy-save"></i>
+                Create
+            </button>
+        </div>
+    </form>
+{% endblock container %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+{% endblock js %}

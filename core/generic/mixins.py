@@ -86,5 +86,15 @@ class FormAndFormsetMixin(FormMixin):
 class FormAndModelFormsetMixin(FormAndFormsetMixin):
     formset_model = None
 
+    def get_formset_initial(self):
+        return self.formset_initial or self.formset_model.objects.none()
+
     def get_formset_class(self):
         return self.formset_class or modelformset_factory(model=self.formset_model, fields='__all__', can_delete=True)
+
+
+class NextMixin(ContextMixin):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next'] = self.request.META.get('HTTP_REFERER', self.request.GET.get('next'))
+        return context
