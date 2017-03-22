@@ -103,11 +103,10 @@ class Replay(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
             task.host_groups.add(*groups)
             task.vars.add(*vars)
 
-            models.Log.objects.create(
-                action=consts.ACTION_REPLAY,
-                item=consts.TASK,
-                message='Replay task',
-                object_id=task.id,
+            models.TaskLog.objects.create(
+                task=task,
+                status=consts.IN_PROGRESS,
+                message='Replay task'
             )
         else:
             messages.info(self.request, 'Not start duplicate task')

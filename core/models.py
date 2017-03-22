@@ -22,7 +22,7 @@ class TaskOperationsMixin:
     def get_playbook_name(self) -> str:
         return os.path.basename(self.playbook)
 
-    def get_single_hosts(self):
+    def get_hosts_without_groups(self) -> models.QuerySet:
         return self.get_actual_hosts().filter(groups__isnull=True)
 
 
@@ -86,18 +86,6 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
 
     def get_last_task(self):
         return self.tasks.last()
-
-    def get_duration(self) -> datetime.timedelta:
-        last_task = self.get_last_task()
-        delta = None
-        if last_task:
-            start_date = last_task.dc
-            last_log = last_task.logs.filter(status__in=consts.NOT_RUN_STATUSES).last()
-            finish_date = last_log.dc if last_log else datetime.datetime.now()
-            raw_delta = finish_date - start_date
-            days, minutes, seconds = raw_delta.days, raw_delta.seconds // 3600, raw_delta.seconds % 3600 / 60.0  # todo
-            delta = datetime.timedelta(days=days, minutes=minutes, seconds=seconds)
-        return delta
 
     def get_last_date(self) -> datetime.datetime:
         last_task = self.get_last_task()
@@ -171,7 +159,7 @@ class Task(TaskOperationsMixin, models.Model):
         return delta
 
     def stop(self):
-        tasks.stop(self)
+        tasks.TaskManager.stop_task(self)
 
 
 class TaskLog(models.Model):
@@ -188,23 +176,3 @@ class TaskLog(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.task.get_playbook_name(), self.dc)
-
-
-class Log(models.Model):
-    ITEM_CHOICES = (
-        (consts.TASK, consts.TASK),
-        (consts.TASK_TEMPLATE, consts.TASK_TEMPLATE),
-    )
-    ACTION_CHOICES = [(action, action) for action in consts.ACTIONS]
-    message = models.CharField(max_length=255)
-    item = models.CharField(max_length=100, choices=ITEM_CHOICES, blank=True)
-    action = models.CharField(max_length=100, choices=ACTION_CHOICES)
-    object_id = models.IntegerField(null=True)
-
-    class Meta:
-        permissions = (
-            ('view_log', 'View Log'),
-        )
-
-    def __str__(self):
-        return '%s %s "%s"' % (self.item, self.action, self.message)

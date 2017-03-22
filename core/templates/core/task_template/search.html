@@ -42,7 +42,7 @@
     <td>{{ object.get_actual_hosts.count }}</td>
     <td>{{ object.vars.count }}</td>
     <td>{{ object.get_playbook_name }}</td>
-    <td>{{ object.get_duration|default:'Not runing' }}</td>
+    <td>{{ object.tasks.last.get_duration|default:'Not runing' }}</td>
     <td>{{ object.get_last_date|date:"d-m-Y H:i:s"|default:'Not runing' }}</td>
     <td>
         <a href="{% url 'task_template_run' object.id %}" data-toggle="tooltip" data-placement="left" title="Run">
