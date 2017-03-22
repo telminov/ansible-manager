@@ -18,7 +18,7 @@
     <th></th>
 {% endblock table_heads %}
 
-{% block table_cols %}
+{% block table_row %}
     <td>
         {% if object.template %}
             <a href="{% url 'task_template_update' object.template.id %}">{{ object.template.name }}</a>
@@ -43,4 +43,4 @@
             </a>
         {% endif %}
     </td>
-{% endblock table_cols %}
+{% endblock table_row %}

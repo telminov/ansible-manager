@@ -38,24 +38,25 @@
 
   this.getLogs = function(last_id) {
     var url;
-    if (task_running) {
-      url = GET_LOGS_URL;
-      if (!last_id && last_log_id) {
-        last_id = last_log_id;
-      }
-      if (last_id) {
-        url = url + "?last_log_id=" + last_id;
-      }
-      return $.get(url, function(data) {
-        if (data.length > 0) {
-          last_id = data[data.length - 1].id;
-          setLogs(data);
-        }
-        return setTimeout((function() {
-          return getLogs(last_id);
-        }), 1000);
-      });
+    if (!task_running) {
+      return;
     }
+    url = GET_LOGS_URL;
+    if (!last_id && last_log_id) {
+      last_id = last_log_id;
+    }
+    if (last_id) {
+      url = url + "?last_log_id=" + last_id;
+    }
+    return $.get(url, function(data) {
+      if (data.length > 0) {
+        last_id = data[data.length - 1].id;
+        setLogs(data);
+      }
+      return setTimeout((function() {
+        return getLogs(last_id);
+      }), 1000);
+    });
   };
 
   getLogs();

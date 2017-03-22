@@ -13,8 +13,8 @@
     <th>Variables</th>
 {% endblock table_heads %}
 
-{% block table_cols %}
+{% block table_row %}
     <td><a href="{% url 'host_group_update' object.id %}">{{ object.name}}</a></td>
     <td>{{ object.hosts.count }}</td>
     <td>{{ object.vars.count }}</td>
-{% endblock table_cols %}
+{% endblock table_row %}
