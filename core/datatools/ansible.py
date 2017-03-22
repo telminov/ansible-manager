@@ -4,7 +4,7 @@ import tempfile
 from django.template.loader import render_to_string
 
 
-def make_command(item, splited=False):
+def make_command(item, splited=False) -> str:
     inventory_file_path = create_inventory(item)
 
     command = ['ansible-playbook', '-i', inventory_file_path, item.playbook]
@@ -19,7 +19,6 @@ def create_inventory(item) -> str:
     with open(file_path, 'w') as file:
         content = render_to_string('core/ansible/inventory', {'object': item})
         file.write(content)
-
     return file_path
 
 
