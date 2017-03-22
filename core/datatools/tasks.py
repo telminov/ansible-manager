@@ -5,8 +5,6 @@ from time import sleep
 from multiprocessing import Process
 from subprocess import PIPE, Popen
 
-import shutil
-
 from core import consts
 from core import models
 
@@ -56,8 +54,6 @@ class TaskManager:
         connection.connection = None
 
         task = models.Task.objects.get(id=task_id)
-        task.status = consts.IN_PROGRESS
-        task.save()
 
         models.TaskLog.objects.create(
             task=task,
@@ -79,7 +75,7 @@ class TaskManager:
                         output=output
                     )
 
-            shutil.rmtree(inventory_file)
+            os.remove(inventory_file)
             code = proc.returncode
             if code == 0:
                 task.status = consts.COMPLETED
@@ -103,7 +99,7 @@ class TaskManager:
         except Exception as e:
             models.TaskLog.objects.create(
                 task=task,
-                messgae='Progress error "%s"' % e,
+                message='Progress error "%s"' % e,
                 status=consts.FAIL
             )
 
@@ -142,6 +138,7 @@ class TaskManager:
         )
 
         task.pid = pid
+        task.status = consts.IN_PROGRESS
         task.save()
 
     @staticmethod

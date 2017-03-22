@@ -23,7 +23,7 @@ class TaskOperationsMixin:
         return os.path.basename(self.playbook)
 
     def get_hosts_without_groups(self) -> models.QuerySet:
-        return self.get_actual_hosts().filter(groups__isnull=True)
+        return self.get_actual_hosts().exclude(groups__in=self.host_groups.all())
 
 
 class Variable(models.Model):
