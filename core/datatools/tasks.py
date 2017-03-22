@@ -1,5 +1,6 @@
 import os
 import signal
+import traceback
 from time import sleep
 
 from multiprocessing import Process
@@ -61,9 +62,9 @@ class TaskManager:
             message='Run with pid %s in new process' % task.pid,
         )
 
+        command = task.get_command(splited=True)
+        inventory_file_path = command[2]
         try:
-            command = task.get_command(splited=True)
-            inventory_file = command[2]
             proc = Popen(command, stdout=PIPE, stderr=PIPE)
             while proc.poll() is None:
                 output = proc.stdout.readline()
@@ -75,9 +76,15 @@ class TaskManager:
                         output=output
                     )
 
-            os.remove(inventory_file)
             code = proc.returncode
             if code == 0:
+                output = proc.stdout.readline()
+                if output:
+                    models.TaskLog.objects.create(
+                        task=task,
+                        status=consts.IN_PROGRESS,
+                        output=output
+                    )
                 task.status = consts.COMPLETED
                 task.save()
                 models.TaskLog.objects.create(
@@ -97,11 +104,15 @@ class TaskManager:
                 )
 
         except Exception as e:
+            traceback_message = traceback.format_exc()
             models.TaskLog.objects.create(
                 task=task,
+                output=traceback_message,
                 message='Progress error "%s"' % e,
                 status=consts.FAIL
             )
+        finally:
+            os.remove(inventory_file_path)
 
     @staticmethod
     def stop_task(task):
@@ -116,8 +127,10 @@ class TaskManager:
                     message='Task stopped'
                 )
             except Exception as e:
+                traceback_message = traceback.format_exc()
                 models.TaskLog.objects.create(
                     task=task,
+                    output=traceback_message,
                     messgae='Stop error "%s"' % e,
                     status=consts.FAIL
                 )
