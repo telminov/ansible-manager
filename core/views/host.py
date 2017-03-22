@@ -13,7 +13,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/host/search.html'
     form_class = core.forms.host.Search
     paginate_by = 20
-    title = 'Search hosts'
+    title = 'Hosts'
     model = models.Host
     permission_required = 'core.view_host'
 
@@ -48,7 +48,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     formset_model = models.Variable
     permission_required = 'core.add_host'
     success_url = reverse_lazy('host_search')
-    title_create = 'Create Host'
+    title_create = 'Create'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -65,7 +65,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     def get_breadcrumbs(self):
         return (
             ('Home', reverse('index')),
-            ('Search hosts', reverse('host_search')),
+            (Search.title, reverse('host_search')),
             (self.get_title(), '')
         )
 
@@ -91,7 +91,7 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
         obj = self.get_object()
         return (
             ('Home', reverse('index')),
-            ('Search hosts', reverse('host_search')),
+            (Search.title, reverse('host_search')),
             (str(obj), reverse('host_update', kwargs={'pk': obj.id})),
             ('Delete', '')
         )

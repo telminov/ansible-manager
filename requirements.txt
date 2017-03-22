@@ -1,3 +1,4 @@
 django==1.10.6
 django-bootstrap3==8.2.1
 sw-django-utils==0.0.35
+djangorestframework==3.6.2

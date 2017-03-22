@@ -16,7 +16,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task/search.html'
     form_class = core.forms.task.Search
     paginate_by = 20
-    title = 'Search tasks'
+    title = 'Tasks'
     model = models.Task
     permission_required = 'core.view_task'
 
@@ -50,12 +50,12 @@ class Create(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, vi
     formset_model = models.Variable
     permission_required = 'core.add_task'
     success_url = reverse_lazy('task_search')
-    title_create = 'Create Task'
+    title_create = 'Create'
 
     def get_breadcrumbs(self):
         return (
             ('Home', reverse('index')),
-            ('Search tasks', reverse('task_search')),
+            (Search.title, reverse('task_search')),
             (self.get_title(), '')
         )
 
@@ -126,7 +126,7 @@ class Log(mixins.PermissionRequiredMixin, views.DetailView):
     def get_breadcrumbs(self):
         return (
             ('Home', reverse('index')),
-            ('Search tasks', reverse('task_search')),
+            (Search.title, reverse('task_search')),
             (self.get_title(), '')
         )
 log = Log.as_view()

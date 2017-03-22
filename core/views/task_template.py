@@ -16,7 +16,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task_template/search.html'
     form_class = core.forms.task_template.Search
     paginate_by = 20
-    title = 'Search task templates'
+    title = 'Task templates'
     model = models.TaskTemplate
     permission_required = 'core.view_task_template'
 
@@ -53,7 +53,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     formset_model = models.Variable
     permission_required = 'core.add_task_template'
     success_url = reverse_lazy('task_template_search')
-    title_create = 'Create Task Template'
+    title_create = 'Create'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -70,7 +70,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     def get_breadcrumbs(self):
         return (
             ('Home', reverse('index')),
-            ('Search task templates', reverse('task_template_search')),
+            (Search.title, reverse('task_template_search')),
             (self.get_title(), '')
         )
 
@@ -96,7 +96,7 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
         obj = self.get_object()
         return (
             ('Home', reverse('index')),
-            ('Search task templates', reverse('task_template_search')),
+            (Search.title, reverse('task_template_search')),
             (str(obj), reverse('task_template_update', kwargs={'pk': obj.id})),
             ('Delete', '')
         )

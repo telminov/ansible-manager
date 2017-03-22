@@ -3,3 +3,4 @@ project/local_settings.py
 /.idea/
 *.pyc
 node_modules
+venv/

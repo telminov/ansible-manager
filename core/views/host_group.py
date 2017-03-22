@@ -13,7 +13,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/host_group/search.html'
     form_class = core.forms.host_group.Search
     paginate_by = 20
-    title = 'Search host groups'
+    title = 'Host groups'
     model = models.HostGroup
     permission_required = 'core.view_host_group'
 
@@ -41,7 +41,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     formset_model = models.Variable
     permission_required = 'core.add_host_group'
     success_url = reverse_lazy('host_group_search')
-    title_create = 'Create Host Group'
+    title_create = 'Create'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -58,7 +58,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     def get_breadcrumbs(self):
         return (
             ('Home', reverse('index')),
-            ('Search host groups', reverse('host_group_search')),
+            (Search.title, reverse('host_group_search')),
             (self.get_title(), '')
         )
 
