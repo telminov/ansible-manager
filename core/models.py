@@ -94,6 +94,10 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         task.hosts.add(*self.hosts.all())
         task.host_groups.add(*self.host_groups.all())
         task = Task.objects.get(id=task.id)
+        task.logs.create(
+            status=consts.WAIT,
+            message='Task created by user %s' % user
+        )
         return task
 
 

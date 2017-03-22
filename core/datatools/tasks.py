@@ -154,7 +154,7 @@ class TaskManager:
         models.TaskLog.objects.create(
             task=task,
             status=consts.IN_PROGRESS,
-            message='Start for pid %s' % pid,
+            message='Start task with pid %s' % pid,
         )
 
         task.pid = pid

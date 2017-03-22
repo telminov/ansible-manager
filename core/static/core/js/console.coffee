@@ -19,24 +19,26 @@ setLogs = (logs) ->
       $('#replay').show()
 
 @getLogs = (last_id) ->
-  if task_running
-    url = GET_LOGS_URL
+  if not task_running
+    return
 
-    if not last_id and last_log_id
-      last_id = last_log_id
+  url = GET_LOGS_URL
 
-    if last_id
-      url = "#{url}?last_log_id=#{last_id}"
+  if not last_id and last_log_id
+    last_id = last_log_id
 
-    $.get(url, (data) ->
-      if data.length > 0
-        last_id = data[data.length-1].id
-        setLogs(data)
+  if last_id
+    url = "#{url}?last_log_id=#{last_id}"
 
-      setTimeout ( ->
-        getLogs(last_id)
-        ), 1000
-    )
+  $.get(url, (data) ->
+    if data.length > 0
+      last_id = data[data.length-1].id
+      setLogs(data)
+
+    setTimeout ( ->
+      getLogs(last_id)
+      ), 1000
+  )
 
 getLogs()
 
