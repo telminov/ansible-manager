@@ -46,7 +46,7 @@ class TaskManager:
     def start_wait_tasks(self):
         tasks = models.Task.objects.filter(status=consts.WAIT)
         for task in tasks:
-            self.run_in_new_process(task)
+            self.run_task_process(task)
 
     @staticmethod
     def run_task(task_id):
@@ -104,6 +104,8 @@ class TaskManager:
                 )
 
         except Exception as e:
+            task.status = consts.FAIL
+            task.save()
             traceback_message = traceback.format_exc()
             models.TaskLog.objects.create(
                 task=task,
@@ -112,6 +114,8 @@ class TaskManager:
                 status=consts.FAIL
             )
         finally:
+            if os.path.exists("/proc/%s" % task.pid):
+                os.kill(task.pid, signal.SIGTERM)
             os.remove(inventory_file_path)
 
     @staticmethod
@@ -135,7 +139,7 @@ class TaskManager:
                     status=consts.FAIL
                 )
 
-    def run_in_new_process(self, task):
+    def run_task_process(self, task):
         proc = Process(target=self.run_task, args=(task.id,))
         proc.start()
         pid = proc.pid

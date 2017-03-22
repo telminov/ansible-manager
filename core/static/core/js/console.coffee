@@ -9,7 +9,7 @@ scrollConsole()
 
 setLogs = (logs) ->
   for log in logs
-    message = log.output or log.message
+    message = formatOutput(log.output or log.message)
     $('.logs').append("<p class='line log-#{log.status}'>#{message}</p>")
     scrollConsole()
 
@@ -32,10 +32,20 @@ setLogs = (logs) ->
       if data.length > 0
         last_id = data[data.length-1].id
         setLogs(data)
-#
+
       setTimeout ( ->
         getLogs(last_id)
         ), 1000
     )
 
 getLogs()
+
+
+formatOutput = (message) ->
+  return message.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;')
+
+$('.line').each (i, element) ->
+  e = $(element)
+  e.html(formatOutput(e.html()))
+
+

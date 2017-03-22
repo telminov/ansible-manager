@@ -5,7 +5,7 @@
     <div class="console">
         <div class="logs">
             {% for log in object.logs.all %}
-                <p class="line log-{{ log.status }}">{{ log.output|default:log.message }}</p>
+                <p class="line log-{{ log.status }}">{{ log.output|default:log.message|safe }}</p>
             {% endfor %}
         </div>
     </div>
