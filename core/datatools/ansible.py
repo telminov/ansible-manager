@@ -2,12 +2,13 @@ import os
 import tempfile
 
 from django.template.loader import render_to_string
+from django.conf import settings
 
 
 def make_command(item, splited=False) -> str:
     inventory_file_path = create_inventory(item)
 
-    command = ['ansible-playbook', '-i', inventory_file_path, item.playbook]
+    command = [settings.ANSIBLE_PLAYBOOK_BIN_PATH, '-i', inventory_file_path, item.playbook]
     if not splited:
         command = ' '.join(command)
     return command

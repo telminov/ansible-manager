@@ -115,3 +115,7 @@ body{
 .search-from .buttons-row {
     margin-top: 5px;
 }
+
+.label-link:hover {
+    text-decoration: none
+}

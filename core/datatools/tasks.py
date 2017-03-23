@@ -56,14 +56,18 @@ class TaskManager:
 
         task = models.Task.objects.get(id=task_id)
 
-        models.TaskLog.objects.create(
-            task=task,
+        task.logs.create(
             status=consts.IN_PROGRESS,
             message='Run with pid %s in new process' % task.pid,
         )
 
         command = task.get_command(splited=True)
         inventory_file_path = command[2]
+        task.logs.create(
+            status=consts.IN_PROGRESS,
+            message='Command: %s' % ' '.join(command),
+        )
+
         try:
             proc = Popen(command, stdout=PIPE, stderr=PIPE)
             while proc.poll() is None:
@@ -114,9 +118,9 @@ class TaskManager:
                 status=consts.FAIL
             )
         finally:
+            os.remove(inventory_file_path)
             if os.path.exists("/proc/%s" % task.pid):
                 os.kill(task.pid, signal.SIGTERM)
-            os.remove(inventory_file_path)
 
     @staticmethod
     def stop_task(task):
