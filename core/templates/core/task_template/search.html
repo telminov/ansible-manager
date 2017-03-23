@@ -19,7 +19,7 @@
     <th></th>
 {% endblock table_heads %}
 
-{% block table_cols %}
+{% block table_row %}
     {% with object.tasks.last as last_task %}
         <td><a href="{% url 'task_template_update' object.id %}">{{ object.name }}</a></td>
         <td>{{ object.description|default:'-'|truncatechars:20 }}</td>
@@ -37,4 +37,4 @@
             {% endif %}
         </td>
     {% endwith %}
-{% endblock table_cols %}
+{% endblock table_row %}

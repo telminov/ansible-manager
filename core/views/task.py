@@ -72,6 +72,16 @@ class Stop(mixins.PermissionRequiredMixin, views.DetailView):
     template_name = 'core/task/stop.html'
     permission_required = 'core.stop_task'
     model = models.Task
+    title = 'Stop'
+
+    def get_breadcrumbs(self):
+        task = self.get_object()
+        return (
+            ('Home', reverse('index')),
+            (Search.title, reverse('task_search')),
+            (str(task), reverse('task_log', kwargs={'pk': task.id})),
+            (self.get_title(), '')
+        )
 
     def post(self, *args, **kwargs):
         task = self.get_object()
