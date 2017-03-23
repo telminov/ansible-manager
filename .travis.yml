@@ -6,3 +6,5 @@ install:
   - pip install coveralls
 script:
   - coverage run --source=core manage.py test core
+after_success:
+  - coveralls
