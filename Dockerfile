@@ -1,12 +1,13 @@
 # docker build -t telminov/ansible-manager .
 FROM ubuntu:16.04
-MAINTAINER telminov <telminov@soft-way.biz>
+LABEL maintainer "telminov@soft-way.biz"
 
 
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt update && \
+    apt install -y \
                     supervisor \
-                    python3-pip
+                    python3-pip npm
+RUN ln -s /usr/bin/nodejs /usr/bin/node
 
 RUN mkdir /var/log/ansible-manager/
 
@@ -15,6 +16,7 @@ WORKDIR /opt/ansible-manager
 
 
 RUN pip3 install -r requirements.txt
+RUN npm install
 RUN cp project/local_settings.sample.py project/local_settings.py
 
 COPY supervisor/prod.conf /etc/supervisor/conf.d/ansible-manager.conf
