@@ -56,8 +56,8 @@
                         {% for object in object_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                {% block table_cols %}
-                                {% endblock table_cols %}
+                                {% block table_row %}
+                                {% endblock table_row %}
                             </tr>
                         {% endfor %}
                     {% endblock tbody %}

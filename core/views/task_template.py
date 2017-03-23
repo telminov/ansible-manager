@@ -82,7 +82,8 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
 
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
-        c['last_tasks'] = self.get_object().tasks.order_by('-id')[:10]
+        if self.get_object():
+            c['last_tasks'] = self.get_object().tasks.order_by('-id')[:10]
         return c
 
 edit = Edit.as_view()

@@ -94,6 +94,10 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         task.hosts.add(*self.hosts.all())
         task.host_groups.add(*self.host_groups.all())
         task = Task.objects.get(id=task.id)
+        task.logs.create(
+            status=consts.WAIT,
+            message='Task created by user %s' % user
+        )
         return task
 
 
@@ -131,10 +135,8 @@ class Task(TaskOperationsMixin, models.Model):
         logs = self.logs.filter(status__in=consts.NOT_RUN_STATUSES)
         delta = None
         if logs.exists():
-            finish_date = logs.last().dc
-            raw_delta = finish_date - start_date
-            days, minutes, seconds = raw_delta.days, raw_delta.seconds // 3600, raw_delta.seconds % 3600 / 60.0  # todo
-            delta = datetime.timedelta(days=days, minutes=minutes, seconds=seconds)
+            finish_date = self.logs.last().dc
+            delta = finish_date - start_date
         return delta
 
     def stop(self):

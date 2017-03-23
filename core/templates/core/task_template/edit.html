@@ -107,6 +107,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Time</th>
+                                        <th>Duration</th>
                                         <th>Status</th>
                                         <th>Log</th>
                                     </tr>
@@ -116,6 +117,7 @@
                                     <tr>
                                         <td>{{ task.id }}</td>
                                         <td>{{ task.dc|date:"d-m-Y H:i:s" }}</td>
+                                        <td>{{ task.get_duration|default:'Unknown' }}</td>
                                         <td>{% include 'core/task/status_label.html' %}</td>
                                         <td><a href="{% url 'task_log' task.id %}" class="btn btn-default" data-toggle="tooltip"
                                             data-placement="left" title="Show log for this task">

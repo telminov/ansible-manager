@@ -4,6 +4,9 @@
 {% block container %}
     <form action="" method="POST">
         {% csrf_token %}
+        {% bootstrap_form_errors form %}
+        {% bootstrap_formset_errors formset %}
+
         <div class="row">
             <div class="col-sm-6">
                 {% if object %}
@@ -20,21 +23,17 @@
                 </button>
             </div>
         </div>
+
         <br>
-        {% bootstrap_form_errors form %}
-        {% bootstrap_formset_errors formset %}
-        <div>
-            {% bootstrap_field form.name %}
+        <div class="row">
+            <div class="col-sm-12">
+                {% bootstrap_field form.name layout='horizontal' %}
+            </div>
         </div>
 
+        <br>
         {% include 'core/variables/includes/variables_formset.html' %}
 
-        <div class="text-right">
-            <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
-                <i class="glyphicon glyphicon-floppy-save"></i>
-                {{ object|yesno:'Update, Create' }}
-            </button>
-        </div>
     </form>
 {% endblock container %}
 

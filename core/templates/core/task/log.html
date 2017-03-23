@@ -4,9 +4,6 @@
 {% block container %}
     <div class="console">
         <div class="logs">
-            {% for log in object.logs.all %}
-                <p class="line log-{{ log.status }}">{{ log.output|default:log.message|safe }}</p>
-            {% endfor %}
         </div>
     </div>
     <br>
@@ -14,6 +11,11 @@
 
     <div class="row">
         <div class="col-sm-6">
+            {% if object.template %}
+                <a class="btn btn-default btn-block btn-lg" href="{% url 'task_template_update' object.template.id %}">
+                    <i class="fa fa-arrow-left"></i> Go to template
+                </a>
+            {% endif %}
         </div>
 
         <div class="col-sm-6">
@@ -22,7 +24,7 @@
                     <i class="fa fa-stop"></i> Stop
                 </a>
             {% else %}
-                <button class="btn btn-danger btn-block btn-lg" disabled="disabled">
+                <button class="btn btn-danger btn-block btn-lg" id="stop" disabled="disabled">
                     <i class="fa fa-stop"></i> Stop
                 </button>
             {% endif %}

@@ -90,18 +90,22 @@ body{
     margin: 0;
 }
 
+.log-wait{
+    color: gray;
+}
+
 .log-completed{
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: green;
 }
 
 .log-fail{
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: red;
 }
 
 .log-stopped{
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: yellow;
 }
 
@@ -110,4 +114,8 @@ body{
 }
 .search-from .buttons-row {
     margin-top: 5px;
+}
+
+.label-link:hover {
+    text-decoration: none
 }

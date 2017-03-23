@@ -10,13 +10,13 @@
 {% block table_heads %}
     <th>Name</th>
     <th>Address</th>
-    <th>Group count</th>
-    <th>Variables count</th>
+    <th>Group</th>
+    <th>Variables</th>
 {% endblock table_heads %}
 
-{% block table_cols %}
+{% block table_row %}
     <td>{{ object.name }}</td>
     <td><a href="{% url 'host_update' object.id %}">{{ object.address}}</a></td>
     <td>{{ object.groups.count }}</td>
     <td>{{ object.vars.count }}</td>
-{% endblock table_cols %}
+{% endblock table_row %}
