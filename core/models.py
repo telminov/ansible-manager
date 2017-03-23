@@ -135,10 +135,8 @@ class Task(TaskOperationsMixin, models.Model):
         logs = self.logs.filter(status__in=consts.NOT_RUN_STATUSES)
         delta = None
         if logs.exists():
-            finish_date = logs.last().dc
-            raw_delta = finish_date - start_date
-            days, minutes, seconds = raw_delta.days, raw_delta.seconds // 3600, raw_delta.seconds % 3600 / 60.0  # todo
-            delta = datetime.timedelta(days=days, minutes=minutes, seconds=seconds)
+            finish_date = self.logs.last().dc
+            delta = finish_date - start_date
         return delta
 
     def stop(self):

@@ -30,7 +30,7 @@
           renderMessage(log.output, log.status);
         }
       }
-      if ((ref = log.status) === 'fail' || ref === 'stopped' || ref === 'completed') {
+      if ((ref = log.task_status) === 'fail' || ref === 'stopped' || ref === 'completed') {
         this.task_running = false;
         $('#stop').hide();
         results.push($('#replay').show());

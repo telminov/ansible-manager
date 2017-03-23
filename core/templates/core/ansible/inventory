@@ -3,17 +3,21 @@
 {% endfor %}
 
 {% for group in object.host_groups.all %}
+{% if group.hosts.all %}
 [{{ group.name }}]
 {% for host in group.hosts.all %}
 {{ host.address }}
 {% endfor %}
+{% endif %}
 {% endfor %}
 
 {% for group in object.host_groups.all %}
+{% if group.vars.all %}
 [{{ group.name }}:vars]
 {% for var in group.vars.all %}
 {{ var.name }}={{ var.value }}
 {% endfor %}
+{% endif %}
 {% endfor %}
 
 [all:vars]

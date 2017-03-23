@@ -16,7 +16,7 @@ setLogs = (logs) ->
       if log.output
         renderMessage(log.output, log.status)
 
-    if log.status in ['fail', 'stopped', 'completed']
+    if log.task_status in ['fail', 'stopped', 'completed']
       @task_running = false
       $('#stop').hide()
       $('#replay').show()

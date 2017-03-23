@@ -6,6 +6,8 @@ from multiprocessing import Process
 import asyncio
 from asyncio.subprocess import PIPE, create_subprocess_shell
 
+from django.conf import settings
+
 from core import consts
 from core import models
 
@@ -62,10 +64,16 @@ class TaskManager:
             message='Command: %s' % shell_command,
         )
 
+        cwd = settings.ANSIBLE_WORK_DIR
+        task.logs.create(
+            status=consts.IN_PROGRESS,
+            message='Working directory: %s' % cwd,
+        )
+
         try:
             loop = asyncio.get_event_loop()
 
-            create_proc = create_subprocess_shell(shell_command, stdout=PIPE, stderr=PIPE)
+            create_proc = create_subprocess_shell(shell_command, stdout=PIPE, stderr=PIPE, cwd=cwd)
             proc = loop.run_until_complete(create_proc)
 
             tasks = [
@@ -83,17 +91,13 @@ class TaskManager:
                 )
                 task.status = consts.COMPLETED
                 task.save()
-                task.logs.create(
-                    status=consts.COMPLETED,
-                    message='Task complete'
-                )
             else:
-                task.status = consts.FAIL
-                task.save()
                 task.logs.create(
                     status=consts.FAIL,
                     message='Failed with status code %s' % code
                 )
+                task.status = consts.FAIL
+                task.save()
 
         except Exception as e:
             task.status = consts.FAIL
