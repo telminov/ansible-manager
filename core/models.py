@@ -127,8 +127,8 @@ class Task(TaskOperationsMixin, models.Model):
             name = self.template.name
         return "%s %s" % (name, self.dc.isoformat(sep=' ')[:19])
 
-    def get_command(self, splited=False):
-        return ansible.make_command(self, splited)
+    def get_ansible_command(self):
+        return ansible.make_command(self)
 
     def get_duration(self) -> datetime.timedelta:
         start_date = self.dc

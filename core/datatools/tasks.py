@@ -10,6 +10,7 @@ from django.conf import settings
 
 from core import consts
 from core import models
+import core.datatools.ansible
 
 
 class TaskManager:
@@ -56,9 +57,8 @@ class TaskManager:
 
         task = models.Task.objects.get(id=task_id)
 
-        command = task.get_command(splited=True)
-        shell_command = ' '.join(command)
-        inventory_file_path = command[2]
+        shell_command = task.get_ansible_command()
+        inventory_file_path = core.datatools.ansible.get_inventory_file_path(shell_command)
         task.logs.create(
             status=consts.IN_PROGRESS,
             message='Command: %s' % shell_command,
