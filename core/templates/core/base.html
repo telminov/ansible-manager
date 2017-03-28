@@ -74,7 +74,7 @@
 </nav>
 
 {% block content %}
-    <div class="container white-container">
+    <div class="custom-container white-container">
         {% for message in messages %}
             <div class="alert alert-{% if message.tags == 'warning' %}warning{% elif message.tags == 'error' %}danger{% else %}info{% endif %}">
                 {{ message }}
