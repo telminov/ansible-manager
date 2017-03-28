@@ -25,7 +25,9 @@ class Create(forms.ModelForm):
     playbook = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                    widget=forms.Select(attrs={'class': 'need-select2'}))
 
+    verbose = forms.ChoiceField(choices=consts.VERBOSE_CHOICES)
+
     class Meta:
         model = models.Task
-        fields = ('template', 'hosts', 'playbook', 'host_groups')
+        fields = ('template', 'hosts', 'playbook', 'host_groups', 'verbose')
 

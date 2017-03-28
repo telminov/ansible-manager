@@ -7,8 +7,9 @@
         {% bootstrap_form_errors form %}
         {% bootstrap_formset_errors formset %}
         <div class="row">
-            <div class="col-sm-6">{% bootstrap_field form.template %}</div>
-            <div class="col-sm-6">{% bootstrap_field form.playbook %}</div>
+            <div class="col-sm-4">{% bootstrap_field form.template %}</div>
+            <div class="col-sm-5">{% bootstrap_field form.playbook %}</div>
+            <div class="col-sm-3">{% bootstrap_field form.verbose %}</div>
         </div>
 
         {% bootstrap_field form.hosts %}

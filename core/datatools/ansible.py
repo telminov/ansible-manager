@@ -16,7 +16,7 @@ def make_command(task) -> str:
 
     inventory_file_path = create_inventory(task)
 
-    command = [settings.ANSIBLE_PLAYBOOK_BIN_PATH, '-i', inventory_file_path, settings.ANSIBLE_VERBOSE, task.playbook]
+    command = [settings.ANSIBLE_PLAYBOOK_BIN_PATH, '-i', inventory_file_path, '-%s' % task.verbose, task.playbook]
 
     if settings.ANSIBLE_USER:
         command.extend(['-u', settings.ANSIBLE_USER])

@@ -75,6 +75,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     hosts = models.ManyToManyField(Host, related_name='task_templates')
     host_groups = models.ManyToManyField(HostGroup, related_name='task_templates')
     vars = models.ManyToManyField(Variable, related_name='task_templates')
+    verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
 
     class Meta:
         permissions = (
@@ -110,6 +111,7 @@ class Task(TaskOperationsMixin, models.Model):
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
     pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks')
+    verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
 
     dc = models.DateTimeField(auto_now_add=True)
 
