@@ -1,0 +1,16 @@
+{% extends 'core/base_search.html' %}
+
+{% block left_buttons %}
+    <a href="{% url 'ansible_user_create' %}" class="btn btn-success">
+        <i class="glyphicon glyphicon-plus"></i>
+        Add
+    </a>
+{% endblock left_buttons %}
+
+{% block table_heads %}
+    <th>Name</th>
+{% endblock table_heads %}
+
+{% block table_row %}
+    <td><a href="{% url 'ansible_user_update' object.id %}">{{ object.name}}</a></td>
+{% endblock table_row %}

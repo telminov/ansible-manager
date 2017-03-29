@@ -68,6 +68,18 @@ class Host(models.Model):
         return '%s (%s)' % (self.name, self.address) if self.name else self.address
 
 
+class AnsibleUser(models.Model):
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        permissions = (
+            ('view_ansible_user', 'View Ansible User'),
+        )
+
+    def __str__(self):
+        return self.name
+
+
 class TaskTemplate(TaskOperationsMixin, models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -75,6 +87,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     hosts = models.ManyToManyField(Host, related_name='task_templates')
     host_groups = models.ManyToManyField(HostGroup, related_name='task_templates')
     vars = models.ManyToManyField(Variable, related_name='task_templates')
+    ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates')
 
     class Meta:
         permissions = (
@@ -110,6 +123,7 @@ class Task(TaskOperationsMixin, models.Model):
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
     pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks')
+    ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks')
 
     dc = models.DateTimeField(auto_now_add=True)
 

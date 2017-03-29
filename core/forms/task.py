@@ -25,7 +25,14 @@ class Create(forms.ModelForm):
     playbook = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                    widget=forms.Select(attrs={'class': 'need-select2'}))
 
+    ansible_user = forms.ModelChoiceField(queryset=models.AnsibleUser.objects.all(),
+                                          widget=forms.Select(attrs={'class': 'need-select2'}))
+
     class Meta:
         model = models.Task
-        fields = ('template', 'hosts', 'playbook', 'host_groups')
+        fields = ('template', 'hosts', 'playbook', 'host_groups', 'ansible_user')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
 
