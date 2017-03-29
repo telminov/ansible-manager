@@ -101,7 +101,8 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         task = Task.objects.create(
             template=self,
             playbook=self.playbook,
-            user=user
+            user=user,
+            ansible_user=self.ansible_user
         )
         task.vars.add(*self.vars.all())
         task.hosts.add(*self.hosts.all())

@@ -17,7 +17,7 @@ def make_command(task) -> str:
     inventory_file_path = create_inventory(task)
 
     command = [settings.ANSIBLE_PLAYBOOK_BIN_PATH, '-i', inventory_file_path, settings.ANSIBLE_VERBOSE, task.playbook,
-               '-u', task.ansible_user]
+               '-u', task.ansible_user.name]
     command = ' '.join(command)
     return command
 
