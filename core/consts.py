@@ -10,6 +10,7 @@ NOT_RUN_STATUSES = [COMPLETED, STOPPED, FAIL]
 RUN_STATUSES = [IN_PROGRESS, WAIT]
 
 VERBOSE_CHOICES = (
+    ('', 'silent'),
     ('v', 'standard'),
     ('vv', 'detail'),
     ('vvv', 'very detail'),
