@@ -26,6 +26,10 @@ body{
     background-color: #1c638c;
 }
 
+.custom-container{
+    margin: 0 50px;
+}
+
 .white-container{
     background-color: rgba(255, 255, 255, 0.89);
     padding: 10px;
