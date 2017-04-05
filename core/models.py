@@ -88,7 +88,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     host_groups = models.ManyToManyField(HostGroup, related_name='task_templates')
     vars = models.ManyToManyField(Variable, related_name='task_templates')
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='', blank=True)
-    ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates')
+    ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates', null=True)
 
     class Meta:
         permissions = (
@@ -126,7 +126,7 @@ class Task(TaskOperationsMixin, models.Model):
     pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks')
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
-    ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks')
+    ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks', null=True)
 
     dc = models.DateTimeField(auto_now_add=True)
 
