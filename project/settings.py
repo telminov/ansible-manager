@@ -141,7 +141,6 @@ LOGIN_EXEMPT_URLS = (
     r'/api/',
 )
 
-ANSIBLE_USER = 'ansible'
 ANSIBLE_WORK_DIR = '/home/user/ansible'
 ANSIBLE_PLAYBOOKS_PATH = ANSIBLE_WORK_DIR + '/playbooks'
 ANSIBLE_PLAYBOOK_BIN_PATH = '/usr/bin/ansible-playbook'

@@ -68,6 +68,18 @@ class Host(models.Model):
         return '%s (%s)' % (self.name, self.address) if self.name else self.address
 
 
+class AnsibleUser(models.Model):
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        permissions = (
+            ('view_ansible_user', 'View Ansible User'),
+        )
+
+    def __str__(self):
+        return self.name
+
+
 class TaskTemplate(TaskOperationsMixin, models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -75,7 +87,8 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     hosts = models.ManyToManyField(Host, related_name='task_templates')
     host_groups = models.ManyToManyField(HostGroup, related_name='task_templates')
     vars = models.ManyToManyField(Variable, related_name='task_templates')
-    verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
+    verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='', blank=True)
+    ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates')
 
     class Meta:
         permissions = (
@@ -89,7 +102,8 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         task = Task.objects.create(
             template=self,
             playbook=self.playbook,
-            user=user
+            user=user,
+            ansible_user=self.ansible_user,
         )
         task.vars.add(*self.vars.all())
         task.hosts.add(*self.hosts.all())
@@ -112,6 +126,7 @@ class Task(TaskOperationsMixin, models.Model):
     pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks')
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
+    ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks')
 
     dc = models.DateTimeField(auto_now_add=True)
 

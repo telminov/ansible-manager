@@ -27,7 +27,14 @@ class Create(forms.ModelForm):
 
     verbose = forms.ChoiceField(choices=consts.VERBOSE_CHOICES)
 
+    ansible_user = forms.ModelChoiceField(queryset=models.AnsibleUser.objects.all(),
+                                          widget=forms.Select(attrs={'class': 'need-select2'}))
+
     class Meta:
         model = models.Task
-        fields = ('template', 'hosts', 'playbook', 'host_groups', 'verbose')
+        fields = ('template', 'hosts', 'playbook', 'host_groups', 'ansible_user', 'verbose')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
 

@@ -16,10 +16,12 @@ def make_command(task) -> str:
 
     inventory_file_path = create_inventory(task)
 
-    command = [settings.ANSIBLE_PLAYBOOK_BIN_PATH, '-i', inventory_file_path, '-%s' % task.verbose, task.playbook]
+    verbose = ''
+    if task.verbose:
+        verbose = '-%s' % task.verbose
 
-    if settings.ANSIBLE_USER:
-        command.extend(['-u', settings.ANSIBLE_USER])
+    command = [settings.ANSIBLE_PLAYBOOK_BIN_PATH, '-i', inventory_file_path, '-u', task.ansible_user.name,
+               verbose, task.playbook]
 
     command = ' '.join(command)
     return command
