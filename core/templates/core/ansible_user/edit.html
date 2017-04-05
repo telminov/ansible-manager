@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form_errors form %}
+
+        <div class="row">
+            <div class="col-sm-6">
+                {% if object %}
+                    <a href="{% url 'ansible_user_delete' object.id %}" class="btn btn-danger">
+                        <i class="glyphicon glyphicon-trash"></i>
+                        Delete
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-sm-6 text-right">
+                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top">
+                    <i class="glyphicon glyphicon-floppy-save"></i>
+                    {{ object|yesno:'Update, Create' }}
+                </button>
+            </div>
+        </div>
+
+        <br>
+        <div class="row">
+            <div class="col-sm-12">
+                {% bootstrap_field form.name layout='horizontal' %}
+            </div>
+        </div>
+
+        <br>
+
+    </form>
+{% endblock container %}

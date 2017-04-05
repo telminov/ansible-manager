@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from core.views import general, host, host_group, task_template, task, rest
+from core.views import general, host, host_group, task_template, task, ansible_user, rest
 
 urlpatterns = [
     url(r'^$', general.index, name='index'),
@@ -26,6 +26,11 @@ urlpatterns = [
     url(r'^tasks/(?P<pk>\d+)/stop/$', task.stop, name='task_stop'),
     url(r'^tasks/(?P<pk>\d+)/replay/$', task.replay, name='task_replay'),
     url(r'^tasks/(?P<pk>\d+)/log/$', task.log, name='task_log'),
+
+    url(r'^ansible_users/$', ansible_user.search, name='ansible_user_search'),
+    url(r'^ansible_users/create/$', ansible_user.edit, name='ansible_user_create'),
+    url(r'^ansible_users/(?P<pk>\d+)/$', ansible_user.edit, name='ansible_user_update'),
+    url(r'^ansible_users/(?P<pk>\d+)/delete/$', ansible_user.delete, name='ansible_user_delete'),
 
     url(r'^api/task/(?P<task_id>\d+)/logs/$', rest.task_logs, name='rest_task_logs')
 ]
