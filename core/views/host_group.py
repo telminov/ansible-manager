@@ -46,7 +46,8 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['instance'] = self.get_object()
-        kwargs['initial'] = {'hosts':self.get_object().hosts.all()}
+        if self.get_object():
+            kwargs['initial'] = {'hosts': self.get_object().hosts.all()}
         return kwargs
 
     def get_formset_initial(self):
