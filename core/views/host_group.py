@@ -39,7 +39,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     form_class = core.forms.host_group.Edit
     model = models.HostGroup
     formset_model = models.Variable
-    permission_required = 'core.add_host_group'
+    permission_required = 'core.add_hostgroup'
     success_url = reverse_lazy('host_group_search')
     title_create = 'Create'
 
