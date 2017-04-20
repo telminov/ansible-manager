@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from core import models
-from core.datatools import ansible
+from core.datatools import ansible, tasks
 
 
 class Ansible(TestCase):
@@ -82,8 +82,19 @@ class Ansible(TestCase):
 class Tasks(TestCase):
 
     def setUp(self):
+        self.user = User.objects.create(
+            username='Serega',
+            password='passwd'
+        )
         models.Task.objects.create(
             playbook='/home/',
             status='in_progress',
+            user=self.user,
+            pid=99999999,
         )
 
+    def test_check_progress_tasks_not_pid(self):
+        task_manager = tasks.TaskManager()
+        task_manager.check_in_progress_tasks()
+
+        self.assertEqual(len(models.TaskLog.objects.filter(message='Task with pid 99999999 is not running')), 1)
