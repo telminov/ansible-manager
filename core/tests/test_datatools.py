@@ -65,7 +65,7 @@ class Ansible(TestCase):
     def test_create_inventory(self, tempfile_mock):
         test_path_tempfile = '/tmp/test'
         tempfile_mock.return_value = test_path_tempfile
-        os.mkdir('/tmp/test')
+        os.mkdir(test_path_tempfile)
 
         self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
                          '/tmp/test/inventory')
@@ -76,7 +76,7 @@ class Ansible(TestCase):
 
         self.assertEqual(inventory_file_content, must_be_inventory_file_content)
 
-        shutil.rmtree('/tmp/test')
+        shutil.rmtree(test_path_tempfile)
 
     def test_inventory_file_path(self):
         self.assertEqual(ansible.get_inventory_file_path('qwerty 12345 test some 55'), 'test')
