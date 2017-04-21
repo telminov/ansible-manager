@@ -43,11 +43,11 @@ class ModelHost(TestCase):
         )
 
     def test_str(self):
-        host_1 = models.Host.objects.get(name='qwer')
-        host_2 = models.Host.objects.get(address='192.168.44.74')
+        host_with_address = models.Host.objects.get(name='qwer')
+        host_without_address = models.Host.objects.get(address='192.168.44.74')
 
-        self.assertEqual(str(host_1), 'qwer (192.168.12.20)')
-        self.assertEqual(str(host_2), '192.168.44.74')
+        self.assertEqual(str(host_with_address), 'qwer (192.168.12.20)')
+        self.assertEqual(str(host_without_address), '192.168.44.74')
 
 
 class ModelAnsibleUser(TestCase):
@@ -119,11 +119,11 @@ class ModelTask(TestCase):
         )
 
     def test_str(self):
-        task_1 = models.Task.objects.get(playbook='/home/')
-        task_2 = models.Task.objects.get(playbook='/otherhome/image')
+        task_with_template_name = models.Task.objects.get(playbook='/home/')
+        task_without_template_name = models.Task.objects.get(playbook='/otherhome/image')
 
-        self.assertEqual(str(task_1), 'qwer %s' % task_1.dc.isoformat(sep=' ')[:19])
-        self.assertEqual(str(task_2), 'image %s' % task_2.dc.isoformat(sep=' ')[:19])
+        self.assertEqual(str(task_with_template_name), 'qwer %s' % task_with_template_name.dc.isoformat(sep=' ')[:19])
+        self.assertEqual(str(task_without_template_name), 'image %s' % task_without_template_name.dc.isoformat(sep=' ')[:19])
 
     def test_get_duration_date(self):
         models.TaskLog.objects.create(

@@ -55,28 +55,31 @@ class Ansible(TestCase):
 
     @mock.patch('core.datatools.ansible.create_inventory')
     def test_make_command(self, create_inventory_mock):
-        create_inventory_mock.return_value = '/tmp/test/inventory'
+        test_path_inventory = '/tmp/test/inventory'
+        create_inventory_mock.return_value = test_path_inventory
 
         self.assertEqual(models.Task.objects.get(playbook='/home/').get_ansible_command(),
                          '/usr/bin/ansible-playbook -i /tmp/test/inventory -u Serega -v /home/')
 
     @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
     def test_create_inventory(self, tempfile_mock):
-
-        tempfile_mock.return_value = '/tmp/test'
+        test_path_tempfile = '/tmp/test'
+        tempfile_mock.return_value = test_path_tempfile
         os.mkdir('/tmp/test')
 
         self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
                          '/tmp/test/inventory')
-        self.assertEqual(
-            ' '.join(''.join(open('/tmp/test/inventory', 'r').read().split('\n')).split(' ')),
-            '192.168.128.20 Test name=Test var [Test host_group]192.168.59.44[Test host_group:'
-            'vars]Test name=Test var[all:vars]Test name=Test varTest name=Test var')
+        inventory_file_content = ' '.join(''.join(open('/tmp/test/inventory', 'r').read().split('\n')).split(' '))
+        must_be_inventory_file_content = '192.168.128.20 Test name=Test var [Test host_group]192.168.59.44[Test ' \
+                                         'host_group:vars]Test name=Test var' \
+                                         '[all:vars]Test name=Test varTest name=Test var'
+
+        self.assertEqual(inventory_file_content, must_be_inventory_file_content)
 
         shutil.rmtree('/tmp/test')
 
     def test_inventory_file_path(self):
-        self.assertEqual(ansible.get_inventory_file_path('qwerty 12345 test test 55'), 'test')
+        self.assertEqual(ansible.get_inventory_file_path('qwerty 12345 test some 55'), 'test')
 
 
 class Tasks(TestCase):

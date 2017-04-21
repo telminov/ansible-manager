@@ -18,8 +18,10 @@ class IndexView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('index'))
+        redirect_url = reverse('login') + '?next=/'
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -51,8 +53,10 @@ class PermissionDeniedView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('permission_denied'))
+        redirect_url = reverse('login') + '?next=' + reverse('permission_denied')
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -80,15 +84,19 @@ class SearchHostView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('host_search'))
+        redirect_url = reverse('login') + '?next=' + reverse('host_search')
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_permissions(self):
         self.user.user_permissions.remove(Permission.objects.get(codename='view_host'))
 
+        self.client.force_login(user=self.user)
         response = self.client.get(reverse('host_search'))
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -144,15 +152,19 @@ class EditHostView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('host_create'))
+        redirect_url = reverse('login') + '?next=' + reverse('host_create')
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_permissions(self):
         self.user.user_permissions.remove(Permission.objects.get(codename='add_host'))
 
+        self.client.force_login(user=self.user)
         response = self.client.get(reverse('host_create'))
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -226,15 +238,19 @@ class DeleteHostView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('host_delete', args=['1']))
+        redirect_url = reverse('login') + '?next=' + reverse('host_delete', args=['1'])
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='add_host'))
+        self.user.user_permissions.remove(Permission.objects.get(codename='delete_host'))
 
+        self.client.force_login(user=self.user)
         response = self.client.get(reverse('host_delete', args=['1']))
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -262,14 +278,19 @@ class SearchHostGroupView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('host_group_search'))
+        redirect_url = reverse('login') + '?next=' + reverse('host_group_search')
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_permission(self):
         self.user.user_permissions.remove(Permission.objects.get(codename='view_host_group'))
+
+        self.client.force_login(user=self.user)
         response = self.client.get(reverse('host_group_search'))
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         models.HostGroup.objects.create(
@@ -307,14 +328,19 @@ class EditHostGroupView(TestCase):
 
     def test_auth(self):
         response = self.client.get(reverse('host_group_create'))
+        redirect_url = reverse('login') + '?next=' + reverse('host_group_create')
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
 
     def test_permission(self):
         self.user.user_permissions.remove(Permission.objects.get(codename='add_hostgroup'))
+
+        self.client.force_login(user=self.user)
         response = self.client.get(reverse('host_group_create'))
 
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
