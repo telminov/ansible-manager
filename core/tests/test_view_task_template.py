@@ -1,6 +1,6 @@
 import os
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
@@ -80,6 +80,7 @@ class EditTaskTemplateView(TestCase):
 
         self.assertRedirects(response, reverse('permission_denied'))
 
+    @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_create(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
         self.client.force_login(user=self.user)
@@ -88,6 +89,7 @@ class EditTaskTemplateView(TestCase):
         factories.HostGroupFactory.create()
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
+        os.mkdir('/tmp/playbooks')
 
         f = open(path + '/test.yml', 'w')
         f.write('- hosts: all\n'
@@ -105,13 +107,14 @@ class EditTaskTemplateView(TestCase):
 
         self.assertEqual(str(task_template_var), 'Test name')
         self.assertEqual(str(task_template_var.ansible_user), 'Test name')
-        self.assertEqual(str(task_template_var.playbook), '/home/pc/ansible/playbooks/test.yml')
+        self.assertEqual(str(task_template_var.playbook), '/tmp/playbooks/test.yml')
         self.assertEqual(str(task_template_var.hosts.all()[0]), 'test name host (192.168.19.19)')
         self.assertEqual(str(task_template_var.host_groups.all()[0]), 'Test host group name')
         self.assertEqual(str(task_template_var.description), 'Test description')
         self.assertRedirects(response, reverse('task_template_search'))
 
         os.remove(path + '/test.yml')
+        os.rmdir('/tmp/playbooks')
 
     def test_create_invalid(self):
         self.client.force_login(user=self.user)
@@ -128,6 +131,7 @@ class EditTaskTemplateView(TestCase):
 
         self.assertContains(response, 'This field is required.')
 
+    @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_edit(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
         self.client.force_login(user=self.user)
@@ -138,6 +142,7 @@ class EditTaskTemplateView(TestCase):
         factories.TaskTemplateFactory.create(ansible_user=ansb_usr)
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
+        os.mkdir('/tmp/playbooks')
 
         f = open(path + '/test.yml', 'w')
         f.write('- hosts: all\n'
@@ -154,13 +159,14 @@ class EditTaskTemplateView(TestCase):
 
         self.assertEqual(str(changed_task_template), 'Test')
         self.assertEqual(str(changed_task_template.description), 'two')
-        self.assertEqual(str(changed_task_template.playbook), '/home/pc/ansible/playbooks/test.yml')
+        self.assertEqual(str(changed_task_template.playbook), '/tmp/playbooks/test.yml')
         self.assertEqual(str(changed_task_template.hosts.get(id=1)), 'test name host (192.168.19.19)')
         self.assertEqual(str(changed_task_template.host_groups.get(id=1)), 'Test host group name')
         self.assertEqual(str(changed_task_template.ansible_user), 'two')
         self.assertRedirects(response, reverse('task_template_search'))
 
         os.remove(path + '/test.yml')
+        os.rmdir('/tmp/playbooks')
 
     def test_edit_invalid(self):
         self.client.force_login(user=self.user)

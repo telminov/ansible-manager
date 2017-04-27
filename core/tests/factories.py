@@ -186,7 +186,7 @@ def create_data_for_search_task():
         host_groups=(group_without_test,)
     )
     TaskFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,),
-                       template=tsk_tmlt_wth_tst, playbook='/tmp/playbooks/test.yml')
+                       template=tsk_tmlt_wth_tst, playbook='/tmp/ansible/test.yml')
     TaskFactory.create(
         hosts=(host_without_test,),
         host_groups=(group_without_test,),

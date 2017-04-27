@@ -2,7 +2,7 @@ import os
 import mock
 
 from django.contrib.auth import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
@@ -42,10 +42,12 @@ class SearchTaskView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/task/search.html')
 
+    @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_get_queryset(self):
         factories.create_data_for_search_task()
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
+        os.mkdir('/tmp/playbooks')
 
         f = open(path + '/test.yml', 'w')
         f.write('- hosts: all\n'
@@ -62,6 +64,7 @@ class SearchTaskView(TestCase):
         self.assertEqual(len(response.context['object_list']), 1)
 
         os.remove(path + '/test.yml')
+        os.rmdir('/tmp/playbooks')
 
     def test_context(self):
         self.client.force_login(user=self.user)
@@ -106,10 +109,12 @@ class CreateTaskView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/task/create.html')
 
+    @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_create(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task'))
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
+        os.mkdir('/tmp/playbooks')
 
         f = open(path + '/test.yml', 'w')
         f.write('- hosts: all\n'
@@ -132,6 +137,7 @@ class CreateTaskView(TestCase):
         self.assertRedirects(response, reverse('task_search'))
 
         os.remove(path + '/test.yml')
+        os.rmdir('/tmp/playbooks')
 
     def test_create_invalid(self):
         self.client.force_login(user=self.user)
