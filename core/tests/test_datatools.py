@@ -69,13 +69,15 @@ class Ansible(TestCase):
 
         self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
                          '/tmp/test/inventory')
-        inventory_file_content = ' '.join(''.join(open('/tmp/test/inventory', 'r').read().split('\n')).split(' '))
+        f = open('/tmp/test/inventory', 'r')
+        inventory_file_content = ' '.join(''.join(f.read().split('\n')).split(' '))
         must_be_inventory_file_content = '192.168.128.20 Test name=Test var [Test host_group]192.168.59.44[Test ' \
                                          'host_group:vars]Test name=Test var' \
                                          '[all:vars]Test name=Test varTest name=Test var'
 
         self.assertEqual(inventory_file_content, must_be_inventory_file_content)
 
+        f.close()
         shutil.rmtree(test_path_tempfile)
 
     def test_inventory_file_path(self):

@@ -14,6 +14,11 @@ class Search(forms.Form):
     status = forms.ChoiceField(choices=STATUS_CHOICES, required=False,
                                widget=forms.Select(attrs={'class': 'need-select2'}))
 
+    def __init__(self, *args, **kwargs):
+        super(Search, self).__init__(*args, **kwargs)
+        self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$', required=False,
+                                   widget=forms.Select(attrs={'class': 'need-select2'}))
+
 
 class Create(forms.ModelForm):
     template = forms.ModelChoiceField(queryset=models.TaskTemplate.objects.all(), required=False,
@@ -37,4 +42,6 @@ class Create(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
+        self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
+                                   widget=forms.Select(attrs={'class': 'need-select2'}))
 

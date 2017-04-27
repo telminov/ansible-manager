@@ -123,7 +123,8 @@ class ModelTask(TestCase):
         task_without_template_name = models.Task.objects.get(playbook='/otherhome/image')
 
         self.assertEqual(str(task_with_template_name), 'qwer %s' % task_with_template_name.dc.isoformat(sep=' ')[:19])
-        self.assertEqual(str(task_without_template_name), 'image %s' % task_without_template_name.dc.isoformat(sep=' ')[:19])
+        self.assertEqual(str(task_without_template_name),
+                         'image %s' % task_without_template_name.dc.isoformat(sep=' ')[:19])
 
     def test_get_duration_date(self):
         models.TaskLog.objects.create(

@@ -76,7 +76,7 @@ edit = Edit.as_view()
 class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
     template_name = 'core/host_group/delete.html'
     model = models.HostGroup
-    permission_required = 'core.delete_host_group'
+    permission_required = 'core.delete_hostgroup'
     success_url = reverse_lazy('host_group_search')
 
     def get_title(self):

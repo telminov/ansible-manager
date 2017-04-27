@@ -51,7 +51,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     form_class = core.forms.task_template.Edit
     model = models.TaskTemplate
     formset_model = models.Variable
-    permission_required = 'core.add_task_template'
+    permission_required = 'core.add_tasktemplate'
     success_url = reverse_lazy('task_template_search')
     title_create = 'Create'
 
@@ -92,7 +92,7 @@ edit = Edit.as_view()
 class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
     template_name = 'core/task_template/delete.html'
     model = models.TaskTemplate
-    permission_required = 'core.delete_task_template'
+    permission_required = 'core.delete_tasktemplate'
     success_url = reverse_lazy('task_template_search')
 
     def get_title(self):
