@@ -59,7 +59,7 @@ class Ansible(TestCase):
         create_inventory_mock.return_value = test_path_inventory
 
         self.assertEqual(models.Task.objects.get(playbook='/home/').get_ansible_command(),
-                         '/usr/bin/ansible-playbook -i /tmp/test/inventory -u Serega -v /home/')
+                         '/usr/bin/ansible-playbook -i ' + test_path_inventory + ' -u Serega -v /home/')
 
     @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
     def test_create_inventory(self, tempfile_mock):
@@ -68,8 +68,8 @@ class Ansible(TestCase):
         os.mkdir(test_path_tempfile)
 
         self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
-                         '/tmp/test/inventory')
-        f = open('/tmp/test/inventory', 'r')
+                         test_path_tempfile + '/inventory')
+        f = open(test_path_tempfile + '/inventory', 'r')
         inventory_file_content = ' '.join(''.join(f.read().split('\n')).split(' '))
         must_be_inventory_file_content = '192.168.128.20 Test name=Test var [Test host_group]192.168.59.44[Test ' \
                                          'host_group:vars]Test name=Test var' \

@@ -194,3 +194,23 @@ def create_data_for_search_task():
         playbook=settings.ANSIBLE_PLAYBOOKS_PATH + '/test.yml',
         status='fail'
     )
+
+
+def create_data_for_search_host():
+    host_group = models.HostGroup.objects.create(
+        name='Test group'
+    )
+    host = models.Host.objects.create(
+        name='test name',
+        address='192.168.19.19',
+    )
+    host.groups.add(host_group)
+    models.Host.objects.create(
+        name='Other test name',
+        address='192.168.32.44',
+    )
+    host = models.Host.objects.create(
+        name='Other other test name',
+        address='192.168.19.19',
+    )
+    host.groups.add(host_group)

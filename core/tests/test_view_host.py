@@ -7,26 +7,7 @@ from django.contrib.auth.models import Permission
 
 from core import models
 from core.views import host
-
-
-def create_data_for_search():
-    host_group = models.HostGroup.objects.create(
-        name='Test group'
-    )
-    host = models.Host.objects.create(
-        name='test name',
-        address='192.168.19.19',
-    )
-    host.groups.add(host_group)
-    models.Host.objects.create(
-        name='Other test name',
-        address='192.168.32.44',
-    )
-    host = models.Host.objects.create(
-        name='Other other test name',
-        address='192.168.19.19',
-    )
-    host.groups.add(host_group)
+from .factories import create_data_for_search_host
 
 
 class SearchHostView(TestCase):
@@ -63,7 +44,7 @@ class SearchHostView(TestCase):
         self.assertTemplateUsed(response, 'core/host/search.html')
 
     def test_get_queryset(self):
-        create_data_for_search()
+        create_data_for_search_host()
 
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('host_search'),

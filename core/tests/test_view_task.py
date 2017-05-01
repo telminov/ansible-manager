@@ -47,7 +47,7 @@ class SearchTaskView(TestCase):
         factories.create_data_for_search_task()
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
-        os.mkdir('/tmp/playbooks')
+        os.mkdir(path)
 
         f = open(path + '/test.yml', 'w')
         f.write('- hosts: all\n'
@@ -64,7 +64,7 @@ class SearchTaskView(TestCase):
         self.assertEqual(len(response.context['object_list']), 1)
 
         os.remove(path + '/test.yml')
-        os.rmdir('/tmp/playbooks')
+        os.rmdir(path)
 
     def test_context(self):
         self.client.force_login(user=self.user)
@@ -114,7 +114,7 @@ class CreateTaskView(TestCase):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task'))
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
-        os.mkdir('/tmp/playbooks')
+        os.mkdir(path)
 
         f = open(path + '/test.yml', 'w')
         f.write('- hosts: all\n'
@@ -128,16 +128,16 @@ class CreateTaskView(TestCase):
                                     {'template': '1', 'playbook': path + '/test.yml', 'verbose': 'v',
                                      'ansible_user': '1', 'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000',
                                      'form-MIN_NUM_FORMS': '0', 'form-TOTAL_FORMS': '1'})
-        task = models.Task.objects.get(id=1)
+        task = models.Task.objects.get(id=2)
 
-        self.assertEqual(task.playbook, '/home/pc/ansible/playbooks/test.yml')
+        self.assertEqual(task.playbook, '/tmp/playbooks/test.yml')
         self.assertEqual(str(task.template), 'Test name task template')
         self.assertEqual(task.verbose, 'v')
         self.assertEqual(str(task.ansible_user), 'Test name')
         self.assertRedirects(response, reverse('task_search'))
 
         os.remove(path + '/test.yml')
-        os.rmdir('/tmp/playbooks')
+        os.rmdir(path)
 
     def test_create_invalid(self):
         self.client.force_login(user=self.user)
