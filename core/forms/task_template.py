@@ -29,6 +29,8 @@ class Edit(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
+        self.fields['playbook'] =  forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
+                                   widget=forms.Select(attrs={'class': 'need-select2'}))
 
 
 

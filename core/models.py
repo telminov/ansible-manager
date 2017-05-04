@@ -136,6 +136,7 @@ class Task(TaskOperationsMixin, models.Model):
             ('view_task', 'View Task'),
             ('stop_task', 'Stop Task'),
             ('run_task', 'Run Task'),
+            ('replay_task', 'Replay Task'),
         )
 
     def __str__(self):

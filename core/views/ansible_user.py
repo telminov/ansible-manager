@@ -40,7 +40,7 @@ class Edit(mixins.PermissionRequiredMixin, views.EditView):
     template_name = 'core/ansible_user/edit.html'
     form_class = core.forms.ansible_user.Edit
     model = models.AnsibleUser
-    permission_required = 'core.add_ansible_user'
+    permission_required = 'core.add_ansibleuser'
     success_url = reverse_lazy('ansible_user_search')
     title_create = 'Create'
 
@@ -65,7 +65,7 @@ edit = Edit.as_view()
 class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
     template_name = 'core/ansible_user/delete.html'
     model = models.AnsibleUser
-    permission_required = 'core.delete_ansible_user'
+    permission_required = 'core.delete_ansibleuser'
     success_url = reverse_lazy('ansible_user_search')
 
     def get_title(self):
