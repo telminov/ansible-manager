@@ -1,3 +1,5 @@
+from swutils.encrypt import encrypt
+from django.contrib.auth import settings
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
@@ -66,7 +68,11 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
 
     def form_valid(self, form, formset):
         self.object = form.save()
-        variables = formset.save()
+        variables = formset.save(commit=False)
+        for var in variables:
+            if var.cipher is True:
+                var.value = encrypt(var.value, settings.SECRET_KEY.encode('utf-8'))
+            var.save()
         self.object.vars.add(*variables)
         self.object.hosts = form.cleaned_data['hosts']
         return redirect(self.get_success_url())

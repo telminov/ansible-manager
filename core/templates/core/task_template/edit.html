@@ -55,8 +55,6 @@
                         {% bootstrap_field form.description  layout='horizontal' %}
                     </div>
                 </div>
-
-                {% include 'core/variables/includes/variables_formset.html' %}
             </div>
             {% if object %}
                 <div class="col-sm-6">
@@ -136,10 +134,12 @@
                 </div>
             {% endif %}
         </div>
+      {% include 'core/variables/includes/variables_formset.html' %}
     </form>
 {% endblock container %}
 
 {% block js %}
     {{ block.super }}
     <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+    <script src="{{ STATIC_URL }}core/js/show_value.js"></script>
 {% endblock js %}

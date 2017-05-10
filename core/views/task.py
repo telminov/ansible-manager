@@ -1,3 +1,5 @@
+from swutils.encrypt import encrypt
+from django.contrib.auth import settings
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -62,7 +64,11 @@ class Create(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, vi
     def form_valid(self, form, formset):
         form.instance.user = self.request.user
         self.object = form.save()
-        variables = formset.save()
+        variables = formset.save(commit=False)
+        for var in variables:
+            if var.cipher is True:
+                var.value = encrypt(var.value, settings.SECRET_KEY.encode('utf-8'))
+            var.save()
         self.object.vars.add(*variables)
         return redirect(self.get_success_url())
 create = Create.as_view()

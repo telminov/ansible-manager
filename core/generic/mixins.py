@@ -1,11 +1,14 @@
 import urllib.parse
 
+from django.forms import PasswordInput, CheckboxInput
 from django.forms import modelformset_factory
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as PermissionRequiredMixinAuth
 from django.views.generic.edit import FormMixin as DjangoFormMixin
+
+from core.forms.variable_formset import ModelFormSetForVariable
 
 
 class BreadcrumbsMixin(ContextMixin):
@@ -90,8 +93,12 @@ class FormAndModelFormsetMixin(FormAndFormsetMixin):
         return self.formset_initial or self.formset_model.objects.none()
 
     def get_formset_class(self):
-        return self.formset_class or modelformset_factory(model=self.formset_model, fields='__all__', can_delete=True)
-
+        return self.formset_class or modelformset_factory(model=self.formset_model, formset=ModelFormSetForVariable,
+                                                          fields='__all__', can_delete = True,
+                                                          widgets = {'value': PasswordInput(attrs={'autocomplete':
+                                                                                                       'new-password'},
+                                                                                            render_value=True),
+                                                                     'cipher': CheckboxInput(attrs={'class': 'cipher'})})
 
 class NextMixin(ContextMixin):
     def get_context_data(self, **kwargs):

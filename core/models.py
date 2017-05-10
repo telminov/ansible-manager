@@ -2,12 +2,25 @@ import os
 
 import datetime
 
+from swutils.encrypt import decrypt
+from django.contrib.auth import settings
 from django.contrib.auth.models import User
 from django.db import models
 
 from core import consts
 from core.datatools import ansible
 from core.datatools import tasks
+
+
+class EncryptedValueField(models.CharField):
+
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return value
+        try:
+            return decrypt(value, settings.SECRET_KEY.encode('utf-8'))
+        except (ValueError, IndexError, ):
+            return value
 
 
 class TaskOperationsMixin:
@@ -28,7 +41,8 @@ class TaskOperationsMixin:
 
 class Variable(models.Model):
     name = models.CharField(max_length=255)
-    value = models.CharField(max_length=255)
+    value = EncryptedValueField(max_length=255)
+    cipher = models.BooleanField(default=False)
 
     class Meta:
         permissions = (

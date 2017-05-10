@@ -36,8 +36,11 @@
         {% for f in formset %}
             <div class="row variable">
                 <div class="hide">{{ f.id }}</div>
-                <div class="col-sm-5">{% bootstrap_field f.name layout='horizontal' %}</div>
-                <div class="col-sm-5">{% bootstrap_field f.value layout='horizontal' %}</div>
+                <div class="col-sm-3">{% bootstrap_field f.name layout='horizontal' %}</div>
+                <div class="col-sm-3">{% bootstrap_field f.value layout='horizontal' %}</div>
+                <div class="col-sm-2"><button type="button" class="btn btn-default btn-block btn-sm show_value"
+                                              id="show_value-{{ forloop.counter0 }}" data-placement="top">Show Value</button></div>
+                <div class="col-sm-2">{% bootstrap_field f.cipher layout='horizontal' show_label=False %}</div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-danger btn-block btn-sm"
                             onclick="deleteElem($(this).parents('.row.variable'))"
