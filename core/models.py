@@ -2,12 +2,49 @@ import os
 
 import datetime
 
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import models
+from croniter import croniter, CroniterBadCronError, CroniterBadDateError
 
+from core.forms.fields import CronFormField
 from core import consts
 from core.datatools import ansible
 from core.datatools import tasks
+
+
+def validate_cron(value):
+
+    if value != '':
+        now = datetime.datetime.now()
+        try:
+
+            croniter(value, now)
+        except (CroniterBadCronError, CroniterBadDateError):
+            raise ValidationError('Недопустимое значение')
+
+
+class CronField(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        defaults = {
+            'help_text': 'Minute Hour Day Month Weekday',
+            'default': '',
+            'max_length': 100,
+        }
+        defaults.update(kwargs)
+        super(CronField, self).__init__(*args, **defaults)
+
+    def formfield(self, **kwargs):
+
+        defaults = {'form_class': CronFormField}
+        defaults.update(kwargs)
+        return super(CronField, self).formfield(**defaults)
+
+    def validate(self, value, model_instance):
+        super(CronField, self).validate(value, model_instance)
+        if self.editable:  # Skip validation for non-editable fields.
+            validate_cron(value)
 
 
 class TaskOperationsMixin:
@@ -89,6 +126,8 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     vars = models.ManyToManyField(Variable, related_name='task_templates')
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='', blank=True)
     ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates', null=True)
+    cron = CronField(blank=True)
+    datetime_cron = models.DateTimeField(default=None, blank=True, null=True)
 
     class Meta:
         permissions = (

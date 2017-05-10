@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 
+from .fields import CronFormField
 from core import models
 
 
@@ -21,6 +22,8 @@ class Edit(forms.ModelForm):
                                    widget=forms.Select(attrs={'class': 'need-select2'}))
     ansible_user = forms.ModelChoiceField(queryset=models.AnsibleUser.objects.all(),
                                           widget=forms.Select(attrs={'class': 'need-select2'}))
+
+    cron = CronFormField(widget=forms.TextInput, required=False)
 
     class Meta:
         model = models.TaskTemplate
