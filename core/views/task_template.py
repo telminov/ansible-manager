@@ -52,8 +52,14 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     model = models.TaskTemplate
     formset_model = models.Variable
     permission_required = 'core.add_tasktemplate'
-    success_url = reverse_lazy('task_template_search')
     title_create = 'Create'
+
+    def get_success_url(self):
+        if 'pk' in self.kwargs:
+            pk = self.kwargs['pk']
+        else:
+            pk = models.TaskTemplate.objects.last().id
+        return reverse_lazy('task_template_update', kwargs={'pk': pk})
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
