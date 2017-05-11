@@ -17,6 +17,7 @@ urlpatterns = [
         name='login'),
     url(r'^logout/', django.contrib.auth.views.logout_then_login, {'login_url': '/login/?next=/'}, name='logout'),
     url(r'^permission_denied/$', permission_denied, name='permission_denied'),
+    url(r'^tz_detect/', include('tz_detect.urls')),
     url(r'^', include(core.urls)),
 ]
 

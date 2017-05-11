@@ -1,3 +1,4 @@
+{% load tz_detect %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,5 +100,6 @@
         $('[data-toggle="tooltip"]').tooltip();
     </script>
 {% endblock js %}
+{% tz_detect %}
 </body>
 </html>

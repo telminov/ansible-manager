@@ -1,3 +1,5 @@
+import pytz
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -6,7 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 import core.forms.task
 from core import consts
-
+from core.utils import get_timezone
 from core import models
 from core.generic import mixins
 from core.generic import views
@@ -131,7 +133,9 @@ class Log(mixins.PermissionRequiredMixin, views.DetailView):
 
     def get_title(self):
         task = self.get_object()
-        return 'Log task for %s' % task.dc.strftime("%d-%m-%Y %H:%M:%S")
+        tz = self.request.session.get('detected_tz')
+        timezone = pytz.timezone(str(get_timezone(tz)))
+        return 'Log task for %s' % task.dc.astimezone(timezone).strftime("%d-%m-%Y %H:%M:%S")
 
     def get_breadcrumbs(self):
         return (

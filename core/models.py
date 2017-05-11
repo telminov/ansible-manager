@@ -143,7 +143,7 @@ class Task(TaskOperationsMixin, models.Model):
         name = self.get_playbook_name()
         if self.template:
             name = self.template.name
-        return "%s %s" % (name, self.dc.isoformat(sep=' ')[:19])
+        return "#%s %s" % (self.id, name)
 
     def get_ansible_command(self):
         return ansible.make_command(self)
@@ -174,4 +174,4 @@ class TaskLog(models.Model):
         )
 
     def __str__(self):
-        return "%s %s" % (self.task.get_playbook_name(), self.dc)
+        return "#%s %s" % (self.id, self.task.get_playbook_name())
