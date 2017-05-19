@@ -5,7 +5,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import models
-from croniter import croniter, CroniterBadCronError, CroniterBadDateError
+from croniter import croniter, CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError
 
 from core.forms.fields import CronFormField
 from core import consts
@@ -14,14 +14,14 @@ from core.datatools import tasks
 
 
 def validate_cron(value):
+    if value == '':
+        return
 
-    if value != '':
-        now = datetime.datetime.now()
-        try:
-
-            croniter(value, now)
-        except (CroniterBadCronError, CroniterBadDateError):
-            raise ValidationError('Недопустимое значение')
+    now = datetime.datetime.now()
+    try:
+        croniter(value, now)
+    except (CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError):
+        raise ValidationError('Недопустимое значение')
 
 
 class CronField(models.CharField):
@@ -127,7 +127,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='', blank=True)
     ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates', null=True)
     cron = CronField(blank=True)
-    datetime_cron = models.DateTimeField(default=None, blank=True, null=True)
+    cron_dt = models.DateTimeField(default=None, blank=True, null=True)
 
     class Meta:
         permissions = (
@@ -153,6 +153,11 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
             message='Task created by user %s' % user
         )
         return task
+
+    def have_uncompleted_task(self):
+        if self.tasks.exists():
+            return self.tasks.last().status in [consts.WAIT, consts.IN_PROGRESS]
+        return False
 
 
 class Task(TaskOperationsMixin, models.Model):

@@ -1,6 +1,3 @@
-import datetime
-
-from django.utils import timezone
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -78,14 +75,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         )
 
     def form_valid(self, form, formset):
-        obj = self.get_object()
-        datetime_cron = 'DateTime'
-        if obj:
-            datetime_cron = obj.datetime_cron
         self.object = form.save()
-        if form.cleaned_data['cron'] and not datetime_cron:
-            obj.datetime_cron = timezone.now()
-            obj.save()
         variables = formset.save()
         self.object.vars.add(*variables)
         return redirect(self.get_success_url())
