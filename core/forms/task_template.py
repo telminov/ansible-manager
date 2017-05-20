@@ -36,12 +36,13 @@ class Edit(forms.ModelForm):
         self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                                       widget=forms.Select(attrs={'class': 'need-select2'}))
 
-    def save(self, commit=True):
-        task_template = super().save(commit=False)
+    def save(self, commit=True, *args, **kwargs):
+        task_template = super(Edit, self).save(commit=False, *args, **kwargs)
         if task_template.cron and not task_template.cron_dt:
             task_template.cron_dt = timezone.now()
         elif not task_template.cron:
             task_template.cron_dt = None
         if commit:
             task_template.save()
+            self.save_m2m()
         return task_template

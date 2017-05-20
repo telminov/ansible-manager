@@ -4,7 +4,6 @@ from time import sleep
 from croniter import croniter
 
 from django.utils import timezone
-from django.contrib.auth.models import User
 
 from core.datatools.tasks import TaskManager
 from core import models
@@ -33,6 +32,6 @@ class Scheduler:
                 self.run_task(template_task)
 
     def run_task(self, template_task):
-        task = template_task.create_task(User.objects.get(id=1))
+        task = template_task.create_task(user=None, is_cron_created=True)
         manager = TaskManager()
         manager.run_task_process(task)

@@ -2,6 +2,7 @@ import os
 
 import datetime
 
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import models
@@ -17,7 +18,7 @@ def validate_cron(value):
     if value == '':
         return
 
-    now = datetime.datetime.now()
+    now = timezone.now()
     try:
         croniter(value, now)
     except (CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError):
@@ -137,11 +138,12 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     def __str__(self):
         return self.name
 
-    def create_task(self, user):
+    def create_task(self, user, is_cron_created=False):
         task = Task.objects.create(
             template=self,
             playbook=self.playbook,
             user=user,
+            is_cron_created=is_cron_created,
             ansible_user=self.ansible_user,
         )
         task.vars.add(*self.vars.all())
@@ -168,7 +170,8 @@ class Task(TaskOperationsMixin, models.Model):
     template = models.ForeignKey(TaskTemplate, related_name='tasks', null=True)
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
     pid = models.IntegerField(null=True)
-    user = models.ForeignKey(User, related_name='tasks')
+    user = models.ForeignKey(User, related_name='tasks', blank=True, null=True)
+    is_cron_created = models.BooleanField(default=False)
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
     ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks', null=True)
 
