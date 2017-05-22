@@ -6,4 +6,5 @@ djangorestframework==3.6.2
 gunicorn==19.6.0
 mock==2.0.0
 factory-boy==2.8.1
+croniter==0.3.16
 django-tz-detect==0.2.8

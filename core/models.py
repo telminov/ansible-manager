@@ -2,12 +2,50 @@ import os
 
 import datetime
 
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import models
+from croniter import croniter, CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError
 
+from core.forms.fields import CronFormField
 from core import consts
 from core.datatools import ansible
 from core.datatools import tasks
+
+
+def validate_cron(value):
+    if value == '':
+        return
+
+    now = timezone.now()
+    try:
+        croniter(value, now)
+    except (CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError):
+        raise ValidationError('Недопустимое значение')
+
+
+class CronField(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        defaults = {
+            'help_text': 'Minute Hour Day Month Weekday',
+            'default': '',
+            'max_length': 100,
+        }
+        defaults.update(kwargs)
+        super(CronField, self).__init__(*args, **defaults)
+
+    def formfield(self, **kwargs):
+
+        defaults = {'form_class': CronFormField}
+        defaults.update(kwargs)
+        return super(CronField, self).formfield(**defaults)
+
+    def validate(self, value, model_instance):
+        super(CronField, self).validate(value, model_instance)
+        if self.editable:  # Skip validation for non-editable fields.
+            validate_cron(value)
 
 
 class TaskOperationsMixin:
@@ -89,6 +127,8 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     vars = models.ManyToManyField(Variable, related_name='task_templates')
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='', blank=True)
     ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates', null=True)
+    cron = CronField(blank=True)
+    cron_dt = models.DateTimeField(default=None, blank=True, null=True)
 
     class Meta:
         permissions = (
@@ -98,11 +138,12 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     def __str__(self):
         return self.name
 
-    def create_task(self, user):
+    def create_task(self, user, is_cron_created=False):
         task = Task.objects.create(
             template=self,
             playbook=self.playbook,
             user=user,
+            is_cron_created=is_cron_created,
             ansible_user=self.ansible_user,
         )
         task.vars.add(*self.vars.all())
@@ -115,6 +156,11 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         )
         return task
 
+    def have_uncompleted_task(self):
+        if self.tasks.exists():
+            return self.tasks.last().status in [consts.WAIT, consts.IN_PROGRESS]
+        return False
+
 
 class Task(TaskOperationsMixin, models.Model):
     playbook = models.FilePathField()
@@ -124,7 +170,8 @@ class Task(TaskOperationsMixin, models.Model):
     template = models.ForeignKey(TaskTemplate, related_name='tasks', null=True)
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
     pid = models.IntegerField(null=True)
-    user = models.ForeignKey(User, related_name='tasks')
+    user = models.ForeignKey(User, related_name='tasks', blank=True, null=True)
+    is_cron_created = models.BooleanField(default=False)
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
     ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks', null=True)
 

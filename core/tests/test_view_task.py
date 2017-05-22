@@ -6,7 +6,6 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
-from django.contrib.auth.models import ContentType
 
 from core import models
 from core.views import task
@@ -225,11 +224,6 @@ class ReplayTaskView(TestCase):
             username='Serega',
             password='passwd',
         )
-        Permission.objects.create(
-            content_type=ContentType.objects.get(id=12),
-            codename='replay_task',
-            name='Replay Task'
-        )
         self.user.user_permissions.add(Permission.objects.get(codename='replay_task'))
         factories.AnsibleUserFactory.create()
         group_with_test = factories.HostGroupFactory.create()
@@ -256,7 +250,6 @@ class ReplayTaskView(TestCase):
 
         self.assertRedirects(response, reverse('permission_denied'))
 
-    # Узнать насчет id = None
     def test_get_not_run_status(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_log'))
         self.client.force_login(user=self.user)
