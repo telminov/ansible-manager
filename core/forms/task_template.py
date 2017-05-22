@@ -1,6 +1,8 @@
 from django import forms
 from django.conf import settings
+from django.utils import timezone
 
+from core.forms.fields import CronFormField
 from core import models
 
 
@@ -22,6 +24,8 @@ class Edit(forms.ModelForm):
     ansible_user = forms.ModelChoiceField(queryset=models.AnsibleUser.objects.all(),
                                           widget=forms.Select(attrs={'class': 'need-select2'}))
 
+    cron = CronFormField(widget=forms.TextInput, required=False)
+
     class Meta:
         model = models.TaskTemplate
         exclude = ('vars',)
@@ -29,8 +33,16 @@ class Edit(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
-        self.fields['playbook'] =  forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
-                                   widget=forms.Select(attrs={'class': 'need-select2'}))
+        self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
+                                                      widget=forms.Select(attrs={'class': 'need-select2'}))
 
-
-
+    def save(self, commit=True, *args, **kwargs):
+        task_template = super(Edit, self).save(commit=False, *args, **kwargs)
+        if task_template.cron and not task_template.cron_dt:
+            task_template.cron_dt = timezone.now()
+        elif not task_template.cron:
+            task_template.cron_dt = None
+        if commit:
+            task_template.save()
+            self.save_m2m()
+        return task_template
