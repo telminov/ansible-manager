@@ -111,7 +111,8 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(str(task_template_var.hosts.all()[0]), 'test name host (192.168.19.19)')
         self.assertEqual(str(task_template_var.host_groups.all()[0]), 'Test host group name')
         self.assertEqual(str(task_template_var.description), 'Test description')
-        self.assertRedirects(response, reverse('task_template_search'))
+        self.assertRedirects(response, reverse('task_template_update',
+                                               kwargs={'pk': models.TaskTemplate.objects.last().id}))
 
         os.remove(path + '/test.yml')
         os.rmdir(path)
@@ -163,7 +164,7 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(str(changed_task_template.hosts.get(id=1)), 'test name host (192.168.19.19)')
         self.assertEqual(str(changed_task_template.host_groups.get(id=1)), 'Test host group name')
         self.assertEqual(str(changed_task_template.ansible_user), 'two')
-        self.assertRedirects(response, reverse('task_template_search'))
+        self.assertRedirects(response, reverse('task_template_update', kwargs={'pk': 1}))
 
         os.remove(path + '/test.yml')
         os.rmdir(path)
