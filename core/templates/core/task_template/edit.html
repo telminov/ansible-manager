@@ -78,7 +78,10 @@
                                         <td>
                                             {% for var in host.vars.all %}
                                                 <span class="label label-default">
-                                                    {{ var }}
+                                                    {{ var.name }}:
+                                                    {% for i in var.value|make_list %}
+                                                        *
+                                                    {% endfor %}
                                                 </span>
                                             {% empty %}
                                                 -
