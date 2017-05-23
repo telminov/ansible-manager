@@ -37,9 +37,7 @@ class IndexView(TestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('index'))
 
-        self.assertEqual(len(response.context['tasks']), 2)
-        self.assertEqual(response.context['tasks'][0].status, 'in_progress')
-        self.assertEqual(response.context['tasks'][1].status, 'wait')
+        self.assertEqual(len(response.context['tasks']), 5)
 
 
 class PermissionDeniedView(TestCase):
