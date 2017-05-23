@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     'bootstrap3',
 
+    'tz_detect',
+
     'core',
 ]
 
@@ -51,7 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'djutils.middleware.LoginRequired'
+    'djutils.middleware.LoginRequired',
+    'tz_detect.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'

@@ -6,7 +6,6 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
-from django.contrib.auth.models import ContentType
 
 from core import models
 from core.views import task

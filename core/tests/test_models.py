@@ -122,9 +122,9 @@ class ModelTask(TestCase):
         task_with_template_name = models.Task.objects.get(playbook='/home/')
         task_without_template_name = models.Task.objects.get(playbook='/otherhome/image')
 
-        self.assertEqual(str(task_with_template_name), 'qwer %s' % task_with_template_name.dc.isoformat(sep=' ')[:19])
+        self.assertEqual(str(task_with_template_name), '#%s qwer' % task_with_template_name.id)
         self.assertEqual(str(task_without_template_name),
-                         'image %s' % task_without_template_name.dc.isoformat(sep=' ')[:19])
+                         '#%s image' % task_without_template_name.id)
 
     def test_get_duration_date(self):
         models.TaskLog.objects.create(
@@ -133,8 +133,8 @@ class ModelTask(TestCase):
         )
 
         self.assertEqual(models.Task.objects.get(playbook='/home/').get_duration(),
-                         models.Task.objects.get(playbook='/home/').logs.last().dc
-                         - models.Task.objects.get(playbook='/home/').dc)
+                         models.Task.objects.get(playbook='/home/').logs.last().dc -
+                         models.Task.objects.get(playbook='/home/').dc)
 
     def test_get_duration_none(self):
         models.TaskLog.objects.create(
@@ -169,4 +169,4 @@ class ModelTaskLog(TestCase):
     def test_str(self):
         task_log = models.TaskLog.objects.get(id=1)
 
-        self.assertEqual(str(task_log), 'image %s' % task_log.dc)
+        self.assertEqual(str(task_log), '#%s image' % task_log.id)
