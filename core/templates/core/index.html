@@ -45,18 +45,14 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td><a href="{% url 'task_log' task.id %}">{{ task.dc }}</a></td>
                                 <td>
-                                    <span class="label label
-                                        {% if task.status == 'in_progress' %}
-                                            label-primary
-                                        {% elif task.status == 'wait' %}
-                                            label-default
-                                        {% endif %}
-                                    ">{{ task.status }}</span>
+                                    {% include 'core/task/status_label.html' with task=task %}
                                 </td>
                                 <td>
+                                    {% if task.status == 'wait' or task.status == 'in_progress' %}
                                     <a href="{% url 'task_stop' task.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">
                                         <i class="fa fa-stop" style="color: red"></i>
                                     </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
