@@ -48,7 +48,7 @@
                                     {% include 'core/task/status_label.html' with task=task %}
                                 </td>
                                 <td>
-                                    {% if task.status == 'completed' or task.status == 'in_progress' %}
+                                    {% if task.status == 'wait' or task.status == 'in_progress' %}
                                     <a href="{% url 'task_stop' task.id %}" data-toggle="tooltip" data-placement="left" title="Stop task">
                                         <i class="fa fa-stop" style="color: red"></i>
                                     </a>
