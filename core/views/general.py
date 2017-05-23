@@ -10,7 +10,7 @@ class Index(TemplateView):
     title = 'Ansible Manager Project'
 
     def get_tasks(self):
-        return models.Task.objects.filter(status__in=consts.RUN_STATUSES)
+        return models.Task.objects.order_by('-dc')[:10]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
