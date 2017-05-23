@@ -58,7 +58,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         if 'pk' in self.kwargs:
             pk = self.kwargs['pk']
         else:
-            pk = models.TaskTemplate.objects.last().id
+            pk = self.object.id
         return reverse_lazy('task_template_update', kwargs={'pk': pk})
 
     def get_form_kwargs(self):
