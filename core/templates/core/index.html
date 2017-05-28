@@ -34,6 +34,7 @@
                         <thead>
                             <tr>
                                 <th>№</th>
+                                <th>Template</th>
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th></th>
@@ -43,6 +44,7 @@
                         {% for task in tasks %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
+                                <td>{{ task.template }}</td>
                                 <td><a href="{% url 'task_log' task.id %}">{{ task.dc }}</a></td>
                                 <td>
                                     {% include 'core/task/status_label.html' with task=task %}
