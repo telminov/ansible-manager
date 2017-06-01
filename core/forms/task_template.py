@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from core.forms.fields import CronFormField
 from core import models
+from core import consts
 
 
 class Search(forms.Form):
@@ -14,6 +15,11 @@ class Search(forms.Form):
     host_groups = forms.ModelMultipleChoiceField(label='Groups', required=False,
                                                  queryset=models.HostGroup.objects.order_by(Lower('name')),
                                                  widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
+
+
+class PaginateBy(forms.Form):
+    paginate_by = forms.ChoiceField(choices=consts.ORDER_BY_CHOICES, required=False,
+                                    widget=forms.Select(attrs={'class': 'need-select2, custom-paginate'}))
 
 
 class Edit(forms.ModelForm):

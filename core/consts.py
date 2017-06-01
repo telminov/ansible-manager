@@ -16,3 +16,11 @@ VERBOSE_CHOICES = (
     ('vvv', 'very detail'),
     ('vvvv', 'all'),
 )
+
+ORDER_BY_CHOICES = (
+    ('4', '4'),
+    ('15', '15'),
+    ('30', '30'),
+    ('50', '50'),
+    ('', 'all')
+)

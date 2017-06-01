@@ -1,4 +1,6 @@
 {% extends 'core/base_search.html' %}
+{% load ansible_tag %}
+{% load bootstrap3 %}
 
 {% block left_buttons %}
     <a href="{% url 'task_template_create' %}" class="btn btn-success">
@@ -6,6 +8,15 @@
         Add
     </a>
 {% endblock left_buttons %}
+
+{% block form_paginate_by_up %}
+    <form id="paginate-form-up" method="get">
+    <label>
+        {% bootstrap_field form2.paginate_by show_label=False bound_css_class='' %}
+    </label>
+        <input type="submit" value="submit" hidden>
+    </form>
+{% endblock %}
 
 {% block table_heads %}
     <th>Name</th>
@@ -42,3 +53,45 @@
         </td>
     {% endwith %}
 {% endblock table_row %}
+
+{% block paginate %}
+    <form id="paginate-form-down" method="get">
+    <label>
+        {% bootstrap_field form2.paginate_by show_label=False bound_css_class='' %}
+    </label>
+        <input type="submit" value="submit" hidden>
+    </form>
+{% if is_paginated %}
+    <div class="text-center">
+    <ul class="pagination text-center">
+        {% if page_obj.has_previous %}
+            <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
+        {% else %}
+            <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+                <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
+            {% else %}
+                <li class="page-item">
+                    {% if i == 1 %}
+                        <a class="active" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                    {% else %}
+                        {% if i|add:"-2" <= page_obj.number and page_obj.number <= i|add:"2" %}
+                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                        {% elif i|divisibleby:"10" or i == page_obj.paginator.num_pages %}
+                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                        {% endif %}
+                    {% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
+        {% else %}
+            <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    </div>
+{% endif %}
+{% endblock %}
