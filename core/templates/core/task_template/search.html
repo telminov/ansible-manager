@@ -10,6 +10,7 @@
 {% block table_heads %}
     <th>Name</th>
     <th>Last status</th>
+    <th>Cron</th>
     <th>Hosts</th>
     <th>Groups</th>
     <th>Playbook</th>
@@ -28,6 +29,7 @@
                 </a>
             {% endif %}
         </td>
+        <td>{{ object.cron }}</td>
         <td>{{ object.hosts.count }}</td>
         <td>{{ object.host_groups.count }}</td>
         <td>{{ object.get_playbook_name }}</td>
