@@ -29,7 +29,13 @@
                 </a>
             {% endif %}
         </td>
-        <td>{{ object.cron }}</td>
+        <td>
+            {% if object.cron %}
+                <span class="glyphicon glyphicon-ok" title="{{ object.cron }}" data-toggle="tooltip"></span>
+            {% else %}
+                <span class="glyphicon glyphicon-remove"></span>
+            {% endif %}
+        </td>
         <td>{{ object.hosts.count }}</td>
         <td>{{ object.host_groups.count }}</td>
         <td>{{ object.get_playbook_name }}</td>
