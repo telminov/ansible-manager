@@ -1,5 +1,7 @@
 import urllib.parse
+from djutils.views.generic import SortMixin as DjSortMixin
 
+from django.db.models import Max
 from django.forms import modelformset_factory
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -98,3 +100,16 @@ class NextMixin(ContextMixin):
         context = super().get_context_data(**kwargs)
         context['next'] = self.request.META.get('HTTP_REFERER', self.request.GET.get('next'))
         return context
+
+
+class SortMixin(DjSortMixin):
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.sort_qs:
+            order_by = self.request.GET[self.sort_param_name]
+            if order_by == 'last_task':
+                qs = qs.annotate(last_task=Max('tasks__dc')).order_by('last_task')
+            else:
+                qs = qs.order_by(order_by)
+        return qs

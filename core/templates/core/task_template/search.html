@@ -8,13 +8,21 @@
 {% endblock left_buttons %}
 
 {% block table_heads %}
-    <th>Name</th>
+    <th>
+        <a href="{% url 'task_template_search' %}?sort=name" type="button" class="btn-link"
+           style="color: #24292e; cursor: pointer"><strong>Name</strong>
+        </a>
+    </th>
     <th>Last status</th>
     <th>Hosts</th>
     <th>Groups</th>
     <th>Playbook</th>
     <th>Duration</th>
-    <th>Last start</th>
+    <th>
+        <a href="{% url 'task_template_search' %}?sort=last_task" type="button" class="btn-link"
+           style="color: #24292e; cursor: pointer"><strong>Last start</strong>
+        </a>
+    </th>
     <th></th>
 {% endblock table_heads %}
 

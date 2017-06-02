@@ -12,13 +12,14 @@ from core.generic import mixins
 from core.generic import views
 
 
-class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
+class Search(mixins.PermissionRequiredMixin, mixins.SortMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task_template/search.html'
     form_class = core.forms.task_template.Search
     paginate_by = 20
     title = 'Task templates'
     model = models.TaskTemplate
     permission_required = 'core.view_task_template'
+    sort_params = ['name', ]
 
     def get_breadcrumbs(self):
         return (
