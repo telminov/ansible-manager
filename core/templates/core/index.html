@@ -44,7 +44,8 @@
                         {% for task in tasks %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'task_template_update' task.template.pk %}">{{ task.template }}</a></td>
+                                <td>{% if task.template %}<a href="{% url 'task_template_update' task.template.pk %}">
+                                    {{ task.template }}</a>{% endif %}</td>
                                 <td><a href="{% url 'task_log' task.id %}">{{ task.dc }}</a></td>
                                 <td>
                                     {% include 'core/task/status_label.html' with task=task %}
