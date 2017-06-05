@@ -1,5 +1,7 @@
 import pytz
 
+from djutils.views.generic import SortMixin
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -14,13 +16,14 @@ from core.generic import mixins
 from core.generic import views
 
 
-class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
+class Search(mixins.PermissionRequiredMixin, SortMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task/search.html'
     form_class = core.forms.task.Search
     paginate_by = 20
     title = 'Tasks'
     model = models.Task
     permission_required = 'core.view_task'
+    sort_params = ['-dc', 'template', 'dc']
 
     def get_breadcrumbs(self):
         return (
@@ -29,7 +32,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
         )
 
     def get_queryset(self):
-        queryset = super().get_queryset().order_by('-id')
+        queryset = super().get_queryset()
         form = self.get_form()
         if form.is_valid():
             template = form.cleaned_data.get('template')

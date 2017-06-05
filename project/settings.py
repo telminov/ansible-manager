@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'bootstrap3',
-
     'tz_detect',
+    'djutils',
 
     'core',
 ]

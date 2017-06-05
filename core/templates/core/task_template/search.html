@@ -1,4 +1,5 @@
 {% extends 'core/base_search.html' %}
+{% load djutils %}
 
 {% block left_buttons %}
     <a href="{% url 'task_template_create' %}" class="btn btn-success">
@@ -8,21 +9,13 @@
 {% endblock left_buttons %}
 
 {% block table_heads %}
-    <th>
-        <a href="{% url 'task_template_search' %}?sort=name" type="button" class="btn-link"
-           style="color: #24292e; cursor: pointer"><strong>Name</strong>
-        </a>
-    </th>
+    {% sort_th 'name' 'Name' %}
     <th>Last status</th>
     <th>Hosts</th>
     <th>Groups</th>
     <th>Playbook</th>
     <th>Duration</th>
-    <th>
-        <a href="{% url 'task_template_search' %}?sort=last_task" type="button" class="btn-link"
-           style="color: #24292e; cursor: pointer"><strong>Last start</strong>
-        </a>
-    </th>
+    {% sort_th 'last_task' 'Last task' %}
     <th></th>
 {% endblock table_heads %}
 

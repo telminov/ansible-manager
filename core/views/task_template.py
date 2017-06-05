@@ -1,3 +1,6 @@
+from djutils.views.generic import SortMixin
+
+from django.db.models import Max
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -12,14 +15,14 @@ from core.generic import mixins
 from core.generic import views
 
 
-class Search(mixins.PermissionRequiredMixin, mixins.SortMixin, mixins.FormMixin, views.ListView):
+class Search(mixins.PermissionRequiredMixin, SortMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task_template/search.html'
     form_class = core.forms.task_template.Search
     paginate_by = 20
     title = 'Task templates'
     model = models.TaskTemplate
     permission_required = 'core.view_task_template'
-    sort_params = ['name', ]
+    sort_params = ['name', 'last_task']
 
     def get_breadcrumbs(self):
         return (
@@ -29,6 +32,15 @@ class Search(mixins.PermissionRequiredMixin, mixins.SortMixin, mixins.FormMixin,
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if self.sort_qs:
+            order_by = self.request.GET[self.sort_param_name]
+            if order_by == 'last_task':
+                queryset = queryset.annotate(last_task=Max('tasks__dc')).order_by('last_task')
+            elif order_by == '-last_task':
+                queryset = queryset.annotate(last_task=Max('tasks__dc')).order_by('last_task').reverse()
+            else:
+                queryset = queryset.order_by(order_by)
+
         form = self.get_form()
         if form.is_valid():
             name = form.cleaned_data.get('name')
