@@ -36,7 +36,7 @@ class SearchTaskTemplateView(TestCase):
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_search'))
+        response = self.client.get(reverse('task_template_search'), {'sort': 'name'})
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/task_template/search.html')
@@ -45,13 +45,14 @@ class SearchTaskTemplateView(TestCase):
         factories.create_data_for_search_template()
 
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_search'), {'name': 'Test', 'hosts': '1', 'host_groups': '1'})
+        response = self.client.get(reverse('task_template_search'), {'name': 'Test', 'hosts': '1', 'host_groups': '1',
+                                                                     'sort': 'name'})
 
         self.assertEqual(len(response.context['object_list']), 1)
 
     def test_context(self):
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_search'))
+        response = self.client.get(reverse('task_template_search'), {'sort': 'name'})
 
         self.assertEqual(response.context['breadcrumbs'][0], ('Home', reverse('index')))
         self.assertEqual(response.context['breadcrumbs'][1], (task_template.Search.title, ''))
@@ -248,10 +249,9 @@ class DeleteTaskTempletView(TestCase):
     def test_delete(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
         self.client.force_login(user=self.user)
-        response = self.client.post(reverse('task_template_delete', args=['1']))
+        self.client.post(reverse('task_template_delete', args=['1']))
 
         self.assertEqual(len(models.TaskTemplate.objects.all()), 0)
-        self.assertRedirects(response, reverse('task_template_search'))
 
     def test_context(self):
         self.client.force_login(user=self.user)

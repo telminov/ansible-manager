@@ -1,4 +1,5 @@
 {% extends 'core/base_search.html' %}
+{% load djutils %}
 
 {% block left_buttons %}
     <a href="{% url 'task_create' %}" class="btn btn-success">
@@ -8,8 +9,8 @@
 {% endblock left_buttons %}
 
 {% block table_heads %}
-    <th>Template</th>
-    <th>Created</th>
+    {% sort_th 'template' 'Template' %}
+    {% sort_th 'dc' 'Created' %}
     <th>Playbook</th>
     <th>Status</th>
     <th>Hosts</th>

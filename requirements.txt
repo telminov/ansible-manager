@@ -2,6 +2,7 @@ coverage==4.3.4
 django==1.10.6
 django-bootstrap3==8.2.1
 sw-django-utils==0.0.35
+sw-python-utils==0.0.15
 djangorestframework==3.6.2
 gunicorn==19.6.0
 mock==2.0.0
