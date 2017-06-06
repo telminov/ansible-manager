@@ -31,9 +31,7 @@
         </td>
         <td>
             {% if object.cron %}
-                <span class="glyphicon glyphicon-ok" title="{{ object.cron }}" data-toggle="tooltip"></span>
-            {% else %}
-                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-asterisk" title="{{ object.cron }}" data-toggle="tooltip"></span>
             {% endif %}
         </td>
         <td>{{ object.hosts.count }}</td>
