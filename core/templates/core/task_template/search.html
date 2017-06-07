@@ -11,6 +11,7 @@
 {% block table_heads %}
     {% sort_th 'name' 'Name' %}
     <th>Last status</th>
+    <th>Cron</th>
     <th>Hosts</th>
     <th>Groups</th>
     <th>Playbook</th>
@@ -27,6 +28,11 @@
                 <a href="{% url 'task_log' last_task.pk %}" class="label-link">
                     {% include 'core/task/status_label.html' with task=last_task %}
                 </a>
+            {% endif %}
+        </td>
+        <td>
+            {% if object.cron %}
+                <span class="glyphicon glyphicon-asterisk" title="{{ object.cron }}" data-toggle="tooltip"></span>
             {% endif %}
         </td>
         <td>{{ object.hosts.count }}</td>
