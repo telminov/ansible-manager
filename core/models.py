@@ -92,7 +92,7 @@ class HostGroup(models.Model):
 
 class Host(models.Model):
     name = models.CharField(max_length=255, blank=True)
-    address = models.GenericIPAddressField()
+    address = models.CharField(max_length=256)
     groups = models.ManyToManyField(HostGroup, related_name='hosts')
     vars = models.ManyToManyField(Variable, related_name='hosts')
 
