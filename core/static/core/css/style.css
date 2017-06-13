@@ -147,3 +147,14 @@ th.sortable.asc::after {
     content: "";
     background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==) no-repeat;
 }
+
+
+/* full screen */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.custom-container.white-container {
+    min-height: 80%;
+}
