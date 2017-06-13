@@ -85,6 +85,7 @@ class HostGroup(models.Model):
         permissions = (
             ('view_host_group', 'View Host Groups'),
         )
+        ordering = ('name', )
 
     def __str__(self):
         return self.name
@@ -101,6 +102,7 @@ class Host(models.Model):
         permissions = (
             ('view_host', 'View Host'),
         )
+        ordering = ('name', )
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.address) if self.name else self.address
@@ -113,6 +115,7 @@ class AnsibleUser(models.Model):
         permissions = (
             ('view_ansible_user', 'View Ansible User'),
         )
+        ordering = ('name', )
 
     def __str__(self):
         return self.name
