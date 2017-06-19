@@ -315,4 +315,5 @@ class LogTaskView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][0], ('Home', reverse('index')))
         self.assertEqual(response.context['breadcrumbs'][1], (task.Search.title, reverse('task_search')))
         self.assertEqual(response.context['breadcrumbs'][2],
-                         ('Log task for %s' % models.Task.objects.get(id=1).dc.strftime("%d-%m-%Y %H:%M:%S"), ''))
+                         ('Log %s task for %s' % (models.Task.objects.get(id=1).template,
+                                                  models.Task.objects.get(id=1).dc.strftime("%d-%m-%Y %H:%M:%S")), ''))
