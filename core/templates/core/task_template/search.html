@@ -9,44 +9,8 @@
     </a>
 {% endblock left_buttons %}
 
-{% block form_paginate_by_up %}
-    <select class="form-control custom-paginate" style="width: 6%; display: inline">
-        <option value="15">15</option>
-        <option value="30">30</option>
-        <option value="50">50</option>
-        <option value="-1">all</option>
-    </select>
-    {% if is_paginated %}
-    <ul class="pagination text-center" style="float: right; margin: 0; display: inline; margin-right: 42.9%">
-        {% if page_obj.has_previous %}
-            <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator.page_range %}
-            {% if page_obj.number == i %}
-                <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
-            {% else %}
-                <li class="page-item">
-                    {% if i == 1 %}
-                        <a class="active" href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                    {% else %}
-                        {% if i|add:"-2" <= page_obj.number and page_obj.number <= i|add:"2" %}
-                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                        {% elif i|divisibleby:"10" or i == page_obj.paginator.num_pages %}
-                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                        {% endif %}
-                    {% endif %}
-                </li>
-            {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-            <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-        {% endif %}
-    </ul>
-{% endif %}
+{% block paginate_by_up %}
+    {% include 'core/paginate/include/paginate.html' %}
 {% endblock %}
 
 {% block table_heads %}
@@ -85,42 +49,6 @@
     {% endwith %}
 {% endblock table_row %}
 
-{% block paginate %}
-    <select class="form-control custom-paginate" style="width: 6%; display: inline">
-        <option value="15">15</option>
-        <option value="30">30</option>
-        <option value="50">50</option>
-        <option value="-1">all</option>
-    </select>
-{% if is_paginated %}
-    <ul class="pagination text-center" style="float: right; margin: 0; display: inline; margin-right: 42.9%">
-        {% if page_obj.has_previous %}
-            <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator.page_range %}
-            {% if page_obj.number == i %}
-                <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
-            {% else %}
-                <li class="page-item">
-                    {% if i == 1 %}
-                        <a class="active" href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                    {% else %}
-                        {% if i|add:"-2" <= page_obj.number and page_obj.number <= i|add:"2" %}
-                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                        {% elif i|divisibleby:"10" or i == page_obj.paginator.num_pages %}
-                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                        {% endif %}
-                    {% endif %}
-                </li>
-            {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-            <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-        {% endif %}
-    </ul>
-{% endif %}
+{% block paginate_by_down %}
+    {% include 'core/paginate/include/paginate.html' %}
 {% endblock %}

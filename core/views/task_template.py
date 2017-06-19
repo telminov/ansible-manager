@@ -15,7 +15,7 @@ from core.generic import views
 class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task_template/search.html'
     form_class = core.forms.task_template.Search
-    paginate_by = 4
+    paginate_by = 15
     title = 'Task templates'
     model = models.TaskTemplate
     permission_required = 'core.view_task_template'

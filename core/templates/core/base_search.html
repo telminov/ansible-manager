@@ -42,7 +42,7 @@
         {% else %}
             <div>
                 <h4>Count: {{ page_obj.paginator.count }}</h4>
-                {% block form_paginate_by_up %}
+                {% block paginate_by_up %}
                 {% endblock %}
             </div>
             <table class="table {% block table_class %}table-hover{% endblock table_class %}">
@@ -67,7 +67,7 @@
                     {% endblock tbody %}
                 </tbody>
             </table>
-            {% block paginate %}
+            {% block paginate_by_down %}
             {% endblock %}
         {% endif %}
     </div>
