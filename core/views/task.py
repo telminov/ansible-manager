@@ -139,9 +139,10 @@ class Log(mixins.PermissionRequiredMixin, views.DetailView):
         tz = self.request.session.get('detected_tz')
         if tz:
             timezone = pytz.timezone(str(get_timezone(tz)))
-            return 'Log task for %s' % task.dc.astimezone(timezone).strftime("%d-%m-%Y %H:%M:%S")
+            return 'Log %s task for %s' % (task.template if task.template else '',
+                                           task.dc.astimezone(timezone).strftime("%d-%m-%Y %H:%M:%S"))
         else:
-            return 'Log task for %s' % task.dc.strftime("%d-%m-%Y %H:%M:%S")
+            return 'Log %s task for %s' % (task.template if task.template else '', task.dc.strftime("%d-%m-%Y %H:%M:%S"))
 
     def get_breadcrumbs(self):
         return (
