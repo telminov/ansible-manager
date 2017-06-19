@@ -15,17 +15,16 @@ from core.generic import views
 class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task_template/search.html'
     form_class = core.forms.task_template.Search
-    second_form_class = core.forms.task_template.PaginateBy
-    paginate_by = 15
+    paginate_by = 4
     title = 'Task templates'
     model = models.TaskTemplate
     permission_required = 'core.view_task_template'
 
     def get_paginate_by(self, queryset):
-        if self.request.GET.get('paginate_by'):
+        if self.request.GET.get('paginate_by') == '-1':
+            paginate_by = queryset.count()
+        elif self.request.GET.get('paginate_by'):
             paginate_by = self.request.GET.get('paginate_by')
-        elif self.request.GET.get('paginate_by') == '':
-            paginate_by = 10 ** 10
         else:
             paginate_by = self.paginate_by
         return paginate_by
@@ -53,11 +52,6 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
             if host_groups:
                 queryset = queryset.filter(host_groups__in=host_groups)
         return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super(Search, self).get_context_data(**kwargs)
-        context['form2'] = self.second_form_class(self.request.GET)
-        return context
 
 search = Search.as_view()
 
