@@ -34,7 +34,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
             if name:
                 queryset = queryset.filter(name__icontains=name)
             if address:
-                queryset = queryset.filter(address=address)
+                queryset = queryset.filter(address__contains=address)
             if group:
                 queryset = queryset.filter(groups__in=[group, ])
         return queryset
