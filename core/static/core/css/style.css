@@ -76,7 +76,7 @@ body{
 }
 
 #actual_hosts, #tasks{
-    max-height: 300px;
+    max-height: 80%;
     overflow: auto;
 }
 
@@ -122,4 +122,39 @@ body{
 
 .label-link:hover {
     text-decoration: none
+}
+
+th.sortable::after {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    content: "";
+    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==) no-repeat;
+}
+
+th.sortable.desc::after {
+    display: inline-block;
+    width: 10px;
+    height: 13px;
+    content: "";
+    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=) no-repeat;
+}
+
+th.sortable.asc::after {
+    display: inline-block;
+    width: 10px;
+    height: 7px;
+    content: "";
+    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==) no-repeat;
+}
+
+
+/* full screen */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.custom-container.white-container {
+    min-height: 80%;
 }

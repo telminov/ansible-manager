@@ -1,6 +1,5 @@
 {% extends 'core/base_search.html' %}
-{% load ansible_tag %}
-{% load bootstrap3 %}
+{% load djutils %}
 
 {% block left_buttons %}
     <a href="{% url 'task_template_create' %}" class="btn btn-success">
@@ -14,13 +13,14 @@
 {% endblock %}
 
 {% block table_heads %}
-    <th>Name</th>
+    {% sort_th 'name' 'Name' %}
     <th>Last status</th>
+    <th>Cron</th>
     <th>Hosts</th>
     <th>Groups</th>
     <th>Playbook</th>
     <th>Duration</th>
-    <th>Last start</th>
+    {% sort_th 'last_task' 'Last task' %}
     <th></th>
 {% endblock table_heads %}
 
@@ -34,11 +34,16 @@
                 </a>
             {% endif %}
         </td>
+        <td>
+            {% if object.cron %}
+                <span class="glyphicon glyphicon-asterisk" title="{{ object.cron }}" data-toggle="tooltip"></span>
+            {% endif %}
+        </td>
         <td>{{ object.hosts.count }}</td>
         <td>{{ object.host_groups.count }}</td>
         <td>{{ object.get_playbook_name }}</td>
         <td>{{ last_task.get_duration|default:'Unknown' }}</td>
-        <td>{{ last_task.dc|date:"d-m-Y H:i:s"|default:'Unknown' }}</td>
+        <td>{{ last_task.dc|default:'Unknown' }}</td>
         <td>
             {% if object.get_actual_hosts.exists %}
             <a href="{% url 'task_template_run' object.id %}" data-toggle="tooltip" data-placement="left" title="Run">

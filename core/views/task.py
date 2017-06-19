@@ -1,5 +1,7 @@
 import pytz
 
+from djutils.views.generic import SortMixin
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -14,13 +16,14 @@ from core.generic import mixins
 from core.generic import views
 
 
-class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
+class Search(mixins.PermissionRequiredMixin, SortMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task/search.html'
     form_class = core.forms.task.Search
     paginate_by = 15
     title = 'Tasks'
     model = models.Task
     permission_required = 'core.view_task'
+    sort_params = ['-dc', 'template', 'dc']
 
     def get_paginate_by(self, queryset):
         if self.request.GET.get('paginate_by') == '-1':
@@ -38,7 +41,7 @@ class Search(mixins.PermissionRequiredMixin, mixins.FormMixin, views.ListView):
         )
 
     def get_queryset(self):
-        queryset = super().get_queryset().order_by('-id')
+        queryset = super().get_queryset()
         form = self.get_form()
         if form.is_valid():
             template = form.cleaned_data.get('template')
@@ -145,9 +148,10 @@ class Log(mixins.PermissionRequiredMixin, views.DetailView):
         tz = self.request.session.get('detected_tz')
         if tz:
             timezone = pytz.timezone(str(get_timezone(tz)))
-            return 'Log task for %s' % task.dc.astimezone(timezone).strftime("%d-%m-%Y %H:%M:%S")
+            return 'Log %s task for %s' % (task.template if task.template else '',
+                                           task.dc.astimezone(timezone).strftime("%d-%m-%Y %H:%M:%S"))
         else:
-            return 'Log task for %s' % task.dc.strftime("%d-%m-%Y %H:%M:%S")
+            return 'Log %s task for %s' % (task.template if task.template else '', task.dc.strftime("%d-%m-%Y %H:%M:%S"))
 
     def get_breadcrumbs(self):
         return (

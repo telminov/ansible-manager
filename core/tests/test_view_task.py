@@ -36,7 +36,7 @@ class SearchTaskView(TestCase):
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_search'))
+        response = self.client.get(reverse('task_search'), {'sort': 'dc'})
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/task/search.html')
@@ -58,7 +58,7 @@ class SearchTaskView(TestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('task_search'),
                                    {'template': '2', 'playbook': path + '/test.yml',
-                                    'status': 'fail'})
+                                    'status': 'fail', 'sort': 'dc'})
 
         self.assertEqual(len(response.context['object_list']), 1)
 
@@ -67,7 +67,7 @@ class SearchTaskView(TestCase):
 
     def test_context(self):
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_search'))
+        response = self.client.get(reverse('task_search'), {'sort': 'dc'})
 
         self.assertEqual(response.context['breadcrumbs'][0], ('Home', reverse('index')))
         self.assertEqual(response.context['breadcrumbs'][1], (task.Search.title, ''))
@@ -123,17 +123,16 @@ class CreateTaskView(TestCase):
         f.close()
 
         self.client.force_login(user=self.user)
-        response = self.client.post(reverse('task_create'),
-                                    {'template': '1', 'playbook': path + '/test.yml', 'verbose': 'v',
-                                     'ansible_user': '1', 'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000',
-                                     'form-MIN_NUM_FORMS': '0', 'form-TOTAL_FORMS': '1'})
+        self.client.post(reverse('task_create'),
+                         {'template': '1', 'playbook': path + '/test.yml', 'verbose': 'v',
+                          'ansible_user': '1', 'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000',
+                          'form-MIN_NUM_FORMS': '0', 'form-TOTAL_FORMS': '1'})
         task = models.Task.objects.get(id=2)
 
         self.assertEqual(task.playbook, '/tmp/playbooks/test.yml')
         self.assertEqual(str(task.template), 'Test name task template')
         self.assertEqual(task.verbose, 'v')
         self.assertEqual(str(task.ansible_user), 'Test name')
-        self.assertRedirects(response, reverse('task_search'))
 
         os.remove(path + '/test.yml')
         os.rmdir(path)
@@ -212,7 +211,7 @@ class StopTaskView(TestCase):
         task.save()
         self.client.force_login(user=self.user)
         response = self.client.post(reverse('task_stop', args=['1']))
-        response = self.client.get(response.url)
+        response = self.client.get(response.url, {'sort': 'dc'})
 
         self.assertContains(response, 'Task is not run')
 
@@ -316,4 +315,5 @@ class LogTaskView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][0], ('Home', reverse('index')))
         self.assertEqual(response.context['breadcrumbs'][1], (task.Search.title, reverse('task_search')))
         self.assertEqual(response.context['breadcrumbs'][2],
-                         ('Log task for %s' % models.Task.objects.get(id=1).dc.strftime("%d-%m-%Y %H:%M:%S"), ''))
+                         ('Log %s task for %s' % (models.Task.objects.get(id=1).template,
+                                                  models.Task.objects.get(id=1).dc.strftime("%d-%m-%Y %H:%M:%S")), ''))
