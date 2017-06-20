@@ -7,7 +7,7 @@
         <option value="-1">all</option>
     </select>
     {% if is_paginated %}
-    <ul class="pagination text-center" style="float: right; margin: 0; display: inline; margin-right: 42.9%">
+    <ul class="pagination text-center" style="float: right; margin: 0; display: inline; margin-right: 41%">
         {% if page_obj.has_previous %}
             <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
         {% else %}
