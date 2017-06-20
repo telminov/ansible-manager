@@ -8,6 +8,10 @@
     </a>
 {% endblock left_buttons %}
 
+{% block paginate_by_up %}
+    {% include 'core/paginate/include/paginate.html' %}
+{% endblock %}
+
 {% block table_heads %}
     {% sort_th 'template' 'Template' %}
     {% sort_th 'dc' 'Created' %}
@@ -45,3 +49,7 @@
         {% endif %}
     </td>
 {% endblock table_row %}
+
+{% block paginate_by_down %}
+    {% include 'core/paginate/include/paginate.html' %}
+{% endblock %}

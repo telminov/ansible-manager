@@ -19,11 +19,20 @@ from core.generic import views
 class Search(mixins.PermissionRequiredMixin, SortMixin, mixins.FormMixin, views.ListView):
     template_name = 'core/task/search.html'
     form_class = core.forms.task.Search
-    paginate_by = 20
+    paginate_by = 15
     title = 'Tasks'
     model = models.Task
     permission_required = 'core.view_task'
     sort_params = ['-dc', 'template', 'dc']
+
+    def get_paginate_by(self, queryset):
+        if self.request.GET.get('paginate_by') == '-1':
+            paginate_by = queryset.count()
+        elif self.request.GET.get('paginate_by'):
+            paginate_by = self.request.GET.get('paginate_by')
+        else:
+            paginate_by = self.paginate_by
+        return paginate_by
 
     def get_breadcrumbs(self):
         return (

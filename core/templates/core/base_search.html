@@ -8,7 +8,7 @@
             <div class="row">
                 {% for field in form %}
                     <div class="col-sm-4">
-                        {% bootstrap_field field layout='horizontal' %}
+                        {% bootstrap_field field layout='horizontal' bound_css_class='' %}
                     </div>
                 {% endfor %}
             </div>
@@ -40,7 +40,11 @@
                 Objects not found
             </div>
         {% else %}
-            <div><h4>Count: {{ object_list|length }}</h4></div>
+            <div>
+                <h4>Count: {{ page_obj.paginator.count }}</h4>
+                {% block paginate_by_up %}
+                {% endblock %}
+            </div>
             <table class="table {% block table_class %}table-hover{% endblock table_class %}">
                 <thead>
                     {% block thead %}
@@ -55,7 +59,7 @@
                     {% block tbody %}
                         {% for object in object_list %}
                             <tr>
-                                <td>{{ forloop.counter }}</td>
+                                <td>{{ forloop.counter0|add:page_obj.start_index }} </td>
                                 {% block table_row %}
                                 {% endblock table_row %}
                             </tr>
@@ -63,6 +67,8 @@
                     {% endblock tbody %}
                 </tbody>
             </table>
+            {% block paginate_by_down %}
+            {% endblock %}
         {% endif %}
     </div>
 {% endblock container %}
