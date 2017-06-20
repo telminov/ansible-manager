@@ -1,13 +1,16 @@
 {% load ansible_tag %}
-
-<select class="form-control custom-paginate" style="width: 6%; display: inline">
+<div class="raw">
+<div class="col-sm-1">
+<select class="form-control custom-paginate">
         <option value="15">15</option>
         <option value="30">30</option>
         <option value="50">50</option>
         <option value="-1">all</option>
     </select>
+</div>
     {% if is_paginated %}
-    <ul class="pagination text-center" style="float: right; margin: 0; display: inline; margin-right: 41%">
+<div class="col-sm-11" style="text-align: center">
+    <ul class="pagination text-center" style="margin: 0; padding-right: 11rem">
         {% if page_obj.has_previous %}
             <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
         {% else %}
@@ -36,4 +39,6 @@
             <li class="disabled"><span>&raquo;</span></li>
         {% endif %}
     </ul>
+</div>
+        </div>
 {% endif %}

@@ -32,7 +32,7 @@ body{
 
 .white-container{
     background-color: rgba(255, 255, 255, 0.89);
-    padding: 10px;
+    padding: 1rem 1rem 5rem 1rem;;
     border-radius: 3px;
 }
 
