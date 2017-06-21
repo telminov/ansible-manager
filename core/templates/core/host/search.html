@@ -7,6 +7,10 @@
     </a>
 {% endblock left_buttons %}
 
+{% block paginate_by_up %}
+    {% include 'core/paginate/include/paginate.html' %}
+{% endblock %}
+
 {% block table_heads %}
     <th>Name</th>
     <th>Address</th>
@@ -20,3 +24,7 @@
     <td>{{ object.groups.count }}</td>
     <td>{{ object.vars.count }}</td>
 {% endblock table_row %}
+
+{% block paginate_by_down %}
+    {% include 'core/paginate/include/paginate.html' %}
+{% endblock %}
