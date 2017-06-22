@@ -1,16 +1,19 @@
-from djutils.views.generic import SortMixin
+import os
 
+from django.http import HttpResponse
 from django.db.models import Max
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic.detail import SingleObjectMixin
+from djutils.views.generic import SortMixin
 
 import core.forms.task_template
 from core import consts
 
 from core import models
+from core.datatools import ansible
 from core.generic import mixins
 from core.generic import views
 
@@ -155,3 +158,18 @@ class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
 
         return redirect(reverse('task_log', kwargs={'pk': task.id}))
 run = Run.as_view()
+
+
+class Inventory(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
+    permission_required = 'core.inventory_task'
+    model = models.TaskTemplate
+
+    def get(self, *args, **kwargs):
+        task_template = self.get_object()
+        inventory_path = ansible.create_inventory(task_template)
+        with open(inventory_path) as inventory_file:
+            inventory_content = inventory_file.read()
+        os.remove(inventory_path)
+        return HttpResponse(inventory_content, content_type='text/plain')
+inventory = Inventory.as_view()
+

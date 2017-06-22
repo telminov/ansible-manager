@@ -20,12 +20,14 @@ urlpatterns = [
     url(r'^task_templates/(?P<pk>\d+)/$', task_template.edit, name='task_template_update'),
     url(r'^task_templates/(?P<pk>\d+)/run/$', task_template.run, name='task_template_run'),
     url(r'^task_templates/(?P<pk>\d+)/delete/$', task_template.delete, name='task_template_delete'),
+    url(r'^task_templates/(?P<pk>\d+)/inventory/$', task_template.inventory, name='task_template_inventory'),
 
     url(r'^tasks/$', task.search, name='task_search'),
     url(r'^tasks/create/$', task.create, name='task_create'),
     url(r'^tasks/(?P<pk>\d+)/stop/$', task.stop, name='task_stop'),
     url(r'^tasks/(?P<pk>\d+)/replay/$', task.replay, name='task_replay'),
     url(r'^tasks/(?P<pk>\d+)/log/$', task.log, name='task_log'),
+    url(r'^tasks/(?P<pk>\d+)/inventory/$', task.inventory, name='task_inventory'),
 
     url(r'^ansible_users/$', ansible_user.search, name='ansible_user_search'),
     url(r'^ansible_users/create/$', ansible_user.edit, name='ansible_user_create'),

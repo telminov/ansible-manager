@@ -93,7 +93,7 @@ class HostGroup(models.Model):
 
 class Host(models.Model):
     name = models.CharField(max_length=255, blank=True)
-    address = models.CharField(max_length=256)
+    address = models.CharField(max_length=255)
     groups = models.ManyToManyField(HostGroup, related_name='hosts')
     vars = models.ManyToManyField(Variable, related_name='hosts')
 
@@ -106,6 +106,18 @@ class Host(models.Model):
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.address) if self.name else self.address
+
+    def get_vars(self):
+        host_vars = {}
+
+        for group in self.groups.all():
+            for group_var in group.vars.all():
+                host_vars[group_var.name] = group_var
+
+        for var in self.vars.all():
+            host_vars[var.name] = var
+
+        return host_vars.values()
 
 
 class AnsibleUser(models.Model):
@@ -187,6 +199,7 @@ class Task(TaskOperationsMixin, models.Model):
             ('stop_task', 'Stop Task'),
             ('run_task', 'Run Task'),
             ('replay_task', 'Replay Task'),
+            ('inventory_task', 'View Task Inventory'),
         )
 
     def __str__(self):

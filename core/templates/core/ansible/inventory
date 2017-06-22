@@ -1,28 +1,3 @@
-{% for host in object.get_hosts_without_groups %}
-{{ host.address }} {% for var in host.vars.all %}{{ var.name }}={{ var.value }} {% endfor %}
-{% endfor %}
-
-{% for group in object.host_groups.all %}
-{% if group.hosts.all %}
-[{{ group.name }}]
-{% for host in group.hosts.all %}
-{{ host.address }}
-{% endfor %}
-{% endif %}
-{% endfor %}
-
-{% for group in object.host_groups.all %}
-{% if group.vars.all %}
-[{{ group.name }}:vars]
-{% for var in group.vars.all %}
-{{ var.name }}={{ var.value }}
-{% endfor %}
-{% endif %}
-{% endfor %}
-
-[all:vars]
-{% for host in object.get_actual_hosts %}
-{% for var in object.vars.all %}
-{{ var.name }}={{ var.value }}
-{% endfor %}
+{% for host, vars in hosts_vars.items %}
+{{ host.address }}  {% for var in vars %}{{ var.name }}={{ var.value }} {% endfor %}
 {% endfor %}
