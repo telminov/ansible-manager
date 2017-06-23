@@ -22,13 +22,12 @@ class Scheduler:
             if template_task.have_uncompleted_task():
                 continue
 
-            if template_task.tasks.exists():
-                last_time = template_task.tasks.last().logs.last().dc.astimezone(timezone.get_current_timezone())
-            else:
-                last_time = template_task.cron_dt.astimezone(timezone.get_current_timezone())
+            last_time = template_task.cron_dt.astimezone(timezone.get_current_timezone())
             next_time = croniter(template_task.cron, last_time).get_next(datetime.datetime).astimezone(timezone.get_current_timezone())
             if next_time <= now:
                 self.run_task(template_task)
+                template_task.cron_dt = timezone.now()
+                template_task.save()
 
     def run_task(self, template_task):
         task = template_task.create_task(user=None, is_cron_created=True)
