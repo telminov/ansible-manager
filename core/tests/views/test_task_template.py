@@ -50,6 +50,42 @@ class SearchTaskTemplateView(TestCase):
 
         self.assertEqual(len(response.context['object_list']), 1)
 
+    def test_paginate(self):
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_template_search'), {'sort': 'name', 'paginate_by': '1'})
+
+        self.assertEqual(len(response.context['object_list']), 1)
+
+    def test_paginate_all(self):
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_template_search'), {'sort': 'name', 'paginate_by': '-1'})
+
+        self.assertEqual(len(response.context['object_list']), 2)
+
+    def test_sort_queryset_ltask(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        self.client.get(reverse('task_template_run', args='1'))
+        response = self.client.get(reverse('task_template_search'), {'sort': 'last_task'})
+
+        self.assertEqual(response.context['object_list'][0], models.TaskTemplate.objects.get(id=2))
+
+    def test_sort_queryset_reverse_ltask(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        self.client.get(reverse('task_template_run', args='1'))
+        response = self.client.get(reverse('task_template_search'), {'sort': '-last_task'})
+
+        self.assertEqual(response.context['object_list'][0], models.TaskTemplate.objects.get(id=1))
+
     def test_context(self):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('task_template_search'), {'sort': 'name'})
@@ -309,3 +345,50 @@ class RunTaskTemplateView(TestCase):
         response = self.client.get(response.url)
 
         self.assertContains(response, 'The same task was not started. You have been redirected to a running task.')
+
+
+class InventoryView(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(
+            username='Serega',
+            password='passwd',
+        )
+        self.user.user_permissions.add(Permission.objects.get(codename='inventory_task'))
+        var = factories.VariableFactory.create()
+        factories.HostGroupFactory.create()
+        host = factories.HostFactory.create(vars=(var,))
+        ansb_usr = factories.AnsibleUserFactory.create()
+        factories.AnsibleUserFactory.create(name='two')
+        factories.TaskTemplateFactory.create(ansible_user=ansb_usr, hosts=(host,))
+
+    def test_auth(self):
+        response = self.client.get(reverse('task_template_inventory', args=['1']))
+        redirect_url = reverse('login') + '?next=' + reverse('task_template_inventory', args=['1'])
+
+        self.assertRedirects(response, redirect_url)
+
+    def test_permission(self):
+        self.user.user_permissions.remove(Permission.objects.get(codename='inventory_task'))
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_template_inventory', args=['1']))
+
+        self.assertRedirects(response, reverse('permission_denied'))
+
+    def test_smoke(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse('task_template_inventory', args='1'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_get(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
+        self.client.force_login(user=self.user)
+
+        self.client.get(reverse('task_template_run', args='1'))
+        response = self.client.get(reverse('task_template_inventory', args='1'))
+
+        self.assertContains(response, '{}  {}={}'.format(models.Host.objects.get(id=1).address,
+                                                         models.Variable.objects.get(id=1).name,
+                                                         models.Variable.objects.get(id=1).value))

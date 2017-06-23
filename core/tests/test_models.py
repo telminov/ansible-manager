@@ -49,6 +49,23 @@ class ModelHost(TestCase):
         self.assertEqual(str(host_with_address), 'qwer (192.168.12.20)')
         self.assertEqual(str(host_without_address), '192.168.44.74')
 
+    def test_get_vars(self):
+        var = models.Variable.objects.create(
+            name='test',
+            value='value',
+        )
+        group = models.HostGroup.objects.create(
+            name='test group'
+        )
+        group.vars.add(var)
+        group.save()
+
+        host = models.Host.objects.get(id=1)
+        host.groups.add(group)
+        host.save()
+
+        self.assertEqual(list(host.get_vars()), [models.Variable.objects.get(id=1)])
+
 
 class ModelAnsibleUser(TestCase):
 
@@ -91,6 +108,43 @@ class ModelTaskTemplate(TestCase):
         self.assertEqual(answer, models.Task.objects.get(template=task_template))
         self.assertEqual(models.TaskLog.objects.all().count(), 1)
         self.assertEqual(models.TaskLog.objects.get(message='Task created by user Serega').status, 'wait')
+
+    def test_uncompleted_task_false(self):
+        self.assertFalse(models.TaskTemplate.objects.get(id=1).have_uncompleted_task())
+
+    def test_uncompleted_task_true(self):
+        models.AnsibleUser.objects.create(
+            name='Test'
+        )
+        models.Task.objects.create(
+            playbook='/home/',
+            template=models.TaskTemplate.objects.get(id=1),
+            ansible_user=models.AnsibleUser.objects.get(id=1),
+            status='wait'
+        )
+
+        self.assertTrue(models.TaskTemplate.objects.get(id=1).have_uncompleted_task())
+
+    def test_get_hosts_without_group(self):
+        host_without_group = models.Host.objects.create(
+            name='test',
+            address='192.168.19.19'
+        )
+        group = models.HostGroup.objects.create(
+            name='group test'
+        )
+        host_with_group = models.Host.objects.create(
+            name='test test',
+            address='192.168.19.20',
+        )
+        host_with_group.groups.add(group)
+        host_with_group.save()
+        template = models.TaskTemplate.objects.get(id=1)
+        template.hosts.add(host_with_group, host_without_group)
+        template.host_groups.add(group)
+        template.save()
+
+        self.assertEqual(len(template.get_hosts_without_groups()), 1)
 
 
 class ModelTask(TestCase):
