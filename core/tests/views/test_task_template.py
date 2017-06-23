@@ -155,7 +155,7 @@ class EditTaskTemplateView(TestCase):
         os.remove(path + '/test.yml')
         os.rmdir(path)
 
-    def test_create_invalid(self):
+    def test_create_invalid_playbook(self):
         self.client.force_login(user=self.user)
         factories.AnsibleUserFactory.create()
         factories.HostFactory.create()
@@ -169,6 +169,35 @@ class EditTaskTemplateView(TestCase):
                                      'form-TOTAL_FORMS': '1'})
 
         self.assertContains(response, 'This field is required.')
+
+    @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
+    def test_create_invalid_cron(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
+        self.client.force_login(user=self.user)
+        factories.AnsibleUserFactory.create()
+        factories.HostFactory.create()
+        factories.HostGroupFactory.create()
+
+        path = settings.ANSIBLE_PLAYBOOKS_PATH
+        os.mkdir(path)
+
+        f = open(path + '/test.yml', 'w')
+        f.write('- hosts: all\n'
+                '  roles:\n'
+                '   - preconf\n'
+                '  tags: preconf')
+        f.close()
+
+        response = self.client.post(reverse('task_template_create'),
+                                    {'name': 'Test name', 'ansible_user': '1', 'playbook': path + '/test.yml',
+                                     'hosts': '1', 'host_groups': '1', 'description': 'Test description',
+                                     'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-MIN_NUM_FORMS': '0',
+                                     'form-TOTAL_FORMS': '1', 'cron': 'asfsdsdf'})
+
+        self.assertContains(response, 'Invalid value cron')
+
+        os.remove(path + '/test.yml')
+        os.rmdir(path)
 
     @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_edit(self):
