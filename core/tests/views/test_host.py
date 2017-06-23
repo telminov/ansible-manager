@@ -7,7 +7,7 @@ from django.contrib.auth.models import Permission
 
 from core import models
 from core.views import host
-from .factories import create_data_for_search_host
+from core.tests.factories import create_data_for_search_host
 
 
 class SearchHostView(TestCase):
@@ -51,6 +51,22 @@ class SearchHostView(TestCase):
                                    {'name': 'Test', 'address': '192.168.19.19', 'group': 1})
 
         self.assertEqual(len(response.context['object_list']), 2)
+
+    def test_paginate(self):
+        create_data_for_search_host()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('host_search'), {'paginate_by': '1'})
+
+        self.assertEqual(len(response.context['object_list']), 1)
+
+    def test_paginate_all(self):
+        create_data_for_search_host()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('host_search'), {'paginate_by': '-1'})
+
+        self.assertEqual(len(response.context['object_list']), 3)
 
     def test_context(self):
         self.client.force_login(user=self.user)

@@ -9,7 +9,7 @@ from django.contrib.auth.models import Permission
 
 from core import models
 from core.views import task
-from . import factories
+from core.tests import factories
 
 
 class SearchTaskView(TestCase):
@@ -64,6 +64,22 @@ class SearchTaskView(TestCase):
 
         os.remove(path + '/test.yml')
         os.rmdir(path)
+
+    def test_paginate(self):
+        factories.create_data_for_search_task()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_search'), {'paginate_by': '1', 'sort': 'dc'})
+
+        self.assertEqual(len(response.context['object_list']), 1)
+
+    def test_paginate_all(self):
+        factories.create_data_for_search_task()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_search'), {'paginate_by': '-1', 'sort': 'dc'})
+
+        self.assertEqual(len(response.context['object_list']), 2)
 
     def test_context(self):
         self.client.force_login(user=self.user)
@@ -308,6 +324,17 @@ class LogTaskView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/task/log.html')
 
+    def test_title(self):
+        self.client.force_login(user=self.user)
+
+        session = self.client.session
+        session['detected_tz'] = 'Europe/Moscow'
+        session.save()
+
+        response = self.client.get(reverse('task_log', args='1'))
+
+        self.assertContains(response, 'Log Test name task template task for')
+
     def test_context(self):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('task_log', args='1'))
@@ -317,3 +344,54 @@ class LogTaskView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2],
                          ('Log %s task for %s' % (models.Task.objects.get(id=1).template,
                                                   models.Task.objects.get(id=1).dc.strftime("%d-%m-%Y %H:%M:%S")), ''))
+
+
+class InventoryView(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(
+            username='Serega',
+            password='passwd',
+        )
+        self.user.user_permissions.add(Permission.objects.get(codename='inventory_task'))
+        factories.AnsibleUserFactory.create()
+        var = factories.VariableFactory.create()
+        group_with_test = factories.HostGroupFactory.create()
+        host_with_test = factories.HostFactory.create(groups=(group_with_test,), vars=(var,))
+        tsk_tmlt_wth_tst = factories.TaskTemplateFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,))
+        factories.TaskFactory.create(
+            hosts=(host_with_test,),
+            host_groups=(group_with_test,),
+            template=tsk_tmlt_wth_tst,
+            playbook='/home/pc/ansible/playbooks/main.yml',
+            status='completed'
+        )
+
+    def test_auth(self):
+        response = self.client.get(reverse('task_inventory', args=['1']))
+        redirect_url = reverse('login') + '?next=' + reverse('task_inventory', args=['1'])
+
+        self.assertRedirects(response, redirect_url)
+
+    def test_permission(self):
+        self.user.user_permissions.remove(Permission.objects.get(codename='inventory_task'))
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_inventory', args=['1']))
+
+        self.assertRedirects(response, reverse('permission_denied'))
+
+    def test_smoke(self):
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_inventory', args='1'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_get(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse('task_inventory', args='1'))
+
+        self.assertContains(response,
+                            '{}  {}={}'.format(str(models.Host.objects.get(id=1).address),
+                                               str(models.Variable.objects.get(id=1).name),
+                                               str(models.Variable.objects.get(id=1).value)))

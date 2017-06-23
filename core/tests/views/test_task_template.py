@@ -8,7 +8,7 @@ from django.contrib.auth import settings
 
 from core import models
 from core.views import task_template
-from . import factories
+from core.tests import factories
 
 
 class SearchTaskTemplateView(TestCase):
@@ -103,7 +103,7 @@ class EditTaskTemplateView(TestCase):
                                     {'name': 'Test name', 'ansible_user': '1', 'playbook': path + '/test.yml',
                                      'hosts': '1', 'host_groups': '1', 'description': 'Test description',
                                      'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-MIN_NUM_FORMS': '0',
-                                     'form-TOTAL_FORMS': '1'})
+                                     'form-TOTAL_FORMS': '1', 'cron': '0 * * * *'})
         task_template_var = models.TaskTemplate.objects.get(id=1)
 
         self.assertEqual(str(task_template_var), 'Test name')
@@ -112,6 +112,7 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(str(task_template_var.hosts.all()[0]), 'test name host (192.168.19.19)')
         self.assertEqual(str(task_template_var.host_groups.all()[0]), 'Test host group name')
         self.assertEqual(str(task_template_var.description), 'Test description')
+        self.assertNotEqual(task_template_var.cron_dt, None)
         self.assertRedirects(response, reverse('task_template_update',
                                                kwargs={'pk': models.TaskTemplate.objects.last().id}))
 
@@ -212,7 +213,7 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2], ('Test name task template', ''))
 
 
-class DeleteTaskTempletView(TestCase):
+class DeleteTaskTemplateView(TestCase):
 
     def setUp(self):
         self.user = User.objects.create(

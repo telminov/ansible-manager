@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from . import factories
+from core.tests import factories
 
 
 class TaskLogsApiView(TestCase):
