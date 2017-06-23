@@ -13,8 +13,8 @@ class Ansible(TestCase):
 
     def setUp(self):
         var = models.Variable.objects.create(
-            name='Test name',
-            value='Test var'
+            name='Test_name',
+            value='Test_var'
         )
         host_group = models.HostGroup.objects.create(
             name='Test host_group',
@@ -59,7 +59,8 @@ class Ansible(TestCase):
         create_inventory_mock.return_value = test_path_inventory
 
         self.assertEqual(models.Task.objects.get(playbook='/home/').get_ansible_command(),
-                         '/usr/bin/ansible-playbook -i ' + test_path_inventory + ' -u Serega -v /home/')
+                         '/usr/bin/ansible-playbook -i ' + test_path_inventory +
+                         ' -u Serega -e "Test_name=Test_var " -v /home/')
 
     # TODO
     # @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
