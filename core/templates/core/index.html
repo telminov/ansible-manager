@@ -35,7 +35,8 @@
                             <tr>
                                 <th>№</th>
                                 <th>Template</th>
-                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>Duration</th>
                                 <th>Status</th>
                                 <th></th>
                             </tr>
@@ -47,6 +48,7 @@
                                 <td>{% if task.template %}<a href="{% url 'task_template_update' task.template.pk %}">
                                     {{ task.template }}</a>{% endif %}</td>
                                 <td><a href="{% url 'task_log' task.id %}">{{ task.dc }}</a></td>
+                                <td>{{ task.get_duration|default:'unknown' }}</td>
                                 <td>
                                     {% include 'core/task/status_label.html' with task=task %}
                                 </td>
