@@ -62,25 +62,23 @@ class Ansible(TestCase):
                          '/usr/bin/ansible-playbook -i ' + test_path_inventory +
                          ' -u Serega -e "Test_name=Test_var " -v /home/')
 
-    # TODO
-    # @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
-    # def test_create_inventory(self, tempfile_mock):
-    #     test_path_tempfile = '/tmp/test'
-    #     tempfile_mock.return_value = test_path_tempfile
-    #     os.mkdir(test_path_tempfile)
-    #
-    #     self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
-    #                      test_path_tempfile + '/inventory')
-    #     f = open(test_path_tempfile + '/inventory', 'r')
-    #     inventory_file_content = ' '.join(''.join(f.read().split('\n')).split(' '))
-    #     must_be_inventory_file_content = '192.168.128.20 Test name=Test var [Test host_group]192.168.59.44[Test ' \
-    #                                      'host_group:vars]Test name=Test var' \
-    #                                      '[all:vars]Test name=Test varTest name=Test var'
-    #
-    #     self.assertEqual(inventory_file_content, must_be_inventory_file_content)
-    #
-    #     f.close()
-    #     shutil.rmtree(test_path_tempfile)
+    @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
+    def test_create_inventory(self, tempfile_mock):
+        test_path_tempfile = '/tmp/test'
+        tempfile_mock.return_value = test_path_tempfile
+        os.mkdir(test_path_tempfile)
+
+        self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
+                         test_path_tempfile + '/inventory')
+        f = open(test_path_tempfile + '/inventory', 'r')
+        inventory_file_content = ' '.join(''.join(f.read().split('\n')).split(' '))
+
+        must_be_inventory_file_content = '192.168.59.44  Test_name=Test_var 192.168.128.20  Test_name=Test_var '
+
+        self.assertEqual(inventory_file_content, must_be_inventory_file_content)
+
+        f.close()
+        shutil.rmtree(test_path_tempfile)
 
     def test_inventory_file_path(self):
         self.assertEqual(ansible.get_inventory_file_path('qwerty 12345 test some 55'), 'test')
@@ -93,6 +91,8 @@ class Tasks(TestCase):
             username='Serega',
             password='passwd'
         )
+
+    def test_check_progress_tasks_not_pid(self):
         models.Task.objects.create(
             playbook='/home/',
             status='in_progress',
@@ -100,8 +100,21 @@ class Tasks(TestCase):
             pid=99999999,
         )
 
-    def test_check_progress_tasks_not_pid(self):
         task_manager = tasks.TaskManager()
         task_manager.check_in_progress_tasks()
 
         self.assertEqual(len(models.TaskLog.objects.filter(message='Task with pid 99999999 is not running')), 1)
+
+    def test_start_waiting_task(self):
+        models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.start_waiting_tasks()
+
+        self.assertEqual(models.Task.objects.get().status, 'in_progress')
+        self.assertEqual(models.TaskLog.objects.get().message, 'Start task with pid 99999')

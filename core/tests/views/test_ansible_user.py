@@ -5,37 +5,19 @@ from django.contrib.auth.models import Permission
 
 from core import models
 from core.views import ansible_user
+from core.tests.mixins import TestDefaultMixin
 
 
-class SearchAnsibleUserView(TestCase):
+class SearchAnsibleUserView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'view_ansible_user'
+        self.url = reverse('ansible_user_search')
         self.user.user_permissions.add(Permission.objects.get(codename='view_ansible_user'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('ansible_user_search'))
-        redirect_url = reverse('login') + '?next=' + reverse('ansible_user_search')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='view_ansible_user'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('ansible_user_search'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('ansible_user_search'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/ansible_user/search.html')
 
     def test_get_queryset(self):
         models.AnsibleUser.objects.create(
@@ -63,35 +45,16 @@ class SearchAnsibleUserView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][1], (ansible_user.Search.title, ''))
 
 
-class EditAnsibleUserView(TestCase):
+class EditAnsibleUserView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'add_ansibleuser'
+        self.url = reverse('ansible_user_create')
         self.user.user_permissions.add(Permission.objects.get(codename='add_ansibleuser'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('ansible_user_create'))
-        redirect_url = reverse('login') + '?next=' + reverse('ansible_user_create')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='add_ansibleuser'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('ansible_user_create'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('ansible_user_create'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/ansible_user/edit.html')
 
     def test_create(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_ansible_user'))
@@ -149,38 +112,19 @@ class EditAnsibleUserView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2], (str(models.AnsibleUser.objects.get(id=1)), ''))
 
 
-class DeleteAnsibleUserView(TestCase):
+class DeleteAnsibleUserView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'delete_ansibleuser'
+        self.url = reverse('ansible_user_delete', args=['1'])
         self.user.user_permissions.add(Permission.objects.get(codename='delete_ansibleuser'))
         models.AnsibleUser.objects.create(
             name='Test ansible user'
         )
-
-    def test_auth(self):
-        response = self.client.get(reverse('ansible_user_delete', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('ansible_user_delete', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='delete_ansibleuser'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('ansible_user_delete', args=['1']))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('ansible_user_delete', args=['1']))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/ansible_user/delete.html')
 
     def test_delete(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_ansible_user'))

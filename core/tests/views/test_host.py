@@ -8,25 +8,21 @@ from django.contrib.auth.models import Permission
 from core import models
 from core.views import host
 from core.tests.factories import create_data_for_search_host
+from core.tests.mixins import TestDefaultMixin
 
 
-class SearchHostView(TestCase):
+class SearchHostView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
-        self.user.user_permissions.add(Permission.objects.get(codename='view_host'))
+        self.pem = 'view_host'
+        self.user.user_permissions.add(Permission.objects.get(codename=self.pem))
+        self.url = reverse('host_search')
 
-    def test_auth(self):
-        response = self.client.get(reverse('host_search'))
-        redirect_url = reverse('login') + '?next=' + reverse('host_search')
-
-        self.assertRedirects(response, redirect_url)
-
-    # Здесь проверяем миксин
-    def test_permissions(self):
+    def test_permissions_mixin(self):
         self.user.user_permissions.remove(Permission.objects.get(codename='view_host'))
 
         self.client.force_login(user=self.user)
@@ -35,13 +31,6 @@ class SearchHostView(TestCase):
         url = reverse('permission_denied') + '?next=%s' % urllib.parse.quote(http_referer)
 
         self.assertRedirects(response, url)
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('host_search'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/host/search.html')
 
     def test_get_queryset(self):
         create_data_for_search_host()
@@ -76,39 +65,19 @@ class SearchHostView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][1], (host.Search.title, ''))
 
 
-class EditHostView(TestCase):
+class EditHostView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'add_host'
+        self.url = reverse('host_create')
         self.user.user_permissions.add(Permission.objects.get(codename='add_host'))
         models.HostGroup.objects.create(
             name='Test name',
         )
-
-    def test_auth(self):
-        response = self.client.get(reverse('host_create'))
-        redirect_url = reverse('login') + '?next=' + reverse('host_create')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permissions(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='add_host'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('host_create'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-
-        response = self.client.get(reverse('host_create'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/host/edit.html')
 
     def test_create(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_host'))
@@ -194,40 +163,21 @@ class EditHostView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2], (str(models.Host.objects.get(pk=1)), ''))
 
 
-class DeleteHostView(TestCase):
+class DeleteHostView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'delete_host'
+        self.url = reverse('host_delete', args='1')
         self.user.user_permissions.add(Permission.objects.get(codename='delete_host'))
         self.user.user_permissions.add(Permission.objects.get(codename='view_host'))
         models.Host.objects.create(
             name='Test',
             address='192.168.19.19'
         )
-
-    def test_auth(self):
-        response = self.client.get(reverse('host_delete', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('host_delete', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='delete_host'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('host_delete', args=['1']))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('host_delete', args=['1']))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/host/delete.html')
 
     def test_delete_host(self):
         self.client.force_login(user=self.user)

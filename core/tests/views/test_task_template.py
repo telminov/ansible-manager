@@ -9,30 +9,19 @@ from django.contrib.auth import settings
 from core import models
 from core.views import task_template
 from core.tests import factories
+from core.tests.mixins import TestDefaultMixin
 
 
-class SearchTaskTemplateView(TestCase):
+class SearchTaskTemplateView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'view_task_template'
+        self.url = reverse('task_template_search')
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_search'))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_search')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='view_task_template'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_search'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -94,28 +83,16 @@ class SearchTaskTemplateView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][1], (task_template.Search.title, ''))
 
 
-class EditTaskTemplateView(TestCase):
+class EditTaskTemplateView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'add_tasktemplate'
+        self.url = reverse('task_template_create')
         self.user.user_permissions.add(Permission.objects.get(codename='add_tasktemplate'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_create'))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_create')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='add_tasktemplate'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_create'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
 
     @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_create(self):
@@ -278,39 +255,21 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2], ('Test name task template', ''))
 
 
-class DeleteTaskTemplateView(TestCase):
+class DeleteTaskTemplateView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'delete_tasktemplate'
+        self.url = reverse('task_template_delete', args=['1'])
         self.user.user_permissions.add(Permission.objects.get(codename='delete_tasktemplate'))
         factories.HostGroupFactory.create()
         factories.HostFactory.create()
         ansb_usr = factories.AnsibleUserFactory.create()
         factories.AnsibleUserFactory.create(name='two')
         factories.TaskTemplateFactory.create(ansible_user=ansb_usr)
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_delete', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_delete', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='delete_tasktemplate'))
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_delete', args=['1']))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_delete', args=['1']))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/task_template/delete.html')
 
     def test_delete(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
@@ -376,13 +335,15 @@ class RunTaskTemplateView(TestCase):
         self.assertContains(response, 'The same task was not started. You have been redirected to a running task.')
 
 
-class InventoryView(TestCase):
+class InventoryView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'inventory_task'
+        self.url = reverse('task_template_inventory', args=['1'])
         self.user.user_permissions.add(Permission.objects.get(codename='inventory_task'))
         var = factories.VariableFactory.create()
         factories.HostGroupFactory.create()
@@ -390,26 +351,6 @@ class InventoryView(TestCase):
         ansb_usr = factories.AnsibleUserFactory.create()
         factories.AnsibleUserFactory.create(name='two')
         factories.TaskTemplateFactory.create(ansible_user=ansb_usr, hosts=(host,))
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_inventory', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_inventory', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='inventory_task'))
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_inventory', args=['1']))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-
-        response = self.client.get(reverse('task_template_inventory', args='1'))
-
-        self.assertEqual(response.status_code, 200)
 
     def test_get(self):
         self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
