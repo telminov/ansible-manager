@@ -104,17 +104,3 @@ class Tasks(TestCase):
         task_manager.check_in_progress_tasks()
 
         self.assertEqual(len(models.TaskLog.objects.filter(message='Task with pid 99999999 is not running')), 1)
-
-    def test_start_waiting_task(self):
-        models.Task.objects.create(
-            playbook='/home/',
-            status='wait',
-            user=self.user,
-            pid=99999,
-        )
-
-        task_manager = tasks.TaskManager()
-        task_manager.start_waiting_tasks()
-
-        self.assertEqual(models.Task.objects.get().status, 'in_progress')
-        self.assertEqual(models.TaskLog.objects.get().message, 'Start task with pid 99999')
