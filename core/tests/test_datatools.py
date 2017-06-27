@@ -3,7 +3,7 @@ import os
 import shutil
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from core import models
 from core.datatools import ansible, tasks
@@ -126,6 +126,7 @@ class Tasks(TestCase):
         self.assertIn('Start task with pid', models.TaskLog.objects.get().message)
         self.assertEqual(models.Task.objects.get().status, 'in_progress')
 
+    @override_settings(ANSIBLE_WORK_DIR='/tmp/')
     @mock.patch('django.db.connection')
     def test_run_task_invalid(self, connection):
         connection.return_value = True
