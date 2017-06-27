@@ -104,3 +104,82 @@ class Tasks(TestCase):
         task_manager.check_in_progress_tasks()
 
         self.assertEqual(len(models.TaskLog.objects.filter(message='Task with pid 99999999 is not running')), 1)
+
+    @mock.patch('django.db.connection')
+    def test_start_waiting_task(self, connection):
+        connection.return_value = True
+
+        an_user = models.AnsibleUser.objects.create(
+            name='Test',
+        )
+        models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+            ansible_user=an_user,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.start_waiting_tasks()
+
+        self.assertIn('Start task with pid', models.TaskLog.objects.get().message)
+        self.assertEqual(models.Task.objects.get().status, 'in_progress')
+
+    @mock.patch('django.db.connection')
+    def test_run_task_invalid(self, connection):
+        connection.return_value = True
+
+        an_user = models.AnsibleUser.objects.create(
+            name='Test',
+        )
+        task = models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+            ansible_user=an_user,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.run_task(task.id)
+
+        self.assertIn('Command: ', models.TaskLog.objects.get(id=1).message)
+        self.assertIn('Working directory: ', models.TaskLog.objects.get(id=2).message)
+        self.assertIn('Failed with status code ', models.TaskLog.objects.all().last().message)
+
+    @mock.patch('asyncio.get_event_loop')
+    @mock.patch('django.db.connection')
+    def test_run_task_exception(self, connection, p):
+        connection.return_value = True
+        p.return_value = 0
+
+        an_user = models.AnsibleUser.objects.create(
+            name='Test',
+        )
+        task = models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+            ansible_user=an_user,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.run_task(task.id)
+
+        self.assertIn('Progress error', models.TaskLog.objects.all().last().message)
+
+    def test_stop_task(self):
+        task = models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.stop_task(task)
+
+        self.assertEqual(models.TaskLog.objects.get().message, 'Task stopped')
+        self.assertEqual(models.Task.objects.get().status, 'stopped')
