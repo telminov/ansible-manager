@@ -269,7 +269,7 @@ class LogTaskView(TestDefaultMixin, TestCase):
 
         response = self.client.get(reverse('task_log', args='1'))
 
-        self.assertContains(response, 'Log "Test name task template" task for')
+        self.assertIn('Log "Test name task template" task for', response.context['title'])
 
     def test_context(self):
         self.client.force_login(user=self.user)
