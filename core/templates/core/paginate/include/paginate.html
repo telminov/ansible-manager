@@ -1,44 +1,45 @@
 {% load ansible_tag %}
+
 <div class="raw">
-<div class="col-sm-1">
-<select class="form-control custom-paginate">
-        <option value="15">15</option>
-        <option value="30">30</option>
-        <option value="50">50</option>
-        <option value="-1">all</option>
-    </select>
-</div>
+    <div class="col-sm-1">
+        <select class="form-control custom-paginate">
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="-1">all</option>
+        </select>
+    </div>
     {% if is_paginated %}
-<div class="col-sm-11" style="text-align: center">
-    <ul class="pagination text-center" style="margin: 0; padding-right: 11rem">
-        {% if page_obj.has_previous %}
-            <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator.page_range %}
-            {% if page_obj.number == i %}
-                <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
+    <div class="col-sm-11" style="text-align: center">
+        <ul class="pagination text-center" style="margin: 0; padding-right: 11rem">
+            {% if page_obj.has_previous %}
+                <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
             {% else %}
-                <li class="page-item">
-                    {% if i == 1 %}
-                        <a class="active" href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                    {% else %}
-                        {% if i|add:"-2" <= page_obj.number and page_obj.number <= i|add:"2" %}
-                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                        {% elif i|divisibleby:"10" or i == page_obj.paginator.num_pages %}
-                            <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                        {% endif %}
-                    {% endif %}
-                </li>
+                <li class="disabled"><span>&laquo;</span></li>
             {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-            <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-        {% endif %}
-    </ul>
+            {% for i in paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
+                {% else %}
+                    <li class="page-item">
+                        {% if i == 1 %}
+                            <a class="active" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                        {% else %}
+                            {% if i|add:"-2" <= page_obj.number and page_obj.number <= i|add:"2" %}
+                                <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                            {% elif i|divisibleby:"10" or i == page_obj.paginator.num_pages %}
+                                <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
 </div>
-        </div>
-{% endif %}

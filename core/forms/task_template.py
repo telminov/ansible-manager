@@ -45,6 +45,8 @@ class Edit(forms.ModelForm):
             task_template.cron_dt = timezone.now()
         elif not task_template.cron:
             task_template.cron_dt = None
+        elif task_template.cron and 'cron' in self.changed_data:
+            task_template.cron_dt = timezone.now()
         if commit:
             task_template.save()
             self.save_m2m()

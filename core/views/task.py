@@ -150,7 +150,7 @@ class Log(mixins.PermissionRequiredMixin, views.DetailView):
         tz = self.request.session.get('detected_tz')
         if tz:
             timezone = pytz.timezone(str(get_timezone(tz)))
-            return 'Log %s task for %s' % (task.template if task.template else '',
+            return 'Log %s task for %s' % ('"' + str(task.template) + '"' if task.template else '',
                                            task.dc.astimezone(timezone).strftime("%d-%m-%Y %H:%M:%S"))
         else:
             return 'Log %s task for %s' % (task.template if task.template else '', task.dc.strftime("%d-%m-%Y %H:%M:%S"))
@@ -176,4 +176,3 @@ class Inventory(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
         os.remove(inventory_path)
         return HttpResponse(inventory_content, content_type='text/plain')
 inventory = Inventory.as_view()
-
