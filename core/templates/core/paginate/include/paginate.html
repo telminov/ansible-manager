@@ -10,8 +10,8 @@
         </select>
     </div>
     {% if is_paginated %}
-    <div class="col-sm-11" style="text-align: center">
-        <ul class="pagination text-center" style="margin: 0; padding-right: 11rem">
+    <div class="col-sm-10" style="text-align: center">
+        <ul class="pagination text-center" style="margin: 0">
             {% if page_obj.has_previous %}
                 <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
             {% else %}
