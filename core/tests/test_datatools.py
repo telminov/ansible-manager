@@ -3,7 +3,7 @@ import os
 import shutil
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from core import models
 from core.datatools import ansible, tasks
@@ -62,25 +62,23 @@ class Ansible(TestCase):
                          '/usr/bin/ansible-playbook -i ' + test_path_inventory +
                          ' -u Serega -e "Test_name=Test_var " -v /home/')
 
-    # TODO
-    # @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
-    # def test_create_inventory(self, tempfile_mock):
-    #     test_path_tempfile = '/tmp/test'
-    #     tempfile_mock.return_value = test_path_tempfile
-    #     os.mkdir(test_path_tempfile)
-    #
-    #     self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
-    #                      test_path_tempfile + '/inventory')
-    #     f = open(test_path_tempfile + '/inventory', 'r')
-    #     inventory_file_content = ' '.join(''.join(f.read().split('\n')).split(' '))
-    #     must_be_inventory_file_content = '192.168.128.20 Test name=Test var [Test host_group]192.168.59.44[Test ' \
-    #                                      'host_group:vars]Test name=Test var' \
-    #                                      '[all:vars]Test name=Test varTest name=Test var'
-    #
-    #     self.assertEqual(inventory_file_content, must_be_inventory_file_content)
-    #
-    #     f.close()
-    #     shutil.rmtree(test_path_tempfile)
+    @mock.patch('core.datatools.ansible.tempfile.mkdtemp')
+    def test_create_inventory(self, tempfile_mock):
+        test_path_tempfile = '/tmp/test'
+        tempfile_mock.return_value = test_path_tempfile
+        os.mkdir(test_path_tempfile)
+
+        self.assertEqual(ansible.create_inventory(models.Task.objects.get(playbook='/home/')),
+                         test_path_tempfile + '/inventory')
+        f = open(test_path_tempfile + '/inventory', 'r')
+        inventory_file_content = ' '.join(''.join(f.read().split('\n')).split(' '))
+
+        must_be_inventory_file_content = '192.168.59.44  Test_name=Test_var 192.168.128.20  Test_name=Test_var '
+
+        self.assertEqual(inventory_file_content, must_be_inventory_file_content)
+
+        f.close()
+        shutil.rmtree(test_path_tempfile)
 
     def test_inventory_file_path(self):
         self.assertEqual(ansible.get_inventory_file_path('qwerty 12345 test some 55'), 'test')
@@ -93,6 +91,8 @@ class Tasks(TestCase):
             username='Serega',
             password='passwd'
         )
+
+    def test_check_progress_tasks_not_pid(self):
         models.Task.objects.create(
             playbook='/home/',
             status='in_progress',
@@ -100,8 +100,87 @@ class Tasks(TestCase):
             pid=99999999,
         )
 
-    def test_check_progress_tasks_not_pid(self):
         task_manager = tasks.TaskManager()
         task_manager.check_in_progress_tasks()
 
         self.assertEqual(len(models.TaskLog.objects.filter(message='Task with pid 99999999 is not running')), 1)
+
+    @mock.patch('django.db.connection')
+    def test_start_waiting_task(self, connection):
+        connection.return_value = True
+
+        an_user = models.AnsibleUser.objects.create(
+            name='Test',
+        )
+        models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+            ansible_user=an_user,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.start_waiting_tasks()
+
+        self.assertIn('Start task with pid', models.TaskLog.objects.get().message)
+        self.assertEqual(models.Task.objects.get().status, 'in_progress')
+
+    @override_settings(ANSIBLE_WORK_DIR='/tmp/')
+    @mock.patch('django.db.connection')
+    def test_run_task_invalid(self, connection):
+        connection.return_value = True
+
+        an_user = models.AnsibleUser.objects.create(
+            name='Test',
+        )
+        task = models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+            ansible_user=an_user,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.run_task(task.id)
+
+        self.assertIn('Command: ', models.TaskLog.objects.get(id=1).message)
+        self.assertIn('Working directory: ', models.TaskLog.objects.get(id=2).message)
+        self.assertIn('Failed with status code ', models.TaskLog.objects.all().last().message)
+
+    @mock.patch('asyncio.get_event_loop')
+    @mock.patch('django.db.connection')
+    def test_run_task_exception(self, connection, p):
+        connection.return_value = True
+        p.return_value = 0
+
+        an_user = models.AnsibleUser.objects.create(
+            name='Test',
+        )
+        task = models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+            ansible_user=an_user,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.run_task(task.id)
+
+        self.assertIn('Progress error', models.TaskLog.objects.all().last().message)
+
+    def test_stop_task(self):
+        task = models.Task.objects.create(
+            playbook='/home/',
+            status='wait',
+            user=self.user,
+            pid=99999999,
+        )
+
+        task_manager = tasks.TaskManager()
+        task_manager.stop_task(task)
+
+        self.assertEqual(models.TaskLog.objects.get().message, 'Task stopped')
+        self.assertEqual(models.Task.objects.get().status, 'stopped')

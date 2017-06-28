@@ -8,31 +8,20 @@ from django.contrib.auth import settings
 
 from core import models
 from core.views import task_template
-from . import factories
+from core.tests import factories
+from core.tests.mixins import TestDefaultMixin
 
 
-class SearchTaskTemplateView(TestCase):
+class SearchTaskTemplateView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'view_task_template'
+        self.url = reverse('task_template_search')
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_search'))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_search')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='view_task_template'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_search'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -50,6 +39,42 @@ class SearchTaskTemplateView(TestCase):
 
         self.assertEqual(len(response.context['object_list']), 1)
 
+    def test_paginate(self):
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_template_search'), {'sort': 'name', 'paginate_by': '1'})
+
+        self.assertEqual(len(response.context['object_list']), 1)
+
+    def test_paginate_all(self):
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_template_search'), {'sort': 'name', 'paginate_by': '-1'})
+
+        self.assertEqual(len(response.context['object_list']), 2)
+
+    def test_sort_queryset_ltask(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        self.client.get(reverse('task_template_run', args='1'))
+        response = self.client.get(reverse('task_template_search'), {'sort': 'last_task'})
+
+        self.assertEqual(response.context['object_list'][0], models.TaskTemplate.objects.get(id=2))
+
+    def test_sort_queryset_reverse_ltask(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
+        factories.create_data_for_search_template()
+
+        self.client.force_login(user=self.user)
+        self.client.get(reverse('task_template_run', args='1'))
+        response = self.client.get(reverse('task_template_search'), {'sort': '-last_task'})
+
+        self.assertEqual(response.context['object_list'][0], models.TaskTemplate.objects.get(id=1))
+
     def test_context(self):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('task_template_search'), {'sort': 'name'})
@@ -58,28 +83,16 @@ class SearchTaskTemplateView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][1], (task_template.Search.title, ''))
 
 
-class EditTaskTemplateView(TestCase):
+class EditTaskTemplateView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'add_tasktemplate'
+        self.url = reverse('task_template_create')
         self.user.user_permissions.add(Permission.objects.get(codename='add_tasktemplate'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_create'))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_create')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='add_tasktemplate'))
-
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_create'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
 
     @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_create(self):
@@ -103,7 +116,7 @@ class EditTaskTemplateView(TestCase):
                                     {'name': 'Test name', 'ansible_user': '1', 'playbook': path + '/test.yml',
                                      'hosts': '1', 'host_groups': '1', 'description': 'Test description',
                                      'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-MIN_NUM_FORMS': '0',
-                                     'form-TOTAL_FORMS': '1'})
+                                     'form-TOTAL_FORMS': '1', 'cron': '0 * * * *'})
         task_template_var = models.TaskTemplate.objects.get(id=1)
 
         self.assertEqual(str(task_template_var), 'Test name')
@@ -112,13 +125,14 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(str(task_template_var.hosts.all()[0]), 'test name host (192.168.19.19)')
         self.assertEqual(str(task_template_var.host_groups.all()[0]), 'Test host group name')
         self.assertEqual(str(task_template_var.description), 'Test description')
+        self.assertNotEqual(task_template_var.cron_dt, None)
         self.assertRedirects(response, reverse('task_template_update',
                                                kwargs={'pk': models.TaskTemplate.objects.last().id}))
 
         os.remove(path + '/test.yml')
         os.rmdir(path)
 
-    def test_create_invalid(self):
+    def test_create_invalid_playbook(self):
         self.client.force_login(user=self.user)
         factories.AnsibleUserFactory.create()
         factories.HostFactory.create()
@@ -132,6 +146,35 @@ class EditTaskTemplateView(TestCase):
                                      'form-TOTAL_FORMS': '1'})
 
         self.assertContains(response, 'This field is required.')
+
+    @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
+    def test_create_invalid_cron(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
+        self.client.force_login(user=self.user)
+        factories.AnsibleUserFactory.create()
+        factories.HostFactory.create()
+        factories.HostGroupFactory.create()
+
+        path = settings.ANSIBLE_PLAYBOOKS_PATH
+        os.mkdir(path)
+
+        f = open(path + '/test.yml', 'w')
+        f.write('- hosts: all\n'
+                '  roles:\n'
+                '   - preconf\n'
+                '  tags: preconf')
+        f.close()
+
+        response = self.client.post(reverse('task_template_create'),
+                                    {'name': 'Test name', 'ansible_user': '1', 'playbook': path + '/test.yml',
+                                     'hosts': '1', 'host_groups': '1', 'description': 'Test description',
+                                     'form-INITIAL_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-MIN_NUM_FORMS': '0',
+                                     'form-TOTAL_FORMS': '1', 'cron': 'asfsdsdf'})
+
+        self.assertContains(response, 'Invalid value cron')
+
+        os.remove(path + '/test.yml')
+        os.rmdir(path)
 
     @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_edit(self):
@@ -212,39 +255,21 @@ class EditTaskTemplateView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2], ('Test name task template', ''))
 
 
-class DeleteTaskTempletView(TestCase):
+class DeleteTaskTemplateView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'delete_tasktemplate'
+        self.url = reverse('task_template_delete', args=['1'])
         self.user.user_permissions.add(Permission.objects.get(codename='delete_tasktemplate'))
         factories.HostGroupFactory.create()
         factories.HostFactory.create()
         ansb_usr = factories.AnsibleUserFactory.create()
         factories.AnsibleUserFactory.create(name='two')
         factories.TaskTemplateFactory.create(ansible_user=ansb_usr)
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_template_delete', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('task_template_delete', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='delete_tasktemplate'))
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_delete', args=['1']))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_template_delete', args=['1']))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/task_template/delete.html')
 
     def test_delete(self):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
@@ -308,3 +333,32 @@ class RunTaskTemplateView(TestCase):
         response = self.client.get(response.url)
 
         self.assertContains(response, 'The same task was not started. You have been redirected to a running task.')
+
+
+class InventoryView(TestDefaultMixin, TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(
+            username='Serega',
+            password='passwd',
+        )
+        self.pem = 'inventory_task'
+        self.url = reverse('task_template_inventory', args=['1'])
+        self.user.user_permissions.add(Permission.objects.get(codename='inventory_task'))
+        var = factories.VariableFactory.create()
+        factories.HostGroupFactory.create()
+        host = factories.HostFactory.create(vars=(var,))
+        ansb_usr = factories.AnsibleUserFactory.create()
+        factories.AnsibleUserFactory.create(name='two')
+        factories.TaskTemplateFactory.create(ansible_user=ansb_usr, hosts=(host,))
+
+    def test_get(self):
+        self.user.user_permissions.add(Permission.objects.get(codename='run_task'))
+        self.client.force_login(user=self.user)
+
+        self.client.get(reverse('task_template_run', args='1'))
+        response = self.client.get(reverse('task_template_inventory', args='1'))
+
+        self.assertContains(response, '{}  {}={}'.format(models.Host.objects.get(id=1).address,
+                                                         models.Variable.objects.get(id=1).name,
+                                                         models.Variable.objects.get(id=1).value))

@@ -9,30 +9,20 @@ from django.contrib.auth.models import Permission
 
 from core import models
 from core.views import task
-from . import factories
+from core.tests import factories
+from core.tests.mixins import TestDefaultMixin
 
 
-class SearchTaskView(TestCase):
+class SearchTaskView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'view_task'
+        self.url = reverse('task_search')
         self.user.user_permissions.add(Permission.objects.get(codename='view_task'))
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_search'))
-        redirect_url = reverse('login') + '?next=' + reverse('task_search')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='view_task'))
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_search'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
 
     def test_smoke(self):
         self.client.force_login(user=self.user)
@@ -65,6 +55,22 @@ class SearchTaskView(TestCase):
         os.remove(path + '/test.yml')
         os.rmdir(path)
 
+    def test_paginate(self):
+        factories.create_data_for_search_task()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_search'), {'paginate_by': '1', 'sort': 'dc'})
+
+        self.assertEqual(len(response.context['object_list']), 1)
+
+    def test_paginate_all(self):
+        factories.create_data_for_search_task()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse('task_search'), {'paginate_by': '-1', 'sort': 'dc'})
+
+        self.assertEqual(len(response.context['object_list']), 2)
+
     def test_context(self):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse('task_search'), {'sort': 'dc'})
@@ -73,13 +79,15 @@ class SearchTaskView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][1], (task.Search.title, ''))
 
 
-class CreateTaskView(TestCase):
+class CreateTaskView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'add_task'
+        self.url = reverse('task_create')
         self.user.user_permissions.add(Permission.objects.get(codename='add_task'))
         factories.AnsibleUserFactory.create()
         group_with_test = factories.HostGroupFactory.create()
@@ -87,26 +95,6 @@ class CreateTaskView(TestCase):
         tsk_tmlt_wth_tst = factories.TaskTemplateFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,))
         factories.TaskFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,),
                                      template=tsk_tmlt_wth_tst, playbook='/home/pc/ansible/playbooks/test.yml')
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_create'))
-        redirect_url = reverse('login') + '?next=' + reverse('task_create')
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='add_task'))
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_create'))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_create'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/task/create.html')
 
     @override_settings(ANSIBLE_PLAYBOOKS_PATH='/tmp/playbooks')
     def test_create(self):
@@ -155,13 +143,15 @@ class CreateTaskView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2], (task.Create.title_create, ''))
 
 
-class StopTaskView(TestCase):
+class StopTaskView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'stop_task'
+        self.url = reverse('task_stop', args='1')
         self.user.user_permissions.add(Permission.objects.get(codename='stop_task'))
         factories.AnsibleUserFactory.create()
         group_with_test = factories.HostGroupFactory.create()
@@ -174,26 +164,6 @@ class StopTaskView(TestCase):
             playbook='/home/pc/ansible/playbooks/main.yml',
             status='in_progress'
         )
-
-    def test_auth(self):
-        response = self.client.get(reverse('task_stop', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('task_stop', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='stop_task'))
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_stop', args=['1']))
-
-        self.assertRedirects(response, reverse('permission_denied'))
-
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_stop', args=['1']))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/task/stop.html')
 
     @mock.patch('os.kill')
     def test_stop(self, mock_kill):
@@ -268,13 +238,15 @@ class ReplayTaskView(TestCase):
         self.assertContains(response, 'Not start duplicate task')
 
 
-class LogTaskView(TestCase):
+class LogTaskView(TestDefaultMixin, TestCase):
 
     def setUp(self):
         self.user = User.objects.create(
             username='Serega',
             password='passwd',
         )
+        self.pem = 'view_task_log'
+        self.url = reverse('task_log', args=['1'])
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_log'))
         factories.AnsibleUserFactory.create()
         group_with_test = factories.HostGroupFactory.create()
@@ -288,25 +260,16 @@ class LogTaskView(TestCase):
             status='in_progress'
         )
 
-    def test_auth(self):
-        response = self.client.get(reverse('task_log', args=['1']))
-        redirect_url = reverse('login') + '?next=' + reverse('task_log', args=['1'])
-
-        self.assertRedirects(response, redirect_url)
-
-    def test_permission(self):
-        self.user.user_permissions.remove(Permission.objects.get(codename='view_task_log'))
+    def test_title(self):
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse('task_log', args=['1']))
 
-        self.assertRedirects(response, reverse('permission_denied'))
+        session = self.client.session
+        session['detected_tz'] = 'Europe/Moscow'
+        session.save()
 
-    def test_smoke(self):
-        self.client.force_login(user=self.user)
         response = self.client.get(reverse('task_log', args='1'))
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/task/log.html')
+        self.assertIn('Log "Test name task template" task for', response.context['title'])
 
     def test_context(self):
         self.client.force_login(user=self.user)
@@ -317,3 +280,37 @@ class LogTaskView(TestCase):
         self.assertEqual(response.context['breadcrumbs'][2],
                          ('Log %s task for %s' % (models.Task.objects.get(id=1).template,
                                                   models.Task.objects.get(id=1).dc.strftime("%d-%m-%Y %H:%M:%S")), ''))
+
+
+class InventoryView(TestDefaultMixin, TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(
+            username='Serega',
+            password='passwd',
+        )
+        self.pem = 'inventory_task'
+        self.url = reverse('task_inventory', args=['1'])
+        self.user.user_permissions.add(Permission.objects.get(codename='inventory_task'))
+        factories.AnsibleUserFactory.create()
+        var = factories.VariableFactory.create()
+        group_with_test = factories.HostGroupFactory.create()
+        host_with_test = factories.HostFactory.create(groups=(group_with_test,), vars=(var,))
+        tsk_tmlt_wth_tst = factories.TaskTemplateFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,))
+        factories.TaskFactory.create(
+            hosts=(host_with_test,),
+            host_groups=(group_with_test,),
+            template=tsk_tmlt_wth_tst,
+            playbook='/home/pc/ansible/playbooks/main.yml',
+            status='completed'
+        )
+
+    def test_get(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse('task_inventory', args='1'))
+
+        self.assertContains(response,
+                            '{}  {}={}'.format(str(models.Host.objects.get(id=1).address),
+                                               str(models.Variable.objects.get(id=1).name),
+                                               str(models.Variable.objects.get(id=1).value)))

@@ -22,7 +22,7 @@ def validate_cron(value):
     try:
         croniter(value, now)
     except (CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError):
-        raise ValidationError('Недопустимое значение')
+        raise ValidationError('Invalid value cron')
 
 
 class CronField(models.CharField):
