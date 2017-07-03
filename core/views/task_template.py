@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic.detail import SingleObjectMixin
+from django.forms import modelformset_factory
 from djutils.views.generic import SortMixin
 
 import core.forms.task_template
@@ -173,3 +174,27 @@ class Inventory(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
         return HttpResponse(inventory_content, content_type='text/plain')
 inventory = Inventory.as_view()
 
+
+class RepeatTask(mixins.PermissionRequiredMixin, views.FormView):
+    permission_required = 'core.add_tasktemplate'
+    form_class = modelformset_factory(models.RepeatTask, fields=('pause',), can_delete=True,)
+    template_name = 'core/task_template/RepeatTask.html'
+
+    def get_success_url(self):
+        return reverse_lazy('task_template_update', kwargs={'pk': self.kwargs['pk']})
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        queryset = models.RepeatTask.objects.filter(template=models.TaskTemplate.objects.get(id=self.kwargs['pk']))
+        kwargs['queryset'] = queryset
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = models.TaskTemplate.objects.get(id=self.kwargs['pk'])
+        repeat_objs = form.save()
+        for repeat_obj in repeat_objs:
+            repeat_obj.template = self.object
+            repeat_obj.save()
+        return redirect(self.success_url)
+
+repeat_task = RepeatTask.as_view()

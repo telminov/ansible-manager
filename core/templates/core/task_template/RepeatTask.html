@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+<form action="" method="POST">
+    {% csrf_token %}
+    <div>
+        <div class="row">
+            <div class="col-sm-6">
+                <button onclick="addForm()" type="button" class="btn btn-success btn-sm" data-toggle="tooltip"
+                        data-placement="top" title="Add new variable"><i class="glyphicon glyphicon-plus"></i>
+                </button>
+                <b style="font-size: 18px">Variables</b></div>
+            <div class="col-sm-6 text-right">
+                <button onclick="deleteAllForms()" type="button" class="btn btn-danger btn-sm" data-toggle="tooltip"
+                        data-placement="left" title="Remove all variables for this host"><i
+                        class="glyphicon glyphicon-trash"></i> Delete all
+                </button>
+            </div>
+        </div>
+        <br>
+
+        {{ form.management_form }}
+
+        <div class="hide">
+            <div class="row variable" id="empty_form">
+                <div class="col-sm-10">{% bootstrap_field form.empty_form.pause layout='horizontal' %}</div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-danger btn-block btn-sm"
+                            onclick="deleteElem($(this).parents('.row.variable'))"
+                            data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="variables">
+            {% for f in form %}
+                <div class="row variable">
+                    <div class="hide">{{ f.id }}</div>
+                    <div class="col-sm-10">{% bootstrap_field f.pause layout='horizontal' %}</div>
+                    <div class="col-sm-2">
+                        <button type="button" class="btn btn-danger btn-block btn-sm"
+                                onclick="deleteElem($(this).parents('.row.variable'))"
+                                data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                            <i class="glyphicon glyphicon-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div id="deleted-variables" class="hide"></div>
+    </div>
+<button type="submit" class="btn btn-success btn-block" data-toggle="tooltip" data-placement="top">
+                    <i class="glyphicon glyphicon-floppy-save"></i>
+                    {{ object|yesno:'Update' }}
+</button>
+</form>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+{% endblock js %}

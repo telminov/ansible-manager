@@ -31,7 +31,7 @@ class Edit(forms.ModelForm):
 
     class Meta:
         model = models.TaskTemplate
-        exclude = ('vars',)
+        exclude = ('vars', 'repeat_iter')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,6 +47,7 @@ class Edit(forms.ModelForm):
             task_template.cron_dt = None
         elif task_template.cron and 'cron' in self.changed_data:
             task_template.cron_dt = timezone.now()
+            task_template.repeat_iter = -1
         if commit:
             task_template.save()
             self.save_m2m()

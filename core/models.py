@@ -144,6 +144,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     ansible_user = models.ForeignKey(AnsibleUser, related_name='task_templates', null=True)
     cron = CronField(blank=True)
     cron_dt = models.DateTimeField(default=None, blank=True, null=True)
+    repeat_iter = models.IntegerField(default=-1)
 
     class Meta:
         permissions = (
@@ -175,6 +176,11 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         if self.tasks.exists():
             return self.tasks.last().status in [consts.WAIT, consts.IN_PROGRESS]
         return False
+
+
+class RepeatTask(models.Model):
+    pause = models.IntegerField()
+    template = models.ForeignKey(TaskTemplate, related_name='repeat_task', null=True)
 
 
 class Task(TaskOperationsMixin, models.Model):
