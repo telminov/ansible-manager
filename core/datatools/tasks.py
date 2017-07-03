@@ -44,7 +44,8 @@ class TaskManager:
                 status=consts.FAIL,
                 message='Task with pid %s is not running' % task.pid
             )
-            self.calculate_repeat_iter(task.template)
+            if task.template:
+                self.calculate_repeat_iter(task.template)
 
     def start_waiting_tasks(self):
         tasks = models.Task.objects.filter(status=consts.WAIT)
@@ -100,7 +101,8 @@ class TaskManager:
                 )
                 task.status = consts.FAIL
                 task.save()
-            cls.calculate_repeat_iter(task.template)
+            if task.template:
+                cls.calculate_repeat_iter(task.template)
 
         except Exception as e:
             task.status = consts.FAIL
@@ -111,7 +113,8 @@ class TaskManager:
                 message='Progress error "%s"' % e,
                 status=consts.FAIL
             )
-            cls.calculate_repeat_iter(task.template)
+            if task.template:
+                cls.calculate_repeat_iter(task.template)
         finally:
             os.remove(inventory_file_path)
             if os.path.exists("/proc/%s" % task.pid):
