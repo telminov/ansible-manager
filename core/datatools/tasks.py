@@ -180,7 +180,7 @@ class TaskManager:
     def calculate_repeat_iter(template):
         repeat_task_count = models.RepeatTask.objects.filter(template=template).count()
         last_task = template.tasks.all().last()
-        if not last_task.is_cron_created:
+        if not last_task.is_cron_created and template.repeat_iter != -1:
             return
         if last_task.status == consts.COMPLETED:
             template.repeat_iter = -1
