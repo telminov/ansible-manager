@@ -179,6 +179,16 @@ class RepeatSetting(mixins.PermissionRequiredMixin, views.FormView):
     permission_required = 'core.add_tasktemplate'
     form_class = modelformset_factory(models.RepeatSetting, fields=('pause',), can_delete=True,)
     template_name = 'core/task_template/RepeatSetting.html'
+    title = 'Repeat Setting'
+
+    def get_breadcrumbs(self):
+        return (
+            ('Home', reverse('index')),
+            (Search.title, reverse('task_template_search')),
+            (str(models.TaskTemplate.objects.get(id=self.kwargs['pk'])), reverse('task_template_update',
+                                                                                 kwargs={'pk': self.kwargs['pk']})),
+            (self.title, '')
+        )
 
     def get_success_url(self):
         return reverse_lazy('task_template_update', kwargs={'pk': self.kwargs['pk']})
