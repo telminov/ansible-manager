@@ -6,16 +6,12 @@ from croniter import croniter
 from django.utils import timezone
 
 from core import models
-from core import consts
-
-NOT_REPEAT = -1
 
 
 class Scheduler:
     def run(self):
         while True:
             self.check_run_time()
-            self.repeat_task()
             sleep(60)
 
     def check_run_time(self):
@@ -33,21 +29,4 @@ class Scheduler:
                 template_task.save()
 
     def run_task(self, template_task):
-        template_task.create_task(user=None, is_cron_created=True)
-
-    def repeat_task(self):
-        templates_task = models.TaskTemplate.objects.filter(repeat_task__isnull=False).distinct()
-        for template in templates_task:
-            if template.repeat_iter == NOT_REPEAT:
-                continue
-
-            last_task = template.tasks.all().last()
-            if last_task.status != consts.FAIL:
-                continue
-
-            now = timezone.now()
-            repeat_queryset = models.RepeatTask.objects.filter(template=template)
-            if template.repeat_iter < repeat_queryset.count():
-                time_repeat = last_task.dc + datetime.timedelta(minutes=repeat_queryset[template.repeat_iter].pause)
-                if now >= time_repeat:
-                    self.run_task(template)
+        template_task.create_task(user=None, is_created_automatically=True)

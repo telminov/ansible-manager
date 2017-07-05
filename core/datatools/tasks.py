@@ -7,7 +7,6 @@ import asyncio
 from asyncio.subprocess import PIPE, create_subprocess_shell
 
 from django.conf import settings
-from django.db.models import F
 
 from core import consts
 from core import models
@@ -44,8 +43,6 @@ class TaskManager:
                 status=consts.FAIL,
                 message='Task with pid %s is not running' % task.pid
             )
-            if task.template:
-                self.calculate_repeat_iter(task.template)
 
     def start_waiting_tasks(self):
         tasks = models.Task.objects.filter(status=consts.WAIT)
@@ -101,8 +98,6 @@ class TaskManager:
                 )
                 task.status = consts.FAIL
                 task.save()
-            if task.template:
-                cls.calculate_repeat_iter(task.template)
 
         except Exception as e:
             task.status = consts.FAIL
@@ -113,8 +108,6 @@ class TaskManager:
                 message='Progress error "%s"' % e,
                 status=consts.FAIL
             )
-            if task.template:
-                cls.calculate_repeat_iter(task.template)
         finally:
             os.remove(inventory_file_path)
             if os.path.exists("/proc/%s" % task.pid):
@@ -175,16 +168,3 @@ class TaskManager:
                 status=status,
                 output=output,
             )
-
-    @staticmethod
-    def calculate_repeat_iter(template):
-        repeat_task_count = models.RepeatTask.objects.filter(template=template).count()
-        last_task = template.tasks.all().last()
-        if not last_task.is_cron_created and template.repeat_iter != -1:
-            return
-        if last_task.status == consts.COMPLETED:
-            template.repeat_iter = -1
-            template.save()
-        if last_task.status == consts.FAIL and template.repeat_iter < repeat_task_count:
-            template.repeat_iter = F('repeat_iter') + 1
-            template.save()

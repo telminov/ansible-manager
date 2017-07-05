@@ -44,6 +44,11 @@
             <div class="{% if object %}col-sm-6{% else %}col-sm-12{% endif %}">
 
                 <div class="row" style="margin-bottom: 5px">
+                    {% if object %}
+                            <label class="col-sm-3 col-sm-offset-9">
+                                <a href="{% url 'task_template_repeat' object.pk %}">Repeat settings</a>
+                            </label>
+                        {% endif %}
                     <div class="col-sm-12">
                         {% bootstrap_form_errors form %}
                         {% bootstrap_formset_errors formset %}

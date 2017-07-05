@@ -8,12 +8,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <button onclick="addForm()" type="button" class="btn btn-success btn-sm" data-toggle="tooltip"
-                        data-placement="top" title="Add new variable"><i class="glyphicon glyphicon-plus"></i>
+                        data-placement="top" title="Add new repeat setting"><i class="glyphicon glyphicon-plus"></i>
                 </button>
-                <b style="font-size: 18px">Variables</b></div>
+                <b style="font-size: 18px">Repeat Settings</b></div>
             <div class="col-sm-6 text-right">
                 <button onclick="deleteAllForms()" type="button" class="btn btn-danger btn-sm" data-toggle="tooltip"
-                        data-placement="left" title="Remove all variables for this host"><i
+                        data-placement="left" title="Remove all repeat settings for this template"><i
                         class="glyphicon glyphicon-trash"></i> Delete all
                 </button>
             </div>
@@ -28,7 +28,7 @@
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-danger btn-block btn-sm"
                             onclick="deleteElem($(this).parents('.row.variable'))"
-                            data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                            data-toggle="tooltip" data-placement="top" title="Remove this repeat setting">
                         <i class="glyphicon glyphicon-trash"></i>
                     </button>
                 </div>
@@ -44,7 +44,7 @@
                     <div class="col-sm-2">
                         <button type="button" class="btn btn-danger btn-block btn-sm"
                                 onclick="deleteElem($(this).parents('.row.variable'))"
-                                data-toggle="tooltip" data-placement="top" title="Remove this variable">
+                                data-toggle="tooltip" data-placement="top" title="Remove this repeat setting">
                             <i class="glyphicon glyphicon-trash"></i>
                         </button>
                     </div>
@@ -53,10 +53,12 @@
         </div>
         <div id="deleted-variables" class="hide"></div>
     </div>
-<button type="submit" class="btn btn-success btn-block" data-toggle="tooltip" data-placement="top">
-                    <i class="glyphicon glyphicon-floppy-save"></i>
-                    {{ object|yesno:'Update' }}
-</button>
+<div class="col-sm-3 col-sm-offset-4">
+    <button type="submit" class="btn btn-success btn-block">
+                        <i class="glyphicon glyphicon-floppy-save"></i>
+                        Update
+    </button>
+</div>
 </form>
 {% endblock %}
 
