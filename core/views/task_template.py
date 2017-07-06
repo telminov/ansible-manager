@@ -175,7 +175,7 @@ class Inventory(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
 inventory = Inventory.as_view()
 
 
-class RepeatSetting(mixins.PermissionRequiredMixin, views.FormView):
+class RepeatSettings(mixins.PermissionRequiredMixin, views.FormView):
     permission_required = 'core.add_tasktemplate'
     form_class = modelformset_factory(models.RepeatSetting, fields=('pause',), can_delete=True,)
     template_name = 'core/task_template/repeat_setting.html'
@@ -208,4 +208,4 @@ class RepeatSetting(mixins.PermissionRequiredMixin, views.FormView):
 
         return redirect(self.get_success_url())
 
-repeat_task = RepeatSetting.as_view()
+repeat_settings = RepeatSettings.as_view()

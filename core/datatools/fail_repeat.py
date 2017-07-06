@@ -7,7 +7,7 @@ from core import models
 from core import consts
 
 
-class FailRepeat:
+class FailRepeater:
     def run(self):
         while True:
             self.process_fails()
