@@ -29,4 +29,4 @@ class Scheduler:
                 template_task.save()
 
     def run_task(self, template_task):
-        template_task.create_task(user=None, is_created_automatically=True)
+        template_task.create_task(user=None, is_automatically_created=True)

@@ -178,8 +178,8 @@ inventory = Inventory.as_view()
 class RepeatSetting(mixins.PermissionRequiredMixin, views.FormView):
     permission_required = 'core.add_tasktemplate'
     form_class = modelformset_factory(models.RepeatSetting, fields=('pause',), can_delete=True,)
-    template_name = 'core/task_template/RepeatSetting.html'
-    title = 'Repeat Setting'
+    template_name = 'core/task_template/repeat_setting.html'
+    title = 'Repeat Settings'
 
     def get_breadcrumbs(self):
         return (

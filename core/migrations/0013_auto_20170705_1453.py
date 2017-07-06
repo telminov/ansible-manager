@@ -18,17 +18,17 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('pause', models.IntegerField(help_text='Time in minutes')),
-                ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='repeat_task', to='core.TaskTemplate')),
+                ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='repeat_settings', to='core.TaskTemplate')),
             ],
         ),
         migrations.RenameField(
             model_name='task',
             old_name='is_cron_created',
-            new_name='is_created_automatically',
+            new_name='is_automatically_created',
         ),
         migrations.AddField(
             model_name='task',
             name='repeat_number',
-            field=models.IntegerField(null=True),
+            field=models.IntegerField(default=0),
         ),
     ]
