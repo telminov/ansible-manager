@@ -153,7 +153,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     def __str__(self):
         return self.name
 
-    def create_task(self, user, is_automatically_created=False, repeat_number=None):
+    def create_task(self, user, is_automatically_created=False, repeat_number=0):
         task = Task.objects.create(
             template=self,
             playbook=self.playbook,
