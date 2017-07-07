@@ -153,13 +153,14 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     def __str__(self):
         return self.name
 
-    def create_task(self, user, is_cron_created=False):
+    def create_task(self, user, is_automatically_created=False, repeat_number=0):
         task = Task.objects.create(
             template=self,
             playbook=self.playbook,
             user=user,
-            is_cron_created=is_cron_created,
+            is_automatically_created=is_automatically_created,
             ansible_user=self.ansible_user,
+            repeat_number=repeat_number,
         )
         task.vars.add(*self.vars.all())
         task.hosts.add(*self.hosts.all())
@@ -177,6 +178,11 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
         return False
 
 
+class RepeatSetting(models.Model):
+    pause = models.IntegerField(help_text='Time in minutes')
+    template = models.ForeignKey(TaskTemplate, related_name='repeat_settings')
+
+
 class Task(TaskOperationsMixin, models.Model):
     playbook = models.FilePathField()
     hosts = models.ManyToManyField(Host, related_name='tasks')
@@ -186,9 +192,10 @@ class Task(TaskOperationsMixin, models.Model):
     status = models.CharField(max_length=100, choices=consts.STATUS_CHOICES, default=consts.WAIT)
     pid = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='tasks', blank=True, null=True)
-    is_cron_created = models.BooleanField(default=False)
+    is_automatically_created = models.BooleanField(default=False)
     verbose = models.CharField(max_length=4, choices=consts.VERBOSE_CHOICES, default='v')
     ansible_user = models.ForeignKey(AnsibleUser, related_name='tasks', null=True)
+    repeat_number = models.IntegerField(default=0)
 
     dc = models.DateTimeField(auto_now_add=True)
 

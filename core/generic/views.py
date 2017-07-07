@@ -6,6 +6,7 @@ from django.views.generic import (
     View as DjangoView,
     CreateView as DjangoCreateView,
     UpdateView as DjangoUpdateView,
+    FormView as DjangoFormView,
 )
 from djutils.views.generic import TitleMixin
 
@@ -37,6 +38,10 @@ class CreateView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoCr
 
 
 class UpdateView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoUpdateView):
+    pass
+
+
+class FormView(mixins.BreadcrumbsMixin, mixins.NextMixin, TitleMixin, DjangoFormView):
     pass
 
 

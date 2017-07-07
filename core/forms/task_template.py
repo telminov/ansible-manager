@@ -31,7 +31,7 @@ class Edit(forms.ModelForm):
 
     class Meta:
         model = models.TaskTemplate
-        exclude = ('vars',)
+        exclude = ('vars', )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

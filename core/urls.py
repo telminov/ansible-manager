@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^task_templates/(?P<pk>\d+)/run/$', task_template.run, name='task_template_run'),
     url(r'^task_templates/(?P<pk>\d+)/delete/$', task_template.delete, name='task_template_delete'),
     url(r'^task_templates/(?P<pk>\d+)/inventory/$', task_template.inventory, name='task_template_inventory'),
+    url(r'^task_templates/(?P<pk>\d+)/repeat_settings/$', task_template.repeat_settings, name='task_template_repeat_settings'),
 
     url(r'^tasks/$', task.search, name='task_search'),
     url(r'^tasks/create/$', task.create, name='task_create'),

@@ -5,7 +5,6 @@ from croniter import croniter
 
 from django.utils import timezone
 
-from core.datatools.tasks import TaskManager
 from core import models
 
 
@@ -30,6 +29,4 @@ class Scheduler:
                 template_task.save()
 
     def run_task(self, template_task):
-        task = template_task.create_task(user=None, is_cron_created=True)
-        manager = TaskManager()
-        manager.run_task_process(task)
+        template_task.create_task(user=None, is_automatically_created=True)
