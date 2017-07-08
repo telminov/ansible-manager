@@ -117,6 +117,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         c = super().get_context_data(*args, **kwargs)
         if self.get_object():
             c['last_tasks'] = self.get_object().tasks.order_by('-id')[:10]
+            c['length_repeat'] = len(self.object.repeat_settings.all())
         return c
 
 edit = Edit.as_view()
