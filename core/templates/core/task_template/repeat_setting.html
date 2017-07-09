@@ -5,6 +5,11 @@
 <form action="" method="POST">
     {% csrf_token %}
     <div>
+
+    <div class="row">
+        <h4 class="intro-text text-center" style="padding-bottom: 2rem">If the last automatic start was failed,
+            the task will be repeated with the specified pauses</h4>
+    </div>
         <div class="row">
             <div class="col-sm-6">
                 <button onclick="addForm()" type="button" class="btn btn-success btn-sm" data-toggle="tooltip"

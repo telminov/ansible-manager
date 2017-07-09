@@ -57,7 +57,7 @@
                             {% bootstrap_field form.cron layout='horizontal' field_class='col-md-7'%}
                             <div class="col-md-2">
                                 <a id="repeat-setting" href="{% url 'task_template_repeat_settings' object.pk %}"
-                                   class="btn btn-default btn-block" data-toggle="tooltip" title="Repeat settings">
+                                   class="btn btn-default btn-block" data-toggle="tooltip" title="Fail Repeat settings. Current: {{ repeat_count }}">
                                     <i class="glyphicon glyphicon-cog"></i>
                                 </a>
                             </div>
