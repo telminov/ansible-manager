@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/telminov/ansible-manager/badge.svg?branch=master)](https://coveralls.io/github/telminov/ansible-manager?branch=master)
 
 Hi there, this is an ansible managing app, here are some things that in can do:
-* launch ansible playbooks case of fai
+* launch ansible playbooks
 * output of logs to the interface
 * running scheduled tasks
 * automatic tasks re-launch in case of failure and more...
