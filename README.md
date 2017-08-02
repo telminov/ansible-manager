@@ -15,7 +15,7 @@ Hi there, this is an ansible managing app, here are some things that in can do:
 ![6dd61d8b-883a-4e20-9882-6349fcf28926](https://user-images.githubusercontent.com/17553024/28845740-aebe1c0a-7711-11e7-81d5-baf33f374bde.jpg)
 
 ### Web-log
-![ce7da277-f421-4106-999a-496a01fed5cf](https://user-images.githubusercontent.com/17553024/28845741-afed2c38-7711-11e7-84d2-2054099d4930.jpg)
+![28845741-afed2c38-7711-11e7-84d2-2054099d4930_cr](https://user-images.githubusercontent.com/17553024/28872739-2880da60-7793-11e7-814e-0fe2cd6f9858.jpg)
 
 ### Scheduled launch
 ![8822b61d-73a9-43a5-8f91-02410859f2e7](https://user-images.githubusercontent.com/17553024/28845743-b10eac5e-7711-11e7-8918-c25cb6371ee9.jpg)
