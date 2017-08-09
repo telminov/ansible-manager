@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'bootstrap3',
     'tz_detect',
     'djutils',
+    'rest_framework',
+    'rest_framework.authtoken',
 
     'core',
 ]
@@ -142,7 +144,14 @@ LOGIN_EXEMPT_URLS = (
     r'/logout(.*)$',
     r'/about(.*)$',
     r'/api/',
+    r'/metrics',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 
 ANSIBLE_WORK_DIR = '/home/user/ansible'
 ANSIBLE_PLAYBOOKS_PATH = ANSIBLE_WORK_DIR + '/playbooks'
