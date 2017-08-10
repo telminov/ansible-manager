@@ -9,7 +9,7 @@ from django.conf.urls.static import static
 import core.urls
 
 from core.views.general import permission_denied
-from core.views.rest import Metrics
+from core.views.rest import DjangoMetrics, AnsibleMangerMetrics
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -19,7 +19,8 @@ urlpatterns = [
     url(r'^logout/', django.contrib.auth.views.logout_then_login, {'login_url': '/login/?next=/'}, name='logout'),
     url(r'^permission_denied/$', permission_denied, name='permission_denied'),
     url(r'^tz_detect/', include('tz_detect.urls')),
-    url(r'^metrics', Metrics.as_view(), name='metrics'),
+    url(r'^django_metrics/', DjangoMetrics.as_view(), name='django_metrics'),
+    url(r'^ansible_manager_metrics/', AnsibleMangerMetrics.as_view(), name='ansible_manager_metrics'),
     url(r'^', include(core.urls)),
 ]
 
