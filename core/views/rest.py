@@ -32,7 +32,7 @@ class DjangoMetrics(APIView):
         return HttpResponse(result, content_type='text/plain; charset=utf-8')
 
 
-class AnsibleMangerMetrics(APIView):
+class AnsibleManagerMetrics(APIView):
     authentication_classes = (tokenBeaver, )
 
     def get(self, reuqest):
@@ -40,13 +40,9 @@ class AnsibleMangerMetrics(APIView):
         result += '# TYPE ansible_manager_template_last_task_success gauge\n'
         deferred_result = ''
         for template in models.TaskTemplate.objects.filter(cron__isnull=False):
-            if not template.tasks.last():
-                continue
+            completed_tasks = template.tasks.filter(status__in=consts.NOT_RUN_STATUSES)
 
-            if template.tasks.last().status in consts.RUN_STATUSES:
-                continue
-
-            if template.tasks.last().status == consts.COMPLETED:
+            if completed_tasks.last().status == consts.COMPLETED:
                 metric_value_last_task = 1
             else:
                 metric_value_last_task = 0
@@ -57,13 +53,13 @@ class AnsibleMangerMetrics(APIView):
             result += 'ansible_manger_template_last_task_success{name="%s", id="%s"} %s\n' % (template.name,
                                                                                               template.pk,
                                                                                               metric_value_last_task)
-            deferred_result += 'ansible_manager_template_tasks_completed_total{name="%s", id="%s", status="fail"} %s\n' % \
+            deferred_result += 'ansible_manager_tasks_completed_total{name="%s", id="%s", status="fail"} %s\n' % \
                                (template.name, template.pk, metric_value_fail)
-            deferred_result += 'ansible_manager_template_tasks_completed_total{name="%s", id="%s", status="success"} %s\n' % \
+            deferred_result += 'ansible_manager_tasks_completed_total{name="%s", id="%s", status="success"} %s\n' % \
                                (template.name, template.pk, metric_value_success)
 
-        result += '# HELP ansible_manager_template_tasks_completed_total show number of completed tasks\n'
-        result += '# TYPE ansible_manager_template_tasks_completed_total gauge\n'
+        result += '# HELP ansible_manager_tasks_completed_total show number of completed tasks\n'
+        result += '# TYPE ansible_manager_tasks_completed_total gauge\n'
         result += deferred_result
 
         return HttpResponse(result, content_type='text/plain; charset=utf-8')
