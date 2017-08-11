@@ -1,5 +1,6 @@
 coverage==4.3.4
 django==1.10.6
+django-prometheus==1.0.9
 django-bootstrap3==8.2.1
 sw-django-utils==0.0.35
 sw-python-utils==0.0.15

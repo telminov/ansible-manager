@@ -1,8 +1,7 @@
 from django.urls import reverse
 
-from core import consts
-from core import models
 from core.generic.views import TemplateView
+from core import models
 
 
 class Index(TemplateView):
