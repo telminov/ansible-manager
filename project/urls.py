@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^logout/', django.contrib.auth.views.logout_then_login, {'login_url': '/login/?next=/'}, name='logout'),
     url(r'^permission_denied/$', permission_denied, name='permission_denied'),
     url(r'^tz_detect/', include('tz_detect.urls')),
-    url(r'^django_metrics/', DjangoMetrics.as_view(), name='django_metrics'),
+    url(r'^metrics/', DjangoMetrics.as_view(), name='django_metrics'),
     url(r'^ansible_manager_metrics/', AnsibleManagerMetrics.as_view(), name='ansible_manager_metrics'),
     url(r'^', include(core.urls)),
 ]

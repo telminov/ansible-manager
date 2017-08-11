@@ -9,8 +9,8 @@ from core import models
 from core import serializers
 from core import consts
 
-tokenBeaver = TokenAuthentication
-tokenBeaver.keyword = 'Bearer'
+tokenBearer = TokenAuthentication
+tokenBearer.keyword = 'Bearer'
 
 
 class TaskLogs(ListAPIView):
@@ -24,18 +24,17 @@ task_logs = TaskLogs.as_view()
 
 
 class DjangoMetrics(APIView):
-    authentication_classes = (tokenBeaver, )
+    authentication_classes = (tokenBearer,)
 
     def get(self, request):
         result = generate_latest().decode()
-
         return HttpResponse(result, content_type='text/plain; charset=utf-8')
 
 
 class AnsibleManagerMetrics(APIView):
-    authentication_classes = (tokenBeaver, )
+    authentication_classes = (tokenBearer,)
 
-    def get(self, reuqest):
+    def get(self, request):
         result = '# HELP ansible_manager_template_last_task_success show success or fail last task\n'
         result += '# TYPE ansible_manager_template_last_task_success gauge\n'
         deferred_result = ''

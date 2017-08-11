@@ -147,7 +147,7 @@ LOGIN_EXEMPT_URLS = (
     r'/logout(.*)$',
     r'/about(.*)$',
     r'/api/',
-    r'/django_metrics/',
+    r'/metrics/',
     r'/ansible_manager_metrics/'
 )
 
