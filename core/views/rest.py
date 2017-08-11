@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponse
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
@@ -37,28 +38,18 @@ class AnsibleManagerMetrics(APIView):
     def get(self, request):
         result = '# HELP ansible_manager_template_last_task_success show success or fail last task\n'
         result += '# TYPE ansible_manager_template_last_task_success gauge\n'
-        deferred_result = ''
         for template in models.TaskTemplate.objects.filter(cron__isnull=False):
             completed_tasks = template.tasks.filter(status__in=consts.NOT_RUN_STATUSES)
-
-            if completed_tasks.last().status == consts.COMPLETED:
-                metric_value_last_task = 1
-            else:
-                metric_value_last_task = 0
-
-            metric_value_fail = template.tasks.filter(status=consts.FAIL).count()
-            metric_value_success = template.tasks.filter(status=consts.COMPLETED).count()
-
-            result += 'ansible_manger_template_last_task_success{name="%s", id="%s"} %s\n' % (template.name,
-                                                                                              template.pk,
-                                                                                              metric_value_last_task)
-            deferred_result += 'ansible_manager_tasks_completed_total{name="%s", id="%s", status="fail"} %s\n' % \
-                               (template.name, template.pk, metric_value_fail)
-            deferred_result += 'ansible_manager_tasks_completed_total{name="%s", id="%s", status="success"} %s\n' % \
-                               (template.name, template.pk, metric_value_success)
+            success = int(completed_tasks.last().status == consts.COMPLETED)
+            result += 'ansible_manger_template_last_task_success{id="%s", name="%s"} %s\n' % (
+                template.name, template.pk, success)
 
         result += '# HELP ansible_manager_tasks_completed_total show number of completed tasks\n'
         result += '# TYPE ansible_manager_tasks_completed_total gauge\n'
-        result += deferred_result
+        tasks = models.Task.objects.values_list('template__id', 'template__name', 'status').annotate(count=Count('id'))
+        for template_id, template_name, status, count in tasks:
+            result += 'ansible_manager_tasks_completed_total{name="%s", id="%s", status="%s"} %s\n' % (
+                template_id, template_name, status, count
+            )
 
         return HttpResponse(result, content_type='text/plain; charset=utf-8')
