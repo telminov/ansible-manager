@@ -40,6 +40,9 @@ class AnsibleManagerMetrics(APIView):
         result += '# TYPE ansible_manager_template_last_task_success gauge\n'
         for template in models.TaskTemplate.objects.filter(cron__isnull=False):
             completed_tasks = template.tasks.filter(status__in=consts.NOT_RUN_STATUSES)
+            if not completed_tasks:
+                continue
+
             success = int(completed_tasks.last().status == consts.COMPLETED)
             result += 'ansible_manger_template_last_task_success{id="%s", name="%s"} %s\n' % (
                 template.name, template.pk, success)
