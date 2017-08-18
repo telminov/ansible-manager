@@ -38,7 +38,7 @@ class AnsibleManagerMetrics(APIView):
     def get(self, request):
         result = '# HELP ansible_manager_template_last_task_success show success or fail last task\n'
         result += '# TYPE ansible_manager_template_last_task_success gauge\n'
-        for template in models.TaskTemplate.objects.filter(cron__isnull=False):
+        for template in models.TaskTemplate.objects.exclude(cron=''):
             completed_tasks = template.tasks.filter(status__in=consts.NOT_RUN_STATUSES)
             if not completed_tasks:
                 continue
