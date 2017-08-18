@@ -45,13 +45,13 @@ class AnsibleManagerMetrics(APIView):
 
             success = int(completed_tasks.last().status == consts.COMPLETED)
             result += 'ansible_manager_template_last_task_success{id="%s", name="%s"} %s\n' % (
-                template.name, template.pk, success)
+                template.pk, template.name, success)
 
         result += '# HELP ansible_manager_tasks_completed_total show number of completed tasks\n'
         result += '# TYPE ansible_manager_tasks_completed_total gauge\n'
         tasks = models.Task.objects.values_list('template__id', 'template__name', 'status').annotate(count=Count('id'))
         for template_id, template_name, status, count in tasks:
-            result += 'ansible_manager_tasks_completed_total{name="%s", id="%s", status="%s"} %s\n' % (
+            result += 'ansible_manager_tasks_completed_total{id="%s", name="%s", status="%s"} %s\n' % (
                 template_id, template_name, status, count
             )
 
