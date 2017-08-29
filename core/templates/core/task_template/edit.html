@@ -6,7 +6,7 @@
         {% csrf_token %}
 
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 {% if object %}
                     <a href="{% url 'task_template_delete' object.id %}" class="btn btn-danger btn-block">
                         <i class="glyphicon glyphicon-trash"></i>
@@ -15,7 +15,16 @@
                 {% endif %}
             </div>
 
-            <div class="col-sm-3 col-sm-offset-3">
+            <div class="col-sm-offset-2 col-sm-2">
+                {% if object %}
+                    <a class="btn btn-primary btn-block" href="{% url 'task_template_create' %}?pk={{ object.pk }}">
+                    <i class="glyphicon glyphicon-copy"></i>
+                    Copy
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="col-sm-3">
                 {% if object %}
                     {% if object.get_actual_hosts.exists %}
                         <a class="btn btn-success btn-block" href="{% url 'task_template_run' object.id %}"

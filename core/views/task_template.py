@@ -1,5 +1,6 @@
 import os
 
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Max
 from django.contrib import messages
@@ -90,7 +91,11 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.get_object()
+        obj = self.get_object()
+        pk = self.request.GET.get('pk')
+        if not obj and pk:
+            obj = get_object_or_404(self.model, pk=pk)
+        kwargs['instance'] = obj
         return kwargs
 
     def get_formset_initial(self):
