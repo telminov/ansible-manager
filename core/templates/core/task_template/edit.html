@@ -17,7 +17,7 @@
 
             <div class="col-sm-offset-2 col-sm-2">
                 {% if object %}
-                    <a class="btn btn-primary btn-block" href="{% url 'task_template_create' %}?pk={{ object.pk }}">
+                    <a class="btn btn-primary btn-block" href="{% url 'task_template_create' %}?copy_from_template_id={{ object.pk }}">
                     <i class="glyphicon glyphicon-copy"></i>
                     Copy
                     </a>
