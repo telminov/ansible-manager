@@ -81,6 +81,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     formset_model = models.Variable
     permission_required = 'core.add_tasktemplate'
     title_create = 'Create'
+    copy_template = False
 
     def get_success_url(self):
         if 'pk' in self.kwargs:
@@ -95,6 +96,10 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         pk = self.request.GET.get('copy_from_template_id')
         if not obj and pk:
             obj = get_object_or_404(self.model, pk=pk)
+            self.copy_template = True
+            kwargs['initial']['hosts'] = obj.hosts.all()
+            kwargs['initial']['host_groups'] = obj.host_groups.all()
+            obj.pk = None
         kwargs['instance'] = obj
         return kwargs
 
@@ -117,8 +122,17 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
 
     def form_valid(self, form, formset):
         self.object = form.save()
-        variables = formset.save()
-        self.object.vars.add(*variables)
+        if self.copy_template:
+            vars = []
+            for f in formset:
+                if 'DELETE' in f.cleaned_data.keys() and not f.cleaned_data['DELETE']:
+                    f.instance.pk = None
+                    var = f.save()
+                    vars.append(var)
+            self.object.vars.add(*vars)
+        else:
+            variables = formset.save()
+            self.object.vars.add(*variables)
         return redirect(self.get_success_url())
 
     def get_context_data(self, *args, **kwargs):
