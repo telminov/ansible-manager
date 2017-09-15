@@ -126,7 +126,6 @@ edit = Edit.as_view()
 
 class Copy(mixins.PermissionRequiredMixin, views.FormView):
     template_name = 'core/task_template/copy.html'
-    formset_model = models.Variable
     form_class = core.forms.task_template.Copy
     permission_required = 'core.add_tasktemplate'
     title = 'Copy'
