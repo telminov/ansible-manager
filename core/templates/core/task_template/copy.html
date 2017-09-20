@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+{% load bootstrap3 %}
+
+{% block container %}
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="col-sm-3 col-sm-offset-9" style="margin-bottom: 1rem">
+            <button type="submit" class="btn btn-block btn-success">
+                <i class="glyphicon glyphicon-floppy-save"></i>
+                Create
+            </button>
+        </div>
+
+        <div class="col-sm-12" style="margin-bottom: 1rem">
+            {% bootstrap_form form layout='horizontal' %}
+        </div>
+    </form>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}core/js/variables.js"></script>
+    <script>
+        $('#id_name').select();
+    </script>
+{% endblock %}

@@ -51,3 +51,13 @@ class Edit(forms.ModelForm):
             task_template.save()
             self.save_m2m()
         return task_template
+
+
+class Copy(forms.Form):
+    name = forms.CharField()
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if models.TaskTemplate.objects.filter(name=name).exists():
+            raise forms.ValidationError('Template with name alreay exists')
+        return name

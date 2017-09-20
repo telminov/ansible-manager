@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^task_templates/$', task_template.search, name='task_template_search'),
     url(r'^task_templates/create/$', task_template.edit, name='task_template_create'),
     url(r'^task_templates/(?P<pk>\d+)/$', task_template.edit, name='task_template_update'),
+    url(r'^task_templates/(?P<pk>\d+)/copy/$', task_template.copy, name='task_template_copy'),
     url(r'^task_templates/(?P<pk>\d+)/run/$', task_template.run, name='task_template_run'),
     url(r'^task_templates/(?P<pk>\d+)/delete/$', task_template.delete, name='task_template_delete'),
     url(r'^task_templates/(?P<pk>\d+)/inventory/$', task_template.inventory, name='task_template_inventory'),

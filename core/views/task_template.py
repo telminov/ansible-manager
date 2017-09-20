@@ -91,19 +91,12 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        obj = self.get_object()
-        pk = self.request.GET.get('copy_from_template_id')
-        if not obj and pk:
-            obj = get_object_or_404(self.model, pk=pk)
-        kwargs['instance'] = obj
+        kwargs['instance'] = self.get_object()
         return kwargs
 
     def get_formset_initial(self):
         initial = self.formset_model.objects.none()
-        if self.request.GET.get('copy_from_template_id'):
-            obj = get_object_or_404(models.TaskTemplate, pk=self.request.GET.get('copy_from_template_id'))
-        else:
-            obj = self.get_object()
+        obj = self.get_object()
         if obj:
             initial = self.formset_model.objects.filter(task_templates__in=[obj, ])
         return initial
@@ -129,6 +122,62 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         return c
 
 edit = Edit.as_view()
+
+
+class Copy(mixins.PermissionRequiredMixin, views.FormView):
+    template_name = 'core/task_template/copy.html'
+    form_class = core.forms.task_template.Copy
+    permission_required = 'core.add_tasktemplate'
+    title = 'Copy'
+
+    def get_breadcrumbs(self):
+        return (
+            ('Home', reverse('index')),
+            (Search.title, reverse('task_template_search')),
+            (str(self.get_object()), reverse('task_template_update', kwargs={'pk': self.get_object().id})),
+            (self.title, '')
+        )
+
+    def get_initial(self):
+        kwargs = super().get_initial()
+        kwargs['name'] = self.get_object().name
+        return kwargs
+
+    def get_object(self):
+        obj = get_object_or_404(models.TaskTemplate, pk=self.kwargs['pk'])
+        return obj
+
+    def form_valid(self, form):
+        source_template = self.get_object()
+        self.new_template = models.TaskTemplate.objects.create(
+            name=form.cleaned_data['name'],
+            description=source_template.description,
+            playbook=source_template.playbook,
+            verbose=source_template.verbose,
+            ansible_user=source_template.ansible_user,
+            cron=source_template.cron,
+            cron_dt=source_template.cron_dt,
+        )
+
+        self.new_template.hosts.add(*source_template.hosts.all())
+        self.new_template.host_groups.add(*source_template.host_groups.all())
+
+        vars = []
+        for var in source_template.vars.all():
+            var = models.Variable.objects.create(
+                name=var.name,
+                value=var.value
+            )
+            vars.append(var)
+
+        self.new_template.vars.add(*vars)
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('task_template_update', kwargs={'pk': self.new_template.pk})
+
+copy = Copy.as_view()
 
 
 class Delete(mixins.PermissionRequiredMixin, views.DeleteView):

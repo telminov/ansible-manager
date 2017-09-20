@@ -16,7 +16,6 @@ correctedIds = ->
     newElement.css("display", "");
     total = $('#id_form-TOTAL_FORMS').val()
     setTotalNumber(newElement, '__prefix__', total)
-    correctedIds()
     
     total++
     $('#id_form-TOTAL_FORMS').val(total);
