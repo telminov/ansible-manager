@@ -104,6 +104,7 @@ class HostGroup(models.Model):
 
 class Host(models.Model):
     name = models.CharField(max_length=255, blank=True)
+    users = models.CharField('Users with an access to this host', max_length=255, blank=True)
     address = models.CharField(max_length=255)
     groups = models.ManyToManyField(HostGroup, related_name='hosts')
     vars = models.ManyToManyField(Variable, related_name='hosts')
