@@ -39,7 +39,7 @@ class Edit(forms.ModelForm):
         self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
         self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                                       widget=forms.Select(attrs={'class': 'need-select2'}))
-        self.fields['hosts'].queryset = models.Host.objects.filter(users__icontains=self.user).order_by(Lower('name'))
+        self.fields['hosts'].queryset = models.Host.objects.filter(users__username__exact=self.user)
 
     def save(self, commit=True, *args, **kwargs):
         task_template = super(Edit, self).save(commit=False, *args, **kwargs)

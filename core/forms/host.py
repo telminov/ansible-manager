@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models.functions import Lower
+from django.contrib.auth.models import User
 
 from core import models
 
@@ -13,6 +14,8 @@ class Search(forms.Form):
 
 class Edit(forms.ModelForm):
     groups = forms.ModelMultipleChoiceField(required=False, queryset=models.HostGroup.objects.order_by(Lower('name')),
+                                            widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
+    users = forms.ModelMultipleChoiceField(required=False, queryset=User.objects.all(),
                                             widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
     class Meta:
         model = models.Host

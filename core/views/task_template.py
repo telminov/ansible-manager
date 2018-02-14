@@ -209,7 +209,7 @@ class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
     def get(self, request, *args, **kwargs):
         task_template = self.get_object()
 
-        if models.TaskTemplate.objects.filter(hosts__users__icontains=self.request.user):
+        if models.TaskTemplate.objects.filter(hosts__users__username__exact=self.request.user):
             in_progress_tasks = task_template.tasks.filter(status__in=consts.RUN_STATUSES)
             if in_progress_tasks.exists():
                 messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
