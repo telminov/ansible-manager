@@ -99,7 +99,7 @@ class EditTaskTemplateView(TestDefaultMixin, TestCase):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
         self.client.force_login(user=self.user)
         factories.AnsibleUserFactory.create()
-        factories.HostFactory.create()
+        factories.HostFactory.create(users=(self.user.id, ))
         factories.HostGroupFactory.create()
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
@@ -152,7 +152,7 @@ class EditTaskTemplateView(TestDefaultMixin, TestCase):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
         self.client.force_login(user=self.user)
         factories.AnsibleUserFactory.create()
-        factories.HostFactory.create()
+        factories.HostFactory.create(users=(self.user.id, ))
         factories.HostGroupFactory.create()
 
         path = settings.ANSIBLE_PLAYBOOKS_PATH
@@ -181,7 +181,7 @@ class EditTaskTemplateView(TestDefaultMixin, TestCase):
         self.user.user_permissions.add(Permission.objects.get(codename='view_task_template'))
         self.client.force_login(user=self.user)
         factories.HostGroupFactory.create()
-        factories.HostFactory.create()
+        factories.HostFactory.create(users=(self.user.id, ))
         ansb_usr = factories.AnsibleUserFactory.create()
         factories.AnsibleUserFactory.create(name='two')
         factories.TaskTemplateFactory.create(ansible_user=ansb_usr)

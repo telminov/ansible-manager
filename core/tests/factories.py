@@ -44,6 +44,15 @@ class HostFactory(factory.django.DjangoModelFactory):
     address = '192.168.19.19'
 
     @factory.post_generation
+    def users(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for user in extracted:
+                self.users.add(user)
+
+    @factory.post_generation
     def groups(self, create, extracted, **kwargs):
         if not create:
             return
@@ -160,10 +169,11 @@ class TaskLogFactory(factory.django.DjangoModelFactory):
 def create_data_for_search_template():
     group_with_test = HostGroupFactory.create()
     group_without_test = HostGroupFactory.create(name='Jesus')
-    host_with_test = HostFactory.create(groups=(group_with_test,))
+    host_with_test = HostFactory.create(groups=(group_with_test,), users=('1', ))
     host_without_test = HostFactory.create(
         name='host',
         address='192.168.19.18',
+        users='1',
         groups=(group_without_test,)
     )
     TaskTemplateFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,))
@@ -177,8 +187,8 @@ def create_data_for_search_template():
 def create_data_for_search_task():
     group_with_test = HostGroupFactory.create()
     group_without_test = HostGroupFactory.create(name='Jesus')
-    host_with_test = HostFactory.create(groups=(group_with_test,))
-    host_without_test = HostFactory.create(name='host', address='192.168.19.18', groups=(group_without_test,))
+    host_with_test = HostFactory.create(groups=(group_with_test,), users=('1', ))
+    host_without_test = HostFactory.create(name='host', address='192.168.19.18', groups=(group_without_test,), users=('1', ))
     tsk_tmlt_wth_tst = TaskTemplateFactory.create(hosts=(host_with_test,), host_groups=(group_with_test,))
     tsk_tmlt_wthout_tst = TaskTemplateFactory.create(
         name='Other Jesus test',
@@ -197,6 +207,9 @@ def create_data_for_search_task():
 
 
 def create_data_for_search_host():
+    host_user = User.objects.create(
+        username='Test user'
+    )
     host_group = models.HostGroup.objects.create(
         name='Test group'
     )
@@ -204,6 +217,7 @@ def create_data_for_search_host():
         name='test name',
         address='192.168.19.19',
     )
+    host.users.add(host_user)
     host.groups.add(host_group)
     models.Host.objects.create(
         name='Other test name',
@@ -213,4 +227,5 @@ def create_data_for_search_host():
         name='Other other test name',
         address='192.168.19.19',
     )
+    host.users.add(host_user)
     host.groups.add(host_group)
