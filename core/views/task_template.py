@@ -92,6 +92,7 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['instance'] = self.get_object()
+        kwargs['current_user'] = self.request.user
         return kwargs
 
     def get_formset_initial(self):
@@ -207,15 +208,21 @@ class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
 
     def get(self, request, *args, **kwargs):
         task_template = self.get_object()
+        task_hosts = task_template.hosts.all()
+        user_hosts = task_hosts.filter(users__in=[self.request.user])
 
-        in_progress_tasks = task_template.tasks.filter(status__in=consts.RUN_STATUSES)
-        if in_progress_tasks.exists():
-            messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
-            task = in_progress_tasks.last()
+        if user_hosts.count() == task_hosts.count():
+            in_progress_tasks = task_template.tasks.filter(status__in=consts.RUN_STATUSES)
+            if in_progress_tasks.exists():
+                messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
+                task = in_progress_tasks.last()
+            else:
+                task = task_template.create_task(self.request.user)
+
+            return redirect(reverse('task_log', kwargs={'pk': task.id}))
         else:
-            task = task_template.create_task(self.request.user)
-
-        return redirect(reverse('task_log', kwargs={'pk': task.id}))
+            messages.info(self.request, 'This user does not have an acces to this host')
+            return redirect(reverse('task_search'))
 run = Run.as_view()
 
 

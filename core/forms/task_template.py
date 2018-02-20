@@ -33,11 +33,13 @@ class Edit(forms.ModelForm):
         model = models.TaskTemplate
         exclude = ('vars', )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, current_user, *args, **kwargs):
+        self.user = current_user
         super().__init__(*args, **kwargs)
         self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
         self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                                       widget=forms.Select(attrs={'class': 'need-select2'}))
+        self.fields['hosts'].queryset = models.Host.objects.filter(users__in=[self.user, ])
 
     def save(self, commit=True, *args, **kwargs):
         task_template = super(Edit, self).save(commit=False, *args, **kwargs)

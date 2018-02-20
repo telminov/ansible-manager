@@ -9,6 +9,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 from croniter import croniter, CroniterBadCronError, CroniterBadDateError, CroniterNotAlphaError
@@ -104,6 +105,8 @@ class HostGroup(models.Model):
 
 class Host(models.Model):
     name = models.CharField(max_length=255, blank=True)
+    users = models.ManyToManyField(User, related_name='hosts', verbose_name="Users",
+                                   help_text="Users with an access to this host")
     address = models.CharField(max_length=255)
     groups = models.ManyToManyField(HostGroup, related_name='hosts')
     vars = models.ManyToManyField(Variable, related_name='hosts')
