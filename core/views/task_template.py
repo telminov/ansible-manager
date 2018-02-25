@@ -16,6 +16,7 @@ from core import consts
 
 from core import models
 from core.datatools import ansible
+from core.datatools.hosts import get_allowed_hosts
 from core.generic import mixins
 from core.generic import views
 
@@ -74,7 +75,7 @@ class Search(mixins.PermissionRequiredMixin, SortMixin, mixins.FormMixin, views.
 search = Search.as_view()
 
 
-class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, views.EditView):
+class Edit(mixins.PermissionRequiredMixin, mixins.TemplateIsAvailableMixin, mixins.FormAndModelFormsetMixin, views.EditView):
     template_name = 'core/task_template/edit.html'
     form_class = core.forms.task_template.Edit
     model = models.TaskTemplate
@@ -106,10 +107,14 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         return (
             ('Home', reverse('index')),
             (Search.title, reverse('task_template_search')),
-            (self.get_title(), '')
+            (self.get_title(), 'This user does not have an access to this host')
         )
 
     def form_valid(self, form, formset):
+        if not self.template_is_available():
+            messages.error(self.request, 'This user does not have an access to all hosts in this template')
+            return self.get(self.request, *self.args, **self.kwargs)
+            
         self.object = form.save()
         variables = formset.save()
         self.object.vars.add(*variables)
@@ -120,12 +125,12 @@ class Edit(mixins.PermissionRequiredMixin, mixins.FormAndModelFormsetMixin, view
         if self.get_object():
             c['last_tasks'] = self.get_object().tasks.order_by('-id')[:10]
             c['repeat_count'] = self.get_object().repeat_settings.count()
+            c['template_is_available'] = self.template_is_available()
         return c
-
 edit = Edit.as_view()
 
 
-class Copy(mixins.PermissionRequiredMixin, views.FormView):
+class Copy(mixins.PermissionRequiredMixin, mixins.TemplateIsAvailableMixin, views.FormView):
     template_name = 'core/task_template/copy.html'
     form_class = core.forms.task_template.Copy
     permission_required = 'core.add_tasktemplate'
@@ -149,6 +154,10 @@ class Copy(mixins.PermissionRequiredMixin, views.FormView):
         return obj
 
     def form_valid(self, form):
+        if not self.template_is_available():
+            messages.error(self.request, 'This user does not have an access to all hosts in this template')
+            return redirect(self.get_next() or reverse('task_template_search'))
+
         source_template = self.get_object()
         self.new_template = models.TaskTemplate.objects.create(
             name=form.cleaned_data['name'],
@@ -181,7 +190,7 @@ class Copy(mixins.PermissionRequiredMixin, views.FormView):
 copy = Copy.as_view()
 
 
-class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
+class Delete(mixins.PermissionRequiredMixin, mixins.TemplateIsAvailableMixin, views.DeleteView):
     template_name = 'core/task_template/delete.html'
     model = models.TaskTemplate
     permission_required = 'core.delete_tasktemplate'
@@ -190,6 +199,13 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
     def get_title(self):
         obj = self.get_object()
         return "Delete %s" % obj
+
+    def post(self, *args, **kwargs):
+        if not self.template_is_available():
+            messages.error(self.request, 'This user does not have an access to all hosts in this template')
+            return redirect(self.get_next() or reverse('task_template_search'))
+
+        return super(*args, **kwargs)
 
     def get_breadcrumbs(self):
         obj = self.get_object()
@@ -202,27 +218,26 @@ class Delete(mixins.PermissionRequiredMixin, views.DeleteView):
 delete = Delete.as_view()
 
 
-class Run(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
+class Run(mixins.PermissionRequiredMixin, mixins.TemplateIsAvailableMixin, SingleObjectMixin, views.View):
     permission_required = 'core.run_task'
     model = models.TaskTemplate
 
     def get(self, request, *args, **kwargs):
         task_template = self.get_object()
-        task_hosts = task_template.hosts.all()
-        user_hosts = task_hosts.filter(users__in=[self.request.user])
 
-        if user_hosts.count() == task_hosts.count():
-            in_progress_tasks = task_template.tasks.filter(status__in=consts.RUN_STATUSES)
-            if in_progress_tasks.exists():
-                messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
-                task = in_progress_tasks.last()
-            else:
-                task = task_template.create_task(self.request.user)
+        if not self.template_is_available():
+            messages.error(self.request, 'This user does not have an access to all hosts in this template')
+            return redirect(self.get_next() or reverse('task_template_search'))
 
-            return redirect(reverse('task_log', kwargs={'pk': task.id}))
+        in_progress_tasks = task_template.tasks.filter(status__in=consts.RUN_STATUSES)
+        if in_progress_tasks.exists():
+            messages.info(self.request, 'The same task was not started. You have been redirected to a running task.')
+            task = in_progress_tasks.last()
         else:
-            messages.info(self.request, 'This user does not have an acces to this host')
-            return redirect(reverse('task_search'))
+            task = task_template.create_task(self.request.user)
+
+        return redirect(reverse('task_log', kwargs={'pk': task.id}))
+
 run = Run.as_view()
 
 

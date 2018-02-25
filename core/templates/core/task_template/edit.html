@@ -8,25 +8,39 @@
         <div class="row">
             <div class="col-sm-2">
                 {% if object %}
-                    <a href="{% url 'task_template_delete' object.id %}" class="btn btn-danger btn-block">
-                        <i class="glyphicon glyphicon-trash"></i>
-                        Delete
-                    </a>
+                    {% if template_is_available %}
+                        <a href="{% url 'task_template_delete' object.id %}" class="btn btn-danger btn-block">
+                            <i class="glyphicon glyphicon-trash"></i>
+                            Delete
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn btn-danger btn-block" disabled="">
+                            <i class="glyphicon glyphicon-trash"></i>
+                            Delete
+                        </button>
+                    {% endif %}
                 {% endif %}
             </div>
 
             <div class="col-sm-offset-2 col-sm-2">
                 {% if object %}
-                    <a class="btn btn-primary btn-block" href="{% url 'task_template_copy' object.pk %}">
-                    <i class="glyphicon glyphicon-copy"></i>
-                    Copy
-                    </a>
+                    {% if template_is_available %}
+                        <a class="btn btn-primary btn-block" href="{% url 'task_template_copy' object.pk %}">
+                        <i class="glyphicon glyphicon-copy"></i>
+                        Copy
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn btn-primary btn-block" disabled>
+                        <i class="glyphicon glyphicon-copy"></i>
+                        Copy
+                        </button>
+                    {% endif %}
                 {% endif %}
             </div>
 
             <div class="col-sm-3">
                 {% if object %}
-                    {% if object.get_actual_hosts.exists %}
+                    {% if object.get_actual_hosts.exists and template_is_available%}
                         <a class="btn btn-success btn-block" href="{% url 'task_template_run' object.id %}"
                                 data-toggle="tooltip" data-placement="left" title="Create and run new task">
                             <i class="fa fa-play"></i>
@@ -42,7 +56,8 @@
             </div>
 
             <div class="col-sm-3">
-                <button type="submit" class="btn btn-success btn-block" data-toggle="tooltip" data-placement="top">
+                <button type="submit" class="btn btn-success btn-block" data-toggle="tooltip" data-placement="top"
+                        {% if object and not template_is_available %}disabled{% endif %}>
                     <i class="glyphicon glyphicon-floppy-save"></i>
                     {{ object|yesno:'Update, Create' }}
                 </button>

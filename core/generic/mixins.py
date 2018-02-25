@@ -7,6 +7,8 @@ from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as PermissionRequiredMixinAuth
 from django.views.generic.edit import FormMixin as DjangoFormMixin
 
+from core.datatools.hosts import get_allowed_hosts
+
 
 class BreadcrumbsMixin(ContextMixin):
 
@@ -96,5 +98,20 @@ class FormAndModelFormsetMixin(FormAndFormsetMixin):
 class NextMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['next'] = self.request.META.get('HTTP_REFERER', self.request.GET.get('next'))
+        context['next'] = self.get_next()
         return context
+
+    def get_next(self):
+        return self.request.META.get('HTTP_REFERER', self.request.GET.get('next'))
+
+
+class TemplateIsAvailableMixin:
+    def template_is_available(self):
+        template = self.get_object()
+        is_available = True
+        if template:
+            user_hosts = get_allowed_hosts(self.request.user)
+            user_host_ids = list(user_hosts.values_list('id', flat=True))
+            is_available = not template.hosts.exclude(id__in=user_host_ids).exists()
+
+        return is_available

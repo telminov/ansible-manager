@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models.functions import Lower
 from django.utils import timezone
 
+from core.datatools.hosts import get_allowed_hosts
 from core.forms.fields import CronFormField
 from core import models
 
@@ -39,7 +40,7 @@ class Edit(forms.ModelForm):
         self.fields['ansible_user'].initial = models.AnsibleUser.objects.first()
         self.fields['playbook'] = forms.FilePathField(path=settings.ANSIBLE_PLAYBOOKS_PATH, match='.*\.yml$',
                                                       widget=forms.Select(attrs={'class': 'need-select2'}))
-        self.fields['hosts'].queryset = models.Host.objects.filter(users__in=[self.user, ])
+        self.fields['hosts'].queryset = get_allowed_hosts(self.user)
 
     def save(self, commit=True, *args, **kwargs):
         task_template = super(Edit, self).save(commit=False, *args, **kwargs)
