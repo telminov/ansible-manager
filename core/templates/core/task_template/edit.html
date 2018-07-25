@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 
 {% block container %}
-    <form action="" method="POST" class="edit-form">
+    <form action="" method="POST" class="edit-form" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="row">
@@ -59,6 +59,7 @@
                         {% bootstrap_field form.name layout='horizontal' %}
                         {% bootstrap_field form.ansible_user layout='horizontal' %}
                         {% bootstrap_field form.playbook layout='horizontal'%}
+                        <div class="row"><div class="col-sm-12">{% bootstrap_field form.inventory layout='horizontal' %}</div></div>
                         {% bootstrap_field form.hosts layout='horizontal' %}
                         {% bootstrap_field form.host_groups layout='horizontal' %}
                         {% bootstrap_field form.description  layout='horizontal' %}

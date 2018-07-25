@@ -17,6 +17,7 @@ class Search(forms.Form):
 
 
 class Edit(forms.ModelForm):
+    inventory = forms.FileField(required=False)
     hosts = forms.ModelMultipleChoiceField(queryset=models.Host.objects.order_by(Lower('name')), required=False,
                                            widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
     host_groups = forms.ModelMultipleChoiceField(queryset=models.HostGroup.objects.order_by(Lower('name')),

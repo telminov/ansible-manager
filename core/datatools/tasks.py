@@ -109,7 +109,8 @@ class TaskManager:
                 status=consts.FAIL
             )
         finally:
-            os.remove(inventory_file_path)
+            if not task.inventory:
+                os.remove(inventory_file_path)
             if os.path.exists("/proc/%s" % task.pid):
                 os.kill(task.pid, signal.SIGTERM)
 

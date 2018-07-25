@@ -5,6 +5,9 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 
+os.environ['ANSIBLE_NOCOWS'] = '1'
+
+
 def make_command(task) -> str:
     """
     :param task: core.models.Task or core.models.TaskTemplate
@@ -14,7 +17,10 @@ def make_command(task) -> str:
     assert hasattr(task, 'host_groups')
     assert hasattr(task, 'vars')
 
-    inventory_file_path = create_inventory(task)
+    if hasattr(task, 'inventory') and task.inventory:
+        inventory_file_path = task.inventory.path
+    else:
+        inventory_file_path = create_inventory(task)
 
     verbose = ''
     if task.verbose:

@@ -24,6 +24,7 @@ class Search(forms.Form):
 class Create(forms.ModelForm):
     template = forms.ModelChoiceField(queryset=models.TaskTemplate.objects.all(), required=False,
                                       widget=forms.Select(attrs={'class': 'need-select2'}))
+    inventory = forms.FileField(required=False)
     hosts = forms.ModelMultipleChoiceField(queryset=models.Host.objects.order_by(Lower('name')), required=False,
                                            widget=forms.SelectMultiple(attrs={'class': 'need-select2'}))
     host_groups = forms.ModelMultipleChoiceField(queryset=models.HostGroup.objects.order_by(Lower('name')),

@@ -151,6 +151,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     playbook = models.FilePathField()
+    inventory = models.FileField(null=True, blank=True, upload_to='inventories')
     hosts = models.ManyToManyField(Host, related_name='task_templates')
     host_groups = models.ManyToManyField(HostGroup, related_name='task_templates')
     vars = models.ManyToManyField(Variable, related_name='task_templates')
@@ -170,6 +171,7 @@ class TaskTemplate(TaskOperationsMixin, models.Model):
     def create_task(self, user, is_automatically_created=False, repeat_number=0):
         task = Task.objects.create(
             template=self,
+            inventory=self.inventory,
             playbook=self.playbook,
             user=user,
             is_automatically_created=is_automatically_created,
@@ -199,6 +201,7 @@ class RepeatSetting(models.Model):
 
 class Task(TaskOperationsMixin, models.Model):
     playbook = models.FilePathField()
+    inventory = models.FileField(null=True, blank=True, upload_to='inventories')
     hosts = models.ManyToManyField(Host, related_name='tasks')
     host_groups = models.ManyToManyField(HostGroup, related_name='tasks')
     vars = models.ManyToManyField(Variable, related_name='tasks')

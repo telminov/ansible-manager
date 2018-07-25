@@ -170,9 +170,17 @@ class Inventory(mixins.PermissionRequiredMixin, SingleObjectMixin, views.View):
 
     def get(self, *args, **kwargs):
         task = self.get_object()
-        inventory_path = ansible.create_inventory(task)
+
+        if task.inventory:
+            inventory_path = task.inventory.path
+        else:
+            inventory_path = ansible.create_inventory(task)
+
         with open(inventory_path) as inventory_file:
             inventory_content = inventory_file.read()
-        os.remove(inventory_path)
+
+        if not task.inventory:
+            os.remove(inventory_path)
+
         return HttpResponse(inventory_content, content_type='text/plain')
 inventory = Inventory.as_view()
