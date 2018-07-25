@@ -13,7 +13,8 @@
     <div class="col-sm-10" style="text-align: center">
         <ul class="pagination text-center" style="margin: 0">
             {% if page_obj.has_previous %}
-                <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
+                <li><a href="?{% url_replace request 'page' 1 %}"> &laquo; </a></li>
+                <li><a href="?{% url_replace request 'page' page_obj.previous_page_number %}"> &lsaquo; </a></li>
             {% else %}
                 <li class="disabled"><span>&laquo;</span></li>
             {% endif %}
@@ -27,15 +28,18 @@
                         {% else %}
                             {% if i|add:"-2" <= page_obj.number and page_obj.number <= i|add:"2" %}
                                 <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                            {% elif i|divisibleby:"10" or i == page_obj.paginator.num_pages %}
-                                <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                            {% elif forloop.last or forloop.counter < 30 %}
+                                {% if i|divisibleby:"10" %}
+                                    <a href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </li>
                 {% endif %}
             {% endfor %}
             {% if page_obj.has_next %}
-                <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
+                <li><a href="?{% url_replace request 'page' page_obj.next_page_number %}"> &rsaquo; </a></li>
+                <li><a href="?{% url_replace request 'page' page_obj.paginator.num_pages %}"> &raquo; </a></li>
             {% else %}
                 <li class="disabled"><span>&raquo;</span></li>
             {% endif %}
