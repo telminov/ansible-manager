@@ -25,3 +25,5 @@ EXPOSE 80
 VOLUME /data/
 VOLUME /conf/
 VOLUME /static/
+
+RUN rm -rf media; ln -s /data/media media;
